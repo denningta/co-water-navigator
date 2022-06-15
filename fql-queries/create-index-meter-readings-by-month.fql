@@ -1,0 +1,24 @@
+CreateIndex({
+  name: 'meter-readings-by-month',
+  source: {
+    collection: Collection('meterReadings'),
+    fields: {
+      month: Query(
+        Lambda(
+          'doc',
+          Select(
+            ['data'], 
+            Select(
+              1, 
+              FindStrRegex(
+                Select(['data', 'date'], Var('doc')), 
+                "[^\\/]+"
+              )
+            )
+          )
+        )
+      )
+    }
+  },
+  terms: [ { binding: 'month' } ],
+})

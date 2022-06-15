@@ -2,8 +2,7 @@ import { UserData } from "./User";
 
 
 export default interface MeterReading {
-  month: number;
-  year: number;
+  date: string;
   permitNumber: string;
   flowMeter?: CalculatedValue;
   powerMeter?: CalculatedValue;
@@ -13,9 +12,9 @@ export default interface MeterReading {
   availableThisYear?: CalculatedValue; 
   readBy?: string;
   comments?: string;
-  createdAt: Date;
+  createdAt: string;
   createdBy?: UserData;
-  updatedAt: Date;
+  updatedAt: string;
   updatedBy?: UserData;
 }
 

@@ -1,0 +1,24 @@
+CreateIndex({
+  name: 'meter-readings-by-year',
+  source: {
+    collection: Collection('meterReadings'),
+    fields: {
+      year: Query(
+        Lambda(
+          'doc',
+          Select(
+            ['data'], 
+            Select(
+              0, 
+              FindStrRegex(
+                Select(['data', 'date'], Var('doc')), 
+                "[^\\/]+"
+              )
+            )
+          )
+        )
+      )
+    }
+  },
+  terms: [ { binding: 'year' } ],
+})

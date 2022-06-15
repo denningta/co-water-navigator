@@ -1,0 +1,4 @@
+Update(
+  Index('meter-readings-by-year'),
+  { values: [] }
+)
