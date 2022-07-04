@@ -1,9 +1,10 @@
 import { match } from "assert";
 import { Expr } from "faunadb";
 import { NextApiRequest } from "next";
+import MeterReading from "../../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../../lib/faunaClient";
 
-async function retrieveMeterReadings(permitNumber: string | string[], query: NextApiRequest["query"]) {
+async function listMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
   console.log(query)
   if (query.start && query.end && (query.month || query.year)) {
     return Promise.reject({
@@ -35,7 +36,8 @@ async function retrieveMeterReadings(permitNumber: string | string[], query: Nex
 
   const years = Array.isArray(query.year) ? query.year : [query.year];
 
-  if (years.length && years.every(year => isNaN(+year))) {
+  console.log(query.year, years)
+  if (query.year && years.every(year => isNaN(+year))) {
    return Promise.reject({
      error: 'Invalid parameter',
      detail: 'Query parameter for "year" must be a valid number.  Ex: ...?year=2022',
@@ -71,11 +73,8 @@ async function retrieveMeterReadings(permitNumber: string | string[], query: Nex
       q.Lambda(x => q.Get(x))
     ),
   )
-    .then((res: any) => {
-      const response = res.data.map((faunaRecord: any) => faunaRecord.data)
-      return response
-    })
+    .then((res: any) => res)
     .catch(error => error);
 }
 
-export default retrieveMeterReadings;
+export default listMeterReadings;

@@ -13,7 +13,7 @@ if (!endpoint) endpoint = 'https://db.fauna.com/'
 let mg, domain, port, scheme: 'http' | 'https' | undefined
 if ((mg = endpoint.match(/^(https?):\/\/([^:]+)(:(\d+))?/))) {
   scheme = (mg[1] === 'http' && 'http') || 'https'
-  domain = mg[2] || 'db.fauna.com'
+  domain = 'db.fauna.com'
   port = +mg[4] || 443
 }
 
