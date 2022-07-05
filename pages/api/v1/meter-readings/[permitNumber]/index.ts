@@ -45,7 +45,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<Meter
 
   return await handlers[req.method](req)
     .then((res: any) => {
-      console.log(res)
       return res
     })
     .catch((error: any) => {

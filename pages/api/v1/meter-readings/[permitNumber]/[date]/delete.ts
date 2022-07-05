@@ -1,30 +1,36 @@
 import { NextApiRequest } from "next";
-import Error from "next/error";
 import MeterReading from "../../../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../../../lib/faunaClient";
-
-interface DeleteProps {
-  records: MeterReading[];
-}
+import validateQuery from "../../validatorFunctions";
 
 async function deleteMeterReading(req: NextApiRequest): Promise<MeterReading> {
+  return new Promise(async (resolve, reject) => {
+    const errors = validateQuery(req, [
+      'queryExists',
+      'permitNumberRequired',
+      'dateRequired',
+      'validDateFormat'
+    ]);
 
-  const { records }: DeleteProps = body;
+    if (errors.length) return reject(errors);
 
-  return await faunaClient.query(
-    q.Map(records, 
-      (meterReading) => {
-        return q.Delete(
-          q.Select(['ref'], q.Get(
-            q.Match(
-              q.Index('meter-readings-by-permitnumber-date'), 
-              [permitNumber, q.Select(['date'], meterReading)]
-            )
-          ))
-        )
-      }  
-    )
-  )
+    const { permitNumber, date } = req.query;
+
+    const response: any = await faunaClient.query(
+      q.Delete(q.Select(['ref'], q.Get(
+        q.Match(q.Index('meter-readings-by-permitnumber-date'), [permitNumber, date])
+      )))
+    ).catch(err => {
+      errors.push({
+        ...err, 
+        status: err.requestResult.statusCode
+      });
+      return reject(errors);
+    })
+
+    return resolve(response.data);
+
+  });
 
 }
 

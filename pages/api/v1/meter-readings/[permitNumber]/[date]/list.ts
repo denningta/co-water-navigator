@@ -7,6 +7,7 @@ import validateQuery from "../../validatorFunctions";
 async function listMeterReading(req: NextApiRequest): Promise<MeterReading> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
+      'queryExists',
       'permitNumberRequired',
       'dateRequired',
       'validDateFormat',

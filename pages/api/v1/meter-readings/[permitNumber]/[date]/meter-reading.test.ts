@@ -8,14 +8,12 @@
  */
 
 import { createMocks, RequestMethod } from "node-mocks-http";
+import meterReadingHandler from ".";
 import HttpProps from "../../../interfaces/HttpProps";
-import MeterReading from "../../../../../../interfaces/MeterReading";
-import listMeterReading from "./list";
-import createMeterReading from "./create";
-import { HttpError } from "../../../interfaces/HttpError";
 
-const method: RequestMethod = 'POST';
-const { req, res }: HttpProps = createMocks({ method });
+
+let method: RequestMethod = 'GET';
+const { req, res }: HttpProps = createMocks();
 
 const permitNumber = 'XX-00000'
 const date = '1900-01'
@@ -25,30 +23,84 @@ req.query = {
   date: date
 }
 
+
+
 describe('api/[version]/meter-readings/{permitNumber}/{date}', () => {
 
-  it('POST creates a single meter reading record', async () => {
-    req.method = 'POST';
-    req.body = {
-      flowMeter: {
-        value: 150,
-      },
-    }
+  describe('GET and UPDATE', () => {
+    beforeEach(async () => {
+      req.method = 'POST';
+      req.body = { flowMeter: { value: 150 } };
+      const response = await meterReadingHandler(req, res)
+        .catch(error => {
+          console.error('Test setup failed: ', error);
+        });
+    });
 
-    const response = await createMeterReading(req);
-    expect(response).toBeTruthy();
-    expect(response.permitNumber).toEqual('XX-00000');
-    expect(response.date).toEqual('1900-01');
-    expect(response.flowMeter?.value).toEqual(150);
+    afterEach(async () => {
+      req.method = 'DELETE';
+      const response = await meterReadingHandler(req, res)
+        .catch(error => {
+          console.error('Test teardown failed: ', error);
+        });
+    });
+
+
+    test('GET returns a meter reading', async () => {    
+      req.method = 'GET';
+      const response = await meterReadingHandler(req, res);
+      expect(response).toHaveProperty('permitNumber', permitNumber);
+      expect(response).toHaveProperty('date', date);
+      expect(response).toHaveProperty('flowMeter', { value: 150 });
+    });
+
+    test('PATCH updates a meter reading', async () => {
+      req.method = 'PATCH';
+      req.body = { powerMeter: { value: 400 } };
+      const response = await meterReadingHandler(req, res);
+      expect(response).toHaveProperty('permitNumber', permitNumber);
+      expect(response).toHaveProperty('date', date);
+      expect(response).toHaveProperty('flowMeter', { value: 150 });
+      expect(response).toHaveProperty('powerMeter', { value: 400 });
+    });
   });
 
-  it('GET returns a single meter reading record', async () => {
-    req.method = 'GET';
-    const response = await listMeterReading(req).then(res => res).catch(err => err);
+  describe('POST', () => {
+    afterAll(async () => {
+      req.method = 'DELETE'
+      const response = await meterReadingHandler(req, res)
+        .catch(error => {
+          console.error('Test setup failed: ', error);
+        });
+    })
 
-    expect(response).toBeTruthy();
-    expect(response.permitNumber).toEqual('XX-00000');
-    expect(response.date).toEqual('1900-01');
+    test('POST creates a meter reading', async () => {
+      req.method = 'POST';
+      req.body = { flowMeter: { value: 200 } };
+      const response = await meterReadingHandler(req, res);
+      expect(response).toHaveProperty('permitNumber', permitNumber);
+      expect(response).toHaveProperty('date', date);
+      expect(response).toHaveProperty('flowMeter', { value: 200 });
+    });
+  });
+
+  describe('DELETE', () => {
+    beforeAll(async () => {
+      req.method = 'POST';
+      req.body = { flowMeter: { value: 200 } };
+      const response = await meterReadingHandler(req, res)
+        .catch(error => {
+          console.error('Test setup failed: ', error);
+        });
+    })
+
+    test('DELETE deletes a meter reading', async () => {
+      req.method = 'DELETE'
+      const response = await meterReadingHandler(req, res);
+      expect(response).toHaveProperty('permitNumber', permitNumber);
+      expect(response).toHaveProperty('date', date);
+      expect(response).toHaveProperty('flowMeter', { value: 200 });
+    });
   });
 
 });

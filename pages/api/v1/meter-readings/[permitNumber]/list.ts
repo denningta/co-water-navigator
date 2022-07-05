@@ -5,7 +5,6 @@ import MeterReading from "../../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../../lib/faunaClient";
 
 async function listMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
-  console.log(query)
   if (query.start && query.end && (query.month || query.year)) {
     return Promise.reject({
       error: 'Invalid parameters',
@@ -36,7 +35,6 @@ async function listMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
 
   const years = Array.isArray(query.year) ? query.year : [query.year];
 
-  console.log(query.year, years)
   if (query.year && years.every(year => isNaN(+year))) {
    return Promise.reject({
      error: 'Invalid parameter',

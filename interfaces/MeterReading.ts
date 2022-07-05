@@ -18,6 +18,8 @@ export default interface MeterReading {
   updatedBy?: UserData;
 }
 
+
+
 interface CalculatedValue {
   value: number;
   shouldBe: number | undefined;

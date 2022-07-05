@@ -14,7 +14,6 @@ async function handler(
   req: NextApiRequest, 
   res: NextApiResponse
 ): Promise<MeterReading[] | HttpError> {
-
   if (!req || !req.method) {
     return Promise.reject({
       error: 'No Request or Invalid Request Method',
@@ -33,12 +32,11 @@ async function handler(
 
   return await handlers[req.method](req)
   .then((response) => {
-    console.log(response)
     res.status(200).json(response);
+    return response;
   })
-  .catch(errors => {
-    console.log(errors);
-    res.status(errors[0].status).json({errors: errors})
+  .catch((errors: any) => {
+    res.status(errors[0].status || 500).json({errors: errors})
     return errors;
   });
 

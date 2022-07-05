@@ -5,17 +5,18 @@ import faunaClient, { q } from "../../../../../../lib/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../validatorFunctions";
 
-interface CreateProps {
-  records: MeterReading[];
-}
-
 async function createMeterReading(req: NextApiRequest): Promise<MeterReading> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
+      'queryExists',
+      'bodyExists',
       'permitNumberRequired',
       'dateRequired',
-      'validDateFormat'
+      'validDateFormat',
+      'validMeterReading'
     ]);
+
+    if (errors.length) return reject(errors);
 
     const { permitNumber, date } = req.query;
     const meterReading = req.body;
@@ -39,22 +40,19 @@ async function createMeterReading(req: NextApiRequest): Promise<MeterReading> {
           status: err.requestResult.statusCode
         });
       }
+      return reject(errors);
+    });
 
-      reject(errors);
-      return err;
-    })
-
-    console.log(response)
-
-    if (!response.data) {
+    if (!response || !response.data) {
       errors.push(new HttpError(
         'Record Creation Failed',
         `Creation failed for meter reading for permit: ${permitNumber} and date: ${date}`,
         500
-      ))
+      ));
+      return reject(errors);
     }
 
-    resolve(response.data);
+    return resolve(response.data);
   });
 }
 
