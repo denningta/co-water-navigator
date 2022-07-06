@@ -42,7 +42,6 @@ describe('api/[version]/meter-readings/{permitNumber}/{date}', () => {
         });
     });
 
-
     test('GET returns a meter reading', async () => {    
       req.method = 'GET';
       const response = await meterReadingHandler(req, res);

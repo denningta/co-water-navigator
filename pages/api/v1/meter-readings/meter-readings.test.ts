@@ -9,6 +9,7 @@
 import { createMocks, RequestMethod } from "node-mocks-http";
 import HttpProps from "../interfaces/HttpProps";
 import meterReadingsHandler from '.';
+import deleteMeterReading from "./[permitNumber]/[date]/delete";
 
 let method: RequestMethod = 'GET';
 const { req, res }: HttpProps = createMocks();
@@ -37,12 +38,23 @@ const meterReadings = [
   },
 ];
 
-req.body = { records: meterReadings };
+req.body = meterReadings;
 req.query = { permitNumber: 'XX-00001'};
 
 describe('api/[version]/meter-readings/{permitNumber}', () => {
 
   describe('POST meter readings', () => {
+    afterAll(() => {
+      meterReadings.forEach(meterReading => {
+        req.method = 'DELETE';
+        req.query = { permitNumber: meterReading.permitNumber, date: meterReading.date }
+        deleteMeterReading(req)
+          .catch(error => {
+            console.error('Test teardown failed: ', error);
+          });
+      });
+
+    });
 
     test('POST creates multiple meter readings', async () => {
       req.method = 'POST';
@@ -50,7 +62,6 @@ describe('api/[version]/meter-readings/{permitNumber}', () => {
       console.log(response);
       expect(response).toEqual(meterReadings);
     });
-
   });
 
   describe('GET meter readings', () => {
