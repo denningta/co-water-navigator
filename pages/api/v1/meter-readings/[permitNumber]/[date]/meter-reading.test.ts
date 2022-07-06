@@ -2,8 +2,7 @@
  * Tests meter-readings/{permitNumber}/{date} endpoint
  * 
  * @group api
- * @group meter-readings
- * @group meter-readings/{permitNumber}
+ * @group meter-reading
  * @group meter-readings/{permitNumber}/{date}
  */
 
@@ -22,8 +21,6 @@ req.query = {
   permitNumber: permitNumber,
   date: date
 }
-
-
 
 describe('api/[version]/meter-readings/{permitNumber}/{date}', () => {
 

@@ -4,7 +4,7 @@ import faunaClient, { q } from "../../../../../../lib/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../validatorFunctions";
 
-async function listMeterReading(req: NextApiRequest): Promise<MeterReading> {
+function listMeterReading(req: NextApiRequest): Promise<MeterReading> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',

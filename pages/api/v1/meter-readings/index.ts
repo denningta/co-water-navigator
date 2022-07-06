@@ -1,19 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import MeterReading from "../../../../../../interfaces/MeterReading";
-import { HttpError } from "../../../interfaces/HttpError";
-import createMeterReading from "./create";
-import deleteMeterReading from "./delete";
-import listMeterReading from "./list";
-import updateMeterReading from "./update";
+import MeterReading from "../../../../interfaces/MeterReading";
+import { HttpError } from "../interfaces/HttpError";
+import createMeterReadings from "./create";
+import listMeterReadings from "./[permitNumber]/list";
 
 type HandlerFunctions = { 
-  [key: string]: (req: NextApiRequest) => Promise<MeterReading> 
+  [key: string]: (req: NextApiRequest) => Promise<MeterReading[]> 
 };
 
 function handler(
   req: NextApiRequest, 
   res: NextApiResponse
-): Promise<MeterReading | HttpError> {
+): Promise<MeterReading[] | HttpError> {
   return new Promise(async (resolve, reject) => {
 
     if (!req || !req.method) {
@@ -25,21 +23,21 @@ function handler(
     }
   
     const handlers: HandlerFunctions = {
-      GET: listMeterReading,
-      POST: createMeterReading,
-      PATCH: updateMeterReading,
-      DELETE: deleteMeterReading
+      GET: listMeterReadings,
+      POST: createMeterReadings,
     }
-  
+
     return await handlers[req.method](req)
     .then((response) => {
       res.status(200).json(response);
       return resolve(response);
     })
-    .catch((errors: any) => {
+    .catch((errors) => {
+      console.log(errors);
       res.status(errors[0].status || 500).json({errors: errors})
       return reject(errors);
     });
+
   });
 }
 

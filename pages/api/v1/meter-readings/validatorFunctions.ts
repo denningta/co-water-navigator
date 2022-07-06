@@ -5,10 +5,10 @@ import MeterReading from "../../../../interfaces/MeterReading";
 import { HttpError } from "../interfaces/HttpError";
 
 export interface ValidatorFunction {
-  (req: NextApiRequest): HttpError | 'passed'
+  (req: NextApiRequest): (HttpError | HttpError[]) | 'passed'
 }
 
-let response: HttpError | 'passed';
+let response: (HttpError | HttpError[]) | 'passed';
 
 
 const queryExists: ValidatorFunction = (req) => {
@@ -63,12 +63,17 @@ const dateRequired: ValidatorFunction = (req) => {
   return response;
 }
 
+const validateDate = (date: string | string[]): 'valid' | 'invalid' => {
+  const dates = Array.isArray(date) ? date : [date];
+  const dateRegEx: RegExp = /(\d{4})\-(\d{2})/ // RegEx Format: YYYY/MM
+  if (!dates.every(date => date.match(dateRegEx))) return 'invalid';
+  return 'valid';
+}
+
 const validDateFormat: ValidatorFunction = (req) => {
   response = 'passed';
   const { date } = req.query;
-  const dates = Array.isArray(date) ? date : [date];
-  const dateRegEx: RegExp = /(\d{4})\-(\d{2})/ // RegEx Format: YYYY/MM
-  if (!dates.every(date => date.match(dateRegEx))) {
+  if (validateDate(date) === 'invalid') {
     response = new HttpError(
       'Invalid parameter',
       'Incorrect format for date parameter.  Use format: YYYY-MM',
@@ -79,39 +84,81 @@ const validDateFormat: ValidatorFunction = (req) => {
   return response;
 }
 
-const validMeterReading: ValidatorFunction = (req) => {
-  response = 'passed';
+const allowedProperties = [
+  'permitNumber',
+  'date',
+  'flowMeter',
+  'powerMeter',
+  'powerConsumptionCoef',
+  'pumpedThisPeriod',
+  'pumpedYearToDate',
+  'availableThisYear',
+  'readBy',
+  'comments'
+];
 
-  const allowedProperties = [
-    'permitNumber',
-    'date',
-    'flowMeter',
-    'powerMeter',
-    'powerConsumptionCoef',
-    'pumpedThisPeriod',
-    'pumpedYearToDate',
-    'availableThisYear',
-    'readBy',
-    'comments'
-  ];
+const validateMeterReading = (meterReading: MeterReading): string[] => {
+  const blockedProperties: string[] = [];
 
-  let blockedProperties = [];
-
-  for (const [key, value] of Object.entries(req.body)) {
+  for (const [key, value] of Object.entries(meterReading)) {
     if (!allowedProperties.includes(key)) {
       blockedProperties.push(key);
       console.log(blockedProperties)
     }
   }
 
+  return blockedProperties;
+}
+
+const validMeterReading: ValidatorFunction = (req) => {
+  response = 'passed';
+
+  if (Array.isArray(req.body)) {
+    return new HttpError(
+      'Multipe Records',
+      'This endpoint only accepts a single meter reading record.',
+      400
+    );
+  }
+
+  const blockedProperties = validateMeterReading(req.body);
+
   if (blockedProperties.length) {
-    response = new HttpError(
+    return new HttpError(
       'Property not Allowed',
       `The property(s) [${blockedProperties}] are not allowed`,
       400
     )
   }
   
+  return response;
+}
+
+const validMeterReadingsArray: ValidatorFunction = (req) => {
+  response = 'passed';
+  let errors: HttpError[] = [];
+
+  req.body.forEach((bodyRecord: MeterReading) => {
+    const blockedProperties = validateMeterReading(bodyRecord);
+    if (blockedProperties.length) {
+      errors.push(new HttpError(
+        'Invalid Record',
+        `Record: ${bodyRecord.permitNumber} / ${bodyRecord.date} contained invalid property(s): ${blockedProperties}`,
+        400
+      ));
+    }
+
+    const invalidDate = validateDate(bodyRecord.date);
+    if (invalidDate === 'invalid') {
+      errors.push(new HttpError(
+        'Invalid Date Format',
+        `Record: ${bodyRecord.permitNumber} / ${bodyRecord.date} containes an invalid date: ${bodyRecord.date}.  Format: YYYY-MM`,
+        400
+      ))
+    }
+  });
+
+  if (errors.length) response = errors;
   return response;
 }
 
@@ -122,13 +169,24 @@ const validatorFns = {
   validDateFormat: validDateFormat,
   dateRequired: dateRequired,
   validMeterReading: validMeterReading,
+  validMeterReadingsArray: validMeterReadingsArray,
 }
 
 
-const validateQuery = (req: NextApiRequest, validators: Array<keyof typeof validatorFns>) => {
-  const errors = validators
-    .map(fnIndex => validatorFns[fnIndex](req))
-    .filter(validator => validator !== 'passed');
+const validateQuery = (
+  req: NextApiRequest, 
+  validators: Array<keyof typeof validatorFns>
+): HttpError[] => {
+  const errors: HttpError[] = []; 
+  validators.forEach(fnIndex => {
+      const res = validatorFns[fnIndex](req);
+      if (res === 'passed') return;
+      if (res instanceof Array<HttpError>) {
+        res.forEach(err => errors.push(err))
+      } else {
+        errors.push(res);
+      }
+    });
 
   return errors;
 }
