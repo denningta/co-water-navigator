@@ -162,6 +162,25 @@ const validMeterReadingsArray: ValidatorFunction = (req) => {
   return response;
 }
 
+const optionalYearValid: ValidatorFunction = (req) => {
+  response = 'passed';
+  const errors: HttpError[] = [];
+  const years = Array.isArray(req.query.year) ? req.query.year : [req.query.year];
+
+  years.forEach(year => {
+    if (req.query.years && isNaN(+year) && year.length === 4) {
+      errors.push(new HttpError(
+        'Invalid Query',
+        'You must provide a valid four digit year.',
+        400
+      ))
+    }
+  });
+
+
+  return response
+}
+
 const validatorFns = {
   queryExists: queryExists,
   bodyExists: bodyExists,
@@ -170,6 +189,7 @@ const validatorFns = {
   dateRequired: dateRequired,
   validMeterReading: validMeterReading,
   validMeterReadingsArray: validMeterReadingsArray,
+  optionalYearValid: optionalYearValid
 }
 
 

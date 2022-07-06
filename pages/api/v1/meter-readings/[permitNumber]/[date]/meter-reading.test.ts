@@ -11,7 +11,6 @@ import meterReadingHandler from ".";
 import HttpProps from "../../../interfaces/HttpProps";
 
 
-let method: RequestMethod = 'GET';
 const { req, res }: HttpProps = createMocks();
 
 const permitNumber = 'XX-00000'

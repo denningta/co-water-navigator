@@ -12,7 +12,7 @@ CreateIndex({
               0, 
               FindStrRegex(
                 Select(['data', 'date'], Var('doc')), 
-                "[^\\/]+"
+                "[^\-]+"
               )
             )
           )

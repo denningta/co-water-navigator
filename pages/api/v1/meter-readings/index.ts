@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import MeterReading from "../../../../interfaces/MeterReading";
 import { HttpError } from "../interfaces/HttpError";
 import createMeterReadings from "./create";
-import listMeterReadings from "./[permitNumber]/list";
+import listMeterReadings from "./list";
 
 type HandlerFunctions = { 
   [key: string]: (req: NextApiRequest) => Promise<MeterReading[]> 
