@@ -72,6 +72,15 @@ const validateDate = (date: string | string[]): 'valid' | 'invalid' => {
 
 const validDateFormat: ValidatorFunction = (req) => {
   response = 'passed';
+
+  if(!req.query.date) {
+    return new HttpError(
+      'Missing Query Parameter',
+      `A value for the query parameter 'date' is missing`,
+      400
+    )
+  }
+
   const { date } = req.query;
   if (validateDate(date) === 'invalid') {
     response = new HttpError(
@@ -164,11 +173,22 @@ const validMeterReadingsArray: ValidatorFunction = (req) => {
 
 const optionalYearValid: ValidatorFunction = (req) => {
   response = 'passed';
+
   const errors: HttpError[] = [];
-  const years = Array.isArray(req.query.year) ? req.query.year : [req.query.year];
+  const { year } = req.query;
+
+  if (!year) {
+    return new HttpError(
+      'Missing Query Parameter',
+      `A value for the query parameter 'year' is missing`,
+      400
+    );
+  }
+
+  const years = Array.isArray(year) ? year : [year];
 
   years.forEach(year => {
-    if (req.query.years && isNaN(+year) && year.length === 4) {
+    if (req.query.year && isNaN(+year) && year.length === 4) {
       errors.push(new HttpError(
         'Invalid Query',
         'You must provide a valid four digit year.',

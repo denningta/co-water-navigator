@@ -12,10 +12,9 @@ function handler(
   req: NextApiRequest, 
   res: NextApiResponse
 ): Promise<MeterReading[] | HttpError> {
-  return new Promise(async (resolve, reject) => {
 
     if (!req || !req.method) {
-      return reject(new HttpError(
+      return Promise.reject(new HttpError(
         'No Request or Invalid Request Method',
         'No request or an invalid request method was sent to the server',
         400
@@ -27,19 +26,17 @@ function handler(
       POST: createMeterReadings,
     }
 
-    return await handlers[req.method](req)
+    return handlers[req.method](req)
     .then((response) => {
-      console.log(response);
       res.status(200).json(response);
-      return resolve(response);
+      return response;
     })
     .catch((errors) => {
       console.log(errors);
       res.status(errors[0].status || 500).json({errors: errors})
-      return reject(errors);
+      return errors;
     });
 
-  });
 }
 
 export default handler;

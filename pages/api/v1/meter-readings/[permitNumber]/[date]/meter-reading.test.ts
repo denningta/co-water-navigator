@@ -84,7 +84,7 @@ describe('api/[version]/meter-readings/{permitNumber}/{date}', () => {
       req.method = 'POST';
       req.body = { flowMeter: { value: 200 } };
       const response = await meterReadingHandler(req, res)
-        .catch(error => {
+        .catch((error: any) => {
           console.error('Test setup failed: ', error);
         });
     })
