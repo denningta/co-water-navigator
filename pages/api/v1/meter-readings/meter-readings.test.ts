@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Tests meter-readings/{permitNumber} endpoint
  * 
@@ -98,7 +99,6 @@ describe('api/[version]/meter-readings/{permitNumber}', () => {
       req.body = meterReadingsAlt;
       const response = await meterReadingsHandler(req, res)
         .catch(error => console.log('Test setup failed: ', error));
-      console.log(response)
     });
 
     afterAll(() => {

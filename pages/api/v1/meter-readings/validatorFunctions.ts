@@ -112,7 +112,6 @@ const validateMeterReading = (meterReading: MeterReading): string[] => {
   for (const [key, value] of Object.entries(meterReading)) {
     if (!allowedProperties.includes(key)) {
       blockedProperties.push(key);
-      console.log(blockedProperties)
     }
   }
 

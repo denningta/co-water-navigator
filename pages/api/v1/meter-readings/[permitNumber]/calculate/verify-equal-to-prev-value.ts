@@ -17,10 +17,8 @@ const verifyEqualToPrevValue = (
     ...calculatedValue
   }
 
-  updatedValue.calculationState = (+calculatedValue.value === +prevValue.value) 
-    ? 'success' : 'warning'
-
-  if (updatedValue.calculationState === 'warning') {
+  if (!(+calculatedValue.value === +prevValue.value)) {
+    updatedValue.calculationState = 'warning'
     updatedValue.shouldBe = prevValue.value;
     updatedValue.calculationMessage = `Expected: ${prevValue.value}. ` + 
       `The power consumption coefficient should remain constant unless the power meter was changed. ` +
@@ -28,11 +26,14 @@ const verifyEqualToPrevValue = (
     if (meterReading.comments) {
       updatedValue.calculationMessage = `Unexpected value: see comments`;
     }
+  } else {
+    delete updatedValue.calculationState
+    delete updatedValue.calculationMessage
   }
 
   // Is this old news and we dont need to make an update?
   if (
-    calculatedValue.calculationState === updatedValue.calculationState ||
+    calculatedValue.calculationState === updatedValue.calculationState &&
     calculatedValue.calculationMessage === updatedValue.calculationMessage
   ) return 'no update required';
 

@@ -17,23 +17,23 @@ const verifyGreaterThanPrevValue = (
     ...calculatedValue
   }
 
-  updatedValue.calculationState = (+calculatedValue.value >= +prevValue.value) 
-    ? 'success' : 'warning'
-
-  if (updatedValue.calculationState === 'warning') {
+  if (!(+calculatedValue.value >= +prevValue.value))  {
+    updatedValue.calculationState = 'warning'
     updatedValue.calculationMessage = `Expected a value >= ${prevValue.value} acre feet. ` + 
       `Provide a comment to resolve this warning`;
     if (meterReading.comments) {
       updatedValue.calculationMessage = `Unexpected value: see comments`;
     }
+  } else {
+    delete updatedValue.calculationState
+    delete updatedValue.calculationMessage
   }
 
   // Is this old news and we dont need to make an update?
   if (
-    calculatedValue.calculationState === updatedValue.calculationState ||
+    calculatedValue.calculationState === updatedValue.calculationState &&
     calculatedValue.calculationMessage === updatedValue.calculationMessage
   ) return 'no update required';
-
 
   return updatedValue;
 }

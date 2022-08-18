@@ -22,8 +22,8 @@ export default interface MeterReading {
 
 export interface CalculatedValue {
   value: number;
-  shouldBe: number | undefined;
-  calculationState: 'success' | 'warning' | 'error' | undefined;
-  calculationMessage: string;
-  source: 'user' | 'calculation';
+  shouldBe?: number | undefined;
+  calculationState?: 'success' | 'warning' | 'error' | undefined;
+  calculationMessage?: string;
+  source?: 'user' | 'calculation';
 }

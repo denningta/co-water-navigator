@@ -7,6 +7,7 @@ import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../validatorFunctions";
 import verifyEqualToPrevValue from "./verify-equal-to-prev-value";
 import verifyGreaterThanPrevValue from "./verify-greater-than-prev-value";
+import verifyPumpedThisPeriod from "./verify-pumpedThisPeriod";
 
 type HandlerFunctions = { 
   [key: string]: (req: NextApiRequest) => Promise<MeterReading[]> 
@@ -69,13 +70,13 @@ export const queryMeterReadings = (req: NextApiRequest): Promise<MeterReading[]>
     ).catch(error => reject(errors.push(error)))
 
     const meterReadings: MeterReading[] = response.data.map((record: any) => record.data);
-    runCalculations(meterReadings)
-    resolve(response.data.map((record: any) => record.data));
+    const result = runCalculations(meterReadings)
+    resolve(result);
   })
 }
 
 export const runCalculations = (meterReadings: MeterReading[]) => {
-  const updatedRecords = meterReadings.map((meterReading, index, meterReadings) => {
+  return meterReadings.map((meterReading, index, meterReadings) => {
     const prevRecord = meterReadings[index - 1];
     const newRecord: any = {};
 
@@ -83,6 +84,7 @@ export const runCalculations = (meterReadings: MeterReading[]) => {
     newRecord.powerMeter = verifyGreaterThanPrevValue(meterReading, prevRecord, index, 'powerMeter')
     newRecord.powerConsumptionCoef = 
       verifyEqualToPrevValue(meterReading, prevRecord, index, 'powerConsumptionCoef')
+    newRecord.pumpedThisPeriod = verifyPumpedThisPeriod(meterReading, prevRecord, index)
 
     // console.log(newRecord)
 
