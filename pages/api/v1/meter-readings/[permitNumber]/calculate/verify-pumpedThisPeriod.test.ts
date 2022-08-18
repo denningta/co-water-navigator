@@ -13,6 +13,7 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
   let prevRecord: MeterReading
   let meterReading: MeterReading
   let index: number
+  let shouldBe: number
   
   beforeAll(() => {
     prevRecord = {
@@ -33,6 +34,12 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
       }
     }
     index = 1
+
+    if (!meterReading.flowMeter || !prevRecord.flowMeter) {
+      throw new Error('Missing setup data')
+    }
+
+    shouldBe = meterReading.flowMeter.value - prevRecord.flowMeter.value
   })
 
   test('equal to current flowMeter minus prev flowMeter', () => {
@@ -44,6 +51,7 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
     meterReading.pumpedThisPeriod = {
       value: 150
     }
+
     const result = verifyPumpedThisPeriod(meterReading, prevRecord, index)
     
     if (result === 'no update required') {
@@ -52,6 +60,7 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
 
     expect(result.calculationState).toBeTruthy()
     expect(result.calculationMessage).toBeTruthy()
+    expect(result.shouldBe).toBe(shouldBe)
   })
 
   test('fixing error in pumpedThisPeriod returns record to success state', () => {
@@ -74,6 +83,7 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
       throw new Error('Function returned \'no update required\' when an update was required.')
     }
 
+    expect(result.shouldBe).toBe(undefined)
     expect(result.calculationState).toBe(undefined)
     expect(result.calculationMessage).toBe(undefined)
   })

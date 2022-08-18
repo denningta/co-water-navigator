@@ -63,7 +63,7 @@ const dateRequired: ValidatorFunction = (req) => {
   return response;
 }
 
-const validateDate = (date: string | string[]): 'valid' | 'invalid' => {
+export const validateDate = (date: string | string[]): 'valid' | 'invalid' => {
   const dates = Array.isArray(date) ? date : [date];
   const dateRegEx: RegExp = /(\d{4})\-(\d{2})/ // RegEx Format: YYYY/MM
   if (!dates.every(date => date.match(dateRegEx))) return 'invalid';

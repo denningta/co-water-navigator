@@ -20,10 +20,12 @@ const verifyPumpedThisPeriod = (
     ...meterReading.pumpedThisPeriod
   }
 
-  if (!(meterReading.pumpedThisPeriod.value === shouldBe)) {
+  if (meterReading.pumpedThisPeriod.value !== shouldBe) {
+    updatedValue.shouldBe = shouldBe
     updatedValue.calculationState = 'warning'
     updatedValue.calculationMessage = `Expected: ${shouldBe} acre feet.  Provide a comment to resolve this warning.`
   } else {
+    delete updatedValue.shouldBe
     delete updatedValue.calculationState
     delete updatedValue.calculationMessage
   }
