@@ -32,7 +32,6 @@ function handler(
       return response;
     })
     .catch((errors) => {
-      console.log(errors);
       res.status(errors[0].status || 500).json({errors: errors})
       return errors;
     });

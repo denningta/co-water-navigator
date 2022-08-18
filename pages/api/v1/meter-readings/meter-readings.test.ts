@@ -96,10 +96,9 @@ describe('api/[version]/meter-readings/{permitNumber}', () => {
       const { req, res }: HttpProps = createMocks();
       req.method = 'POST';
       req.body = meterReadingsAlt;
-      await createMeterReadings(req)
-        .catch(error => {
-          console.error('Test setup failed: ', error);
-        });
+      const response = await meterReadingsHandler(req, res)
+        .catch(error => console.log('Test setup failed: ', error));
+      console.log(response)
     });
 
     afterAll(() => {

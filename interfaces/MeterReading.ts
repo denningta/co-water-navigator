@@ -20,9 +20,10 @@ export default interface MeterReading {
 
 
 
-interface CalculatedValue {
+export interface CalculatedValue {
   value: number;
   shouldBe: number | undefined;
   calculationState: 'success' | 'warning' | 'error' | undefined;
+  calculationMessage: string;
   source: 'user' | 'calculation';
 }

@@ -31,8 +31,6 @@ function createMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
       return reject(errors);
     });
 
-    console.log(response);
-
     return resolve(response.map((el: any) => el.data));
   });
 }

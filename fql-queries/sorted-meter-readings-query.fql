@@ -1,0 +1,12 @@
+Map(
+  Paginate(
+    Join(
+      Match(Index('meter-readings-by-permit-number'), ['XX-00000']),
+      Index('meter-readings-sort-by-date-asc')
+    )
+  ),
+  Lambda(
+    ['date', 'ref'],
+    Get(Var('ref'))
+  )
+)

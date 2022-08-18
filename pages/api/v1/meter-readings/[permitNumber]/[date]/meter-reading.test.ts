@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Tests meter-readings/{permitNumber}/{date} endpoint
  * 

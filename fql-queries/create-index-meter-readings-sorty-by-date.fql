@@ -1,0 +1,11 @@
+CreateIndex({
+  name: 'meter-readings-sort-by-date-asc',
+  source: Collection('meterReadings'),
+  terms: [
+    { field: ['ref'] }
+  ],
+  values: [
+    { field: ['data', 'date'] },
+    { field: ['ref'] }
+  ]
+})
