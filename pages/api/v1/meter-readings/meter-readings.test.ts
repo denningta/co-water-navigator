@@ -12,6 +12,7 @@ import HttpProps from "../interfaces/HttpProps";
 import meterReadingsHandler from '.';
 import deleteMeterReading from "./[permitNumber]/[date]/delete";
 import createMeterReadings from "./create";
+import updateMeterReadings from "./update";
 
 const meterReadings = [
   {
@@ -120,6 +121,39 @@ describe('api/[version]/meter-readings/{permitNumber}', () => {
       const response = await meterReadingsHandler(req, res);
       expect(response).toEqual(meterReadingsAlt);
     });
+
+    test('updateMeterReadings updates meter readings', async () => {
+      const { req, res }: HttpProps = createMocks();
+      req.body = [
+        {
+          permitNumber: 'XX-00002',
+          date: '1900-01',
+          flowMeter: { value: 999 }
+        },
+        {
+          permitNumber: 'XX-00002',
+          date: '1900-02',
+          flowMeter: { value: 999 },
+          pumpedThisPeriod: { value: 999 }
+        },
+        {
+          permitNumber: 'XX-00002',
+          date: '1900-03',
+          flowMeter: { value: 999 }
+        },
+        {
+          permitNumber: 'XX-00002',
+          date: '1901-01',
+          flowMeter: { value: 999 }
+        },
+      ]
+
+      const response = await updateMeterReadings(req)
+      console.log(response)
+
+      expect(response).toEqual(req.body)
+
+    })
   });
 
 });

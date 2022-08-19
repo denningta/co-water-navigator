@@ -27,8 +27,6 @@ function handler(
       ));
     }
 
-    
-  
     const handlers: HandlerFunctions = {
       POST: queryMeterReadings,
     }

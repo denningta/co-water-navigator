@@ -35,30 +35,31 @@ describe('DBB-004 calculations', () => {
   let pumpingLimitThisYear: number;
   let result: MeterReading[]
 
-  beforeAll(() => {
-    result = runCalculations(meterReadings)
+  describe('initial value for calculated fields from flowMeter data', () => {
+    beforeAll(() => {
+      result = runCalculations(meterReadings)
+    })
+  
+    test('calculate pumpedThisPeriod', () => {
+      expect(result[1].pumpedThisPeriod).toBeTruthy()
+      expect(result[1].pumpedThisPeriod?.value).toBe(30)
+      expect(result[2].pumpedThisPeriod).toBeTruthy()
+      expect(result[2].pumpedThisPeriod?.value).toBe(10)
+    })
+  
+    test('calculate pumpedYearToDate', () => {
+      expect(result[1].pumpedYearToDate).toBeTruthy()
+      expect(result[1].pumpedYearToDate?.value).toBe(30)
+      expect(result[2].pumpedYearToDate).toBeTruthy()
+      expect(result[2].pumpedYearToDate?.value).toBe(40)
+    })
+  
+    test('calculate availableThisYear', () => {
+      expect(result[1].availableThisYear).toBeTruthy()
+      // expect(result[1].availableThisYear?.value).toBe(30)
+      expect(result[2].availableThisYear).toBeTruthy()
+      // expect(result[2].availableThisYear?.value).toBe(40)
+    })
   })
-
-  test('calculate pumpedThisPeriod', () => {
-    expect(result[1].pumpedThisPeriod).toBeTruthy()
-    expect(result[1].pumpedThisPeriod?.value).toBe(30)
-    expect(result[2].pumpedThisPeriod).toBeTruthy()
-    expect(result[2].pumpedThisPeriod?.value).toBe(10)
-  })
-
-  test('calculate pumpedYearToDate', () => {
-    expect(result[1].pumpedYearToDate).toBeTruthy()
-    expect(result[1].pumpedYearToDate?.value).toBe(30)
-    expect(result[2].pumpedYearToDate).toBeTruthy()
-    expect(result[2].pumpedYearToDate?.value).toBe(40)
-  })
-
-  test('calculate availableThisYear', () => {
-    expect(result[1].availableThisYear).toBeTruthy()
-    // expect(result[1].availableThisYear?.value).toBe(30)
-    expect(result[2].availableThisYear).toBeTruthy()
-    // expect(result[2].availableThisYear?.value).toBe(40)
-  })
-
 
 })
