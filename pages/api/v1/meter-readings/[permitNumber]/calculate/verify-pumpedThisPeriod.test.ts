@@ -107,6 +107,10 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
       throw new Error('Missing setup data')
     }
 
-    expect(result.value).toBe(meterReading.flowMeter.value - prevRecord.flowMeter.value)
+    expect(result.value).toBe(shouldBe)
+    expect(typeof result.value).toBe("number")
+    expect(result.shouldBe).toBe(undefined)
+    expect(result.calculationState).toBe(undefined)
+    expect(result.calculationMessage).toBe(undefined)
   })
 })

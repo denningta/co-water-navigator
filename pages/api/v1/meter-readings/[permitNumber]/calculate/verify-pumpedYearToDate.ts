@@ -2,12 +2,10 @@ import MeterReading, { CalculatedValue } from "../../../../../../interfaces/Mete
 import { validateDate } from "../../validatorFunctions";
 
 const verifyPumpedYearToDate = (
+  currentRecord: MeterReading,
+  currentIndex: number,
   meterReadings: MeterReading[], 
-  currentIndex: number
 ): CalculatedValue | 'no update required' => {
-
-  if (currentIndex === 0) return 'no update required'
-
   const readingsThisYear = getMeterReadingsPerYear(meterReadings, currentIndex)
 
   const shouldBe = readingsThisYear.reduce((n, {pumpedThisPeriod}) => {
@@ -15,19 +13,19 @@ const verifyPumpedYearToDate = (
     return n + pumpedThisPeriod.value
   }, 0)
 
-  const currRecord = meterReadings[currentIndex]
-  
-  if (!currRecord.pumpedYearToDate) {
+  if (currentIndex === 0) return 'no update required'
+
+  if (!currentRecord.pumpedYearToDate) {
     return {
       value: shouldBe
     }
   }
   
   const updatedValue: CalculatedValue = {
-    ...currRecord.pumpedYearToDate
+    ...currentRecord.pumpedYearToDate
   }
   
-  if (currRecord.pumpedYearToDate.value !== shouldBe) {
+  if (currentRecord.pumpedYearToDate.value !== shouldBe) {
     updatedValue.shouldBe = shouldBe
     updatedValue.calculationState = 'warning'
     updatedValue.calculationMessage = `Expected: ${shouldBe} acre feet.  Provide a comment to resolve this warning.`
@@ -38,9 +36,9 @@ const verifyPumpedYearToDate = (
   }
 
   if (
-    currRecord.pumpedYearToDate.calculationMessage === updatedValue.calculationMessage
-    && currRecord.pumpedYearToDate.calculationState === updatedValue.calculationState
-    && currRecord.pumpedYearToDate.shouldBe === updatedValue.shouldBe
+    currentRecord.pumpedYearToDate.calculationMessage === updatedValue.calculationMessage
+    && currentRecord.pumpedYearToDate.calculationState === updatedValue.calculationState
+    && currentRecord.pumpedYearToDate.shouldBe === updatedValue.shouldBe
   ) return 'no update required'
 
   return updatedValue;

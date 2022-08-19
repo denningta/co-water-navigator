@@ -5,9 +5,11 @@ import MeterReading, { CalculatedValue } from "../../../../../../interfaces/Mete
 import faunaClient, { q } from "../../../../../../lib/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../validatorFunctions";
+import verifyAvailableThisYear from "./verify-availableThisYear";
 import verifyEqualToPrevValue from "./verify-equal-to-prev-value";
 import verifyGreaterThanPrevValue from "./verify-greater-than-prev-value";
 import verifyPumpedThisPeriod from "./verify-pumpedThisPeriod";
+import verifyPumpedYearToDate from "./verify-pumpedYearToDate";
 
 type HandlerFunctions = { 
   [key: string]: (req: NextApiRequest) => Promise<MeterReading[]> 
@@ -75,10 +77,13 @@ export const queryMeterReadings = (req: NextApiRequest): Promise<MeterReading[]>
   })
 }
 
-export const runCalculations = (meterReadings: MeterReading[]) => {
+export const runCalculations = (meterReadings: MeterReading[]): MeterReading[] => {
   return meterReadings.map((meterReading, index, meterReadings) => {
     const prevRecord = meterReadings[index - 1];
     const newRecord: any = {};
+
+    // TODO: Dynamically query for pumpingLimitThisYear
+    const pumpingLimitThisYear = 250
 
     newRecord.flowMeter = verifyGreaterThanPrevValue(meterReading, prevRecord, index, 'flowMeter')
     newRecord.powerMeter = verifyGreaterThanPrevValue(meterReading, prevRecord, index, 'powerMeter')
@@ -86,9 +91,19 @@ export const runCalculations = (meterReadings: MeterReading[]) => {
       verifyEqualToPrevValue(meterReading, prevRecord, index, 'powerConsumptionCoef')
     newRecord.pumpedThisPeriod = verifyPumpedThisPeriod(meterReading, prevRecord, index)
 
-    // console.log(newRecord)
+    if (newRecord.pumpedThisPeriod !== 'no update required') {
+      meterReading.pumpedThisPeriod = newRecord.pumpedThisPeriod
+    }
+    newRecord.pumpedYearToDate = verifyPumpedYearToDate(meterReading, index, meterReadings)
+    
+    if (newRecord.pumpedYearToDate !== 'no update required') {
+      meterReading.pumpedYearToDate = newRecord.pumpedYearToDate
+    }
+    newRecord.availableThisYear = verifyAvailableThisYear(meterReading, pumpingLimitThisYear, index)
 
-    const updatedRecord: any = {}
+    const updatedRecord: any = {
+      ...meterReading
+    }
 
     Object.entries(newRecord).map(([key, value]) => {
       if (value === 'no update required') return;

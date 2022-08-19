@@ -59,7 +59,7 @@ describe('DBB-004 verification: pumpedYearToDate', () => {
   })
 
   test('equals the sum of pumpedThisPeriod for all records in the year', () => {
-    const result = verifyPumpedYearToDate(meterReadings, index)
+    const result = verifyPumpedYearToDate(meterReadings[index], index, meterReadings)
     expect(result).toBe('no update required')
   })
 
@@ -68,7 +68,7 @@ describe('DBB-004 verification: pumpedYearToDate', () => {
       value: 60
     }
 
-    const result = verifyPumpedYearToDate(meterReadings, index)
+    const result = verifyPumpedYearToDate(meterReadings[index], index, meterReadings)
 
     if (result === 'no update required') {
       throw new Error('Function returned \'no update required\' when an update was required.')
@@ -87,7 +87,7 @@ describe('DBB-004 verification: pumpedYearToDate', () => {
       calculationMessage: 'Expected: 50'
     }
 
-    const result = verifyPumpedYearToDate(meterReadings, index)
+    const result = verifyPumpedYearToDate(meterReadings[index], index, meterReadings)
 
     if (result === 'no update required') {
       throw new Error('Function returned \'no update required\' when an update was required.')
@@ -111,13 +111,16 @@ describe('DBB-004 verification: pumpedYearToDate', () => {
       }
     })
 
-    const result = verifyPumpedYearToDate(meterReadings, index)
+    const result = verifyPumpedYearToDate(meterReadings[index], index, meterReadings)
 
     if (result === 'no update required') {
       throw new Error('Function returned \'no update required\' when an update was required.')
     }
 
     expect(result.value).toBe(shouldBe)
+    expect(result.shouldBe).toBe(undefined)
+    expect(result.calculationState).toBe(undefined)
+    expect(result.calculationMessage).toBe(undefined)
   })
 
 

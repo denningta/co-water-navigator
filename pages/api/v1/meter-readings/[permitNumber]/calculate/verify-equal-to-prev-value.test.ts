@@ -9,7 +9,7 @@
 import verifyEqualToPrevValue from "./verify-equal-to-prev-value";
  import verifyGreaterThanPrevValue from "./verify-greater-than-prev-value"
  
- describe('DBB-004 verification: verify powerConsumptionCoef equal to previous value', () => {
+ describe('DBB-004 verification: powerConsumptionCoef', () => {
  
    let prevRecord: MeterReading;
    let meterReading: MeterReading;

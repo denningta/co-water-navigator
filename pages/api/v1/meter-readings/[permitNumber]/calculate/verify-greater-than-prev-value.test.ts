@@ -8,7 +8,7 @@
 import MeterReading from "../../../../../../interfaces/MeterReading"
 import verifyGreaterThanPrevValue from "./verify-greater-than-prev-value"
 
-describe('DBB-004 verification: verify flowMeter/powerMeter greater than previous value', () => {
+describe('DBB-004 verification: flowMeter/powerMeter', () => {
 
   let prevRecord: MeterReading;
   let meterReading: MeterReading;
