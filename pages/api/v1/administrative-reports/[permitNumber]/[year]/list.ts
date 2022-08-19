@@ -1,26 +1,25 @@
 import { NextApiRequest } from "next";
-import MeterReading from "../../../../../../interfaces/MeterReading";
+import { AdministrativeReport } from "../../../../../../interfaces/AdministrativeReport";
 import faunaClient, { q } from "../../../../../../lib/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
 
-function listMeterReading(req: NextApiRequest): Promise<MeterReading> {
+function listAdministrativeReport(req: NextApiRequest): Promise<AdministrativeReport> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
       'permitNumberRequired',
-      'dateRequired',
-      'validDateFormat',
+      'yearRequired',
     ]);
 
     if (errors.length) reject(errors);
 
-    const {permitNumber, date} = req.query;
+    const {permitNumber, year} = req.query;
     const response = await faunaClient.query(
       q.Map(
-        q.Paginate(q.Match(q.Index('meter-readings-by-permitnumber-date'), [permitNumber, date])),
-        (meterReading) => {
-          return q.Get(meterReading)
+        q.Paginate(q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])),
+        (adminReport) => {
+          return q.Get(adminReport)
         }
       )
     )
@@ -36,11 +35,10 @@ function listMeterReading(req: NextApiRequest): Promise<MeterReading> {
         new HttpError(
           'No Data',
           `No data found matching the query paramters:` + 
-          `'permitNumber': ${permitNumber} and 'date': ${date}`,
+          `'permitNumber': ${permitNumber} and 'year': ${year}`,
           404
         )
       );
-  
       reject(errors);
     }
     
@@ -48,4 +46,4 @@ function listMeterReading(req: NextApiRequest): Promise<MeterReading> {
   });
 }
 
-export default listMeterReading;
+export default listAdministrativeReport;

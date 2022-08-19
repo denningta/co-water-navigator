@@ -1,5 +1,5 @@
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
-import { validateDate } from "../../validatorFunctions";
+import { validateDate } from "../../../validatorFunctions";
 
 const verifyPumpedYearToDate = (
   currentRecord: MeterReading,

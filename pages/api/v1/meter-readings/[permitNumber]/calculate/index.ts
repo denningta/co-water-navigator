@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../../../lib/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
-import validateQuery from "../../validatorFunctions";
+import validateQuery from "../../../validatorFunctions";
 import verifyAvailableThisYear from "./verify-availableThisYear";
 import verifyEqualToPrevValue from "./verify-equal-to-prev-value";
 import verifyGreaterThanPrevValue from "./verify-greater-than-prev-value";

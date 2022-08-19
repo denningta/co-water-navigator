@@ -3,7 +3,7 @@ import { resolve } from "path";
 import MeterReading from "../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../lib/faunaClient";
 import { HttpError } from "../interfaces/HttpError";
-import validateQuery from "./validatorFunctions";
+import validateQuery from "../validatorFunctions";
 
 function createMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {  
   return new Promise(async (resolve, reject) => {

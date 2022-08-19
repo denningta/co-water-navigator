@@ -1,8 +1,8 @@
 import { query } from "faunadb";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Validator } from "react";
-import MeterReading from "../../../../interfaces/MeterReading";
-import { HttpError } from "../interfaces/HttpError";
+import MeterReading from "../../../interfaces/MeterReading";
+import { HttpError } from "./interfaces/HttpError";
 
 export interface ValidatorFunction {
   (req: NextApiRequest): (HttpError | HttpError[]) | 'passed'
@@ -176,13 +176,7 @@ const optionalYearValid: ValidatorFunction = (req) => {
   const errors: HttpError[] = [];
   const { year } = req.query;
 
-  if (!year) {
-    return new HttpError(
-      'Missing Query Parameter',
-      `A value for the query parameter 'year' is missing`,
-      400
-    );
-  }
+  if (!year) return 'passed'
 
   const years = Array.isArray(year) ? year : [year];
 
@@ -196,6 +190,20 @@ const optionalYearValid: ValidatorFunction = (req) => {
     }
   });
 
+  return response
+}
+
+const yearRequired: ValidatorFunction = (req) => {
+  response = 'passed'
+  const { year } = req.query;
+
+  if (!year) {
+    return new HttpError(
+      'Missing Query Parameter',
+      `A value for the query parameter 'date' is missing`,
+      400
+    )
+  }
 
   return response
 }
@@ -208,7 +216,8 @@ const validatorFns = {
   dateRequired: dateRequired,
   validMeterReading: validMeterReading,
   validMeterReadingsArray: validMeterReadingsArray,
-  optionalYearValid: optionalYearValid
+  optionalYearValid: optionalYearValid,
+  yearRequired: yearRequired
 }
 
 
