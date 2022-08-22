@@ -1,6 +1,6 @@
 import { NextApiRequest } from "next";
 import MeterReading from "../../../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../../../lib/faunaClient";
+import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import validateQuery from "../../../validatorFunctions";
 
 async function deleteMeterReading(req: NextApiRequest): Promise<MeterReading> {

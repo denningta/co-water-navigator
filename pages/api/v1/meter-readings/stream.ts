@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { NextApiRequest, NextApiResponse } from "next";
-import faunaClient, { q } from "../../../../lib/faunaClient";
+import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
 
 const openStream = (req: NextApiRequest, res: NextApiResponse) => {
 

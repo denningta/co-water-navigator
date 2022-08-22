@@ -4,7 +4,6 @@ const secret = process.env.FAUNADB_SECRET;
 let endpoint = process.env.FAUNADB_ENDPOINT;
 
 if (typeof secret === 'undefined' || secret === '') {
-  console.error('The FAUNADB_SECRET environment variable is not set, exiting.')
   process.exit(1)
 }
 

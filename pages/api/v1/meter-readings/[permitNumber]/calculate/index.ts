@@ -2,7 +2,7 @@ import { verify } from "crypto";
 import { Get } from "faunadb";
 import { NextApiRequest, NextApiResponse } from "next";
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../../../lib/faunaClient";
+import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
 import verifyAvailableThisYear from "./verify-availableThisYear";

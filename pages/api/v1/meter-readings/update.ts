@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 import { resolve } from "path";
 import MeterReading from "../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../lib/faunaClient";
+import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
 import { HttpError } from "../interfaces/HttpError";
 import validateQuery from "../validatorFunctions";
 

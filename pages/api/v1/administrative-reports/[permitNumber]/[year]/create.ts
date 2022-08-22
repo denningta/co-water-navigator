@@ -2,7 +2,7 @@ import { Get, Lambda } from "faunadb";
 import { NextApiRequest } from "next";
 import { AdministrativeReport } from "../../../../../../interfaces/AdministrativeReport";
 import MeterReading from "../../../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../../../lib/faunaClient";
+import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
 

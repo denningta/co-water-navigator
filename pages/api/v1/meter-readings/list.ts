@@ -1,7 +1,7 @@
 import { Expr } from "faunadb";
 import { NextApiRequest } from "next";
 import MeterReading from "../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../lib/faunaClient";
+import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
 import validateQuery from "../validatorFunctions";
 
 function listMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
