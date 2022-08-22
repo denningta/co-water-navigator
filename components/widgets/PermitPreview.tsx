@@ -4,6 +4,7 @@ import { extent } from 'd3-array';
 import { MarkerCircle } from '@visx/marker';
 import { curveMonotoneX } from '@visx/curve';
 import { Group } from '@visx/group';
+import { withTooltip } from '@visx/tooltip'
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { Circle, line, LinePath } from '@visx/shape';
 import { localPoint } from '@visx/event';
@@ -131,6 +132,7 @@ const PermitPreview = () => {
       const closest = voronoiLayout.find(point.x, point.y, neighborRadius)
       if (closest) {
         setPointActive(closest.index)
+        
       } else {
         setPointActive(undefined)
       }
