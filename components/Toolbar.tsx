@@ -12,12 +12,14 @@ const Toolbar = () => {
 
   return (
     <div className="flex flex-col items-center bg-black text-white p-6 h-full">
-      <div className="p-4 mb-8 text-5xl">
-        <GiWaterSplash />
-      </div>
+        <Link href={'/'}>
+          <div className="p-4 mb-8 text-5xl cursor-pointer">
+            <GiWaterSplash />
+          </div>
+        </Link>
       <NavButton title="Dashboard" route="/"><IoHome/></NavButton>
-      <NavButton title="Profile" route="/profile"><FaUserCircle/></NavButton>
       <NavButton title="Well Permits" route="/well-permits"><FaListAlt/></NavButton>
+      <NavButton title="Profile" route="/profile"><FaUserCircle/></NavButton>
       <div className="grow"></div>
       { user &&
         <div className="flex flex-col items-center mb-6">
