@@ -6,43 +6,60 @@ import Image from 'next/image'
 import NavButton from "./NavButton"
 import { useUser } from "@auth0/nextjs-auth0"
 import Link from "next/link"
+import { useState } from "react"
+import LogoutButton from "./common/LogoutButton"
+import { useRouter } from "next/router"
 
 const Toolbar = () => {
   const { user, error, isLoading } = useUser()
+  const [ collapsed, setCollapsed ] = useState(true)
+
+  const handleMouseEnter = () => {
+    setCollapsed(false)
+  }
+
+  const handleMouseLeave = () => {
+    setCollapsed(true)
+  }
 
   return (
-    <div className="flex flex-col items-center bg-black text-white p-6 h-full">
+    <div 
+      className={`flex flex-col items-center bg-black drop-shadow-lg text-white h-full ${collapsed ? 'p-0' : 'p-6'}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
         <Link href={'/'}>
           <div className="p-4 mb-8 text-5xl cursor-pointer">
             <GiWaterSplash />
           </div>
         </Link>
-      <NavButton title="Dashboard" route="/"><IoHome/></NavButton>
-      <NavButton title="Well Permits" route="/well-permits"><FaListAlt/></NavButton>
-      <NavButton title="Profile" route="/profile"><FaUserCircle/></NavButton>
+      <NavButton title="Dashboard" route="/" size={collapsed ? 'small' : 'normal'}>
+        <IoHome/>
+      </NavButton>
+      <NavButton title="Well Permits" route="/well-permits" size={collapsed ? 'small' : 'normal'}>
+        <FaListAlt/>
+      </NavButton>
+      <NavButton title="Profile" route="/profile" size={collapsed ? 'small' : 'normal'}>
+        <FaUserCircle/>
+      </NavButton>
       <div className="grow"></div>
       { user &&
         <div className="flex flex-col items-center mb-6">
-          <div className="text-gray-500 text-xs text-center mb-4">ACCOUNT</div>
+          { !collapsed && <div className="text-gray-500 text-xs text-center mb-4">ACCOUNT</div> }
           <div className="flex flex-col items-center mb-8">
             {user.picture && 
               <Image 
                 src={user.picture}
                 alt='Profile picture'
-                width={50}
-                height={50}
+                width={collapsed ? 30 : 50}
+                height={collapsed ? 30 : 50}
                 className="rounded-full overflow-hidden"
               />
             }
-            <div className="text-sm text-gray-400 mt-2">{`${user.name}`}</div>
+            { !collapsed && <div className="text-sm text-gray-400 mt-2">{`${user.name}`}</div> }
           </div>
           
-          <Link href="/api/auth/logout">
-            <button className="flex items-center bg-gray-800 hover:bg-gray-700 transition ease-in-out p-2 px-4 rounded-lg cursor-pointer">
-              <MdLogout className="mr-3"/>
-              Logout
-            </button>
-          </Link>
+          <LogoutButton size={collapsed ? 'small' : 'normal'} />
 
         </div>
       }

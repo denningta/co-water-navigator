@@ -9,10 +9,10 @@ const AppLayout = ({ children }: Props) => {
   return (
     <UserProvider>
       <div className="flex">
-        <div className="absolute h-screen w-[160px]">
+        <div className="absolute h-screen z-50">
           <Toolbar></Toolbar>
         </div>
-        <main className="ml-[160px] w-full px-8 py-6">
+        <main className="ml-[80px] w-full px-8 py-6">
           { children }
         </main>
       </div>

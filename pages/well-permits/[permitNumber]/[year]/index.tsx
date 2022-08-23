@@ -1,10 +1,10 @@
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
-import AppLayout from '../../../components/AppLayout'
-import MainContent, { Widget } from '../../../components/MainContent'
-import Header from '../../../components/widgets/Header'
-import MeterReadingsComponent from '../../../components/widgets/MeterReadings/MeterReadings'
-import { NextPageWithLayout } from '../../_app'
+import AppLayout from '../../../../components/AppLayout'
+import MainContent, { Widget } from '../../../../components/MainContent'
+import Header from '../../../../components/widgets/Header'
+import MeterReadingsComponent from '../../../../components/widgets/MeterReadings/MeterReadings'
+import { NextPageWithLayout } from '../../../_app'
 
 
 const WellPermit: NextPageWithLayout = () => {
