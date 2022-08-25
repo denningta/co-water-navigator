@@ -24,15 +24,15 @@ const Toolbar = () => {
 
   return (
     <div 
-      className={`flex flex-col items-center bg-black drop-shadow-lg text-white h-full ${collapsed ? 'p-0' : 'p-6'}`}
+      className={`flex flex-col items-center bg-black drop-shadow-lg text-white h-full transition-all ease-in-out ${collapsed ? 'w-[75px]' : 'w-[150px] px-4'}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-        <Link href={'/'}>
-          <div className="p-4 mb-8 text-5xl cursor-pointer">
-            <GiWaterSplash />
-          </div>
-        </Link>
+      <Link href={'/'}>
+        <div className="p-4 mb-8 text-5xl cursor-pointer">
+          <GiWaterSplash />
+        </div>
+      </Link>
       <NavButton title="Dashboard" route="/" size={collapsed ? 'small' : 'normal'}>
         <IoHome/>
       </NavButton>

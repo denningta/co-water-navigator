@@ -3,15 +3,23 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { AgGridReact } from "ag-grid-react";
 import { useRef, useState } from "react";
-import { dateFormatter } from "./helpers";
+import { dateFormatter, initPlaceholderData } from "../helpers";
 import { ColDef } from "ag-grid-community";
 
 interface Props {
-  meterReadings: MeterReading[]
+  meterReadings: MeterReading[],
+  permitNumber: string
+  year: string
 }
 
-const ReadingsGrid = ({ meterReadings }: Props) => {
+const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
+
+  const rowData = initPlaceholderData(permitNumber, year).map(record => {
+    return meterReadings.find(el => {
+      return el.date === record.date
+    }) ?? record
+  })
 
   const onGridReady = () => {
     if (!gridRef.current) return
@@ -31,7 +39,7 @@ const ReadingsGrid = ({ meterReadings }: Props) => {
   const [columnDefs] = useState<ColDef[]>([
     { 
       field: 'date',
-      minWidth: 130,
+      minWidth: 150,
       editable: false,
       sort: 'asc',
       valueFormatter: dateFormatter
@@ -39,7 +47,7 @@ const ReadingsGrid = ({ meterReadings }: Props) => {
     { 
       field: 'flowMeter',
       minWidth: 120,
-      valueGetter: (params) => params.data.flowMeter.value,
+      valueGetter: (params) => params.data.flowMeter ? params.data.flowMeter.value : '',
       tooltipField: 'flowMeter.calculationMessage',
     },
     { 
@@ -68,11 +76,11 @@ const ReadingsGrid = ({ meterReadings }: Props) => {
   ])
 
   return (
-    <div className="ag-theme-alpine" style={{ height: 400 }}>
+    <div className="ag-theme-alpine" style={{ height: 600 }}>
     <AgGridReact
       ref={gridRef}
       onGridReady={onGridReady}
-      rowData={meterReadings}
+      rowData={rowData}
       defaultColDef={defaultColDef}
       columnDefs={columnDefs}
     >

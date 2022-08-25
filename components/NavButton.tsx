@@ -27,7 +27,7 @@ const NavButton = ({ title = '', route = '/', size = 'normal', children }: Props
         >
           { isActive && <div className='absolute right-0 w-[6px] h-[15px] bg-primary rounded-l'></div> }
           <div className={`flex items-center text-2xl transition ease-in-out ${hover ? 'text-primary' : 'text-gray-400'}`}>
-            { children   || <IoHome /> }
+            { children || <IoHome /> }
           </div>
           { size === 'normal' &&
             <div className={`mt-2 text-center text-sm ${hover ? 'text-white' : 'text-gray-400'}`}>{ title }</div>
