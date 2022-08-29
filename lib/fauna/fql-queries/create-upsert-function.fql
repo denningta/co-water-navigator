@@ -1,0 +1,13 @@
+CreateFunction({
+  name: 'upsert',
+  body: Query(
+    Lambda(
+      ['ref', 'data'],
+      If(
+        Exists(Var('ref')),
+        Update(Var('ref'), Var('data')),
+        Create(Var('ref'), Var('data'))
+      )
+    )
+  ),
+})

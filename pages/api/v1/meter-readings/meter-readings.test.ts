@@ -7,7 +7,7 @@
  * @group meter-readings/{permitNumber}
  */
 
-import { createMocks, RequestMethod } from "node-mocks-http";
+import { createMocks } from "node-mocks-http";
 import HttpProps from "../interfaces/HttpProps";
 import meterReadingsHandler from '.';
 import deleteMeterReading from "./[permitNumber]/[date]/delete";
@@ -148,7 +148,7 @@ describe('api/[version]/meter-readings/{permitNumber}', () => {
         },
       ]
 
-      const response = await updateMeterReadings(req)
+      const response = await updateMeterReadings(req.body)
       console.log(response)
 
       expect(response).toEqual(req.body)

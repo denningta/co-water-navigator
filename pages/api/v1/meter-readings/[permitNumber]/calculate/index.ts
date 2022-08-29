@@ -5,6 +5,7 @@ import MeterReading, { CalculatedValue } from "../../../../../../interfaces/Mete
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
+import updateMeterReadings from "../../update";
 import verifyAvailableThisYear from "./verify-availableThisYear";
 import verifyEqualToPrevValue from "./verify-equal-to-prev-value";
 import verifyGreaterThanPrevValue from "./verify-greater-than-prev-value";
@@ -28,7 +29,7 @@ function handler(
     }
 
     const handlers: HandlerFunctions = {
-      POST: queryMeterReadings,
+      POST: runCalculationsExternal,
     }
   
     return handlers[req.method](req)
@@ -42,8 +43,7 @@ function handler(
       });
 }
 
-
-export const queryMeterReadings = (req: NextApiRequest): Promise<MeterReading[]> => {
+const runCalculationsExternal = (req: NextApiRequest): Promise<MeterReading[]> => {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
@@ -51,9 +51,39 @@ export const queryMeterReadings = (req: NextApiRequest): Promise<MeterReading[]>
     ]);
 
     if (errors.length) reject(errors);
-
     const { permitNumber } = req.query;
+    if (!permitNumber) return
 
+    await getMeterReadings(permitNumber)
+      .then(res => resolve(calculate(res)))
+      .catch(error => reject(error))
+  })
+}
+
+export const runCalculationsInternal = (permitNumber: string): Promise<MeterReading[]> => {
+  return new Promise(async (resolve, reject) => {
+    const meterReadings = await getMeterReadings(permitNumber)
+      .then(res => res)
+      .catch(error => reject(error))
+
+    if (!meterReadings) {
+      reject(new HttpError(
+        'Meter reading calculations failed: No Data',
+        `No data found matching the query paramters:` + 
+        `'permitNumber': ${permitNumber}`,
+        404
+      ))
+      return
+    }
+
+    await updateMeterReadings(calculate(meterReadings))
+      .then(res => resolve(res))
+      .catch(error => reject(error))
+  })
+}
+
+const getMeterReadings = (permitNumber: string | string[]): Promise<MeterReading[]> => {
+  return new Promise(async (resolve, reject) => {
     const response: any = await faunaClient.query( 
       q.Map(
         q.Paginate(
@@ -67,15 +97,14 @@ export const queryMeterReadings = (req: NextApiRequest): Promise<MeterReading[]>
           q.Get(q.Var('ref'))
         )
       )
-    ).catch(error => reject(errors.push(error)))
+    ).catch(error => reject(error))
 
     const meterReadings: MeterReading[] = response.data.map((record: any) => record.data);
-    const result = runCalculations(meterReadings)
-    resolve(result);
+    resolve(meterReadings)
   })
 }
 
-export const runCalculations = (meterReadings: MeterReading[]): MeterReading[] => {
+export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
   return meterReadings.map((meterReading, index, meterReadings) => {
     const prevRecord = meterReadings[index - 1];
     const newRecord: any = {};

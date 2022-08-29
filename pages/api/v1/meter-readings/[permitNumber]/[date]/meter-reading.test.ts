@@ -52,8 +52,9 @@ describe('api/[version]/meter-readings/{permitNumber}/{date}', () => {
 
     test('PATCH updates a meter reading', async () => {
       req.method = 'PATCH';
-      req.body = { powerMeter: { value: 400 } };
+      req.body.powerMeter = { value: 400 };
       const response = await meterReadingHandler(req, res);
+      console.log(response)
       expect(response).toHaveProperty('permitNumber', permitNumber);
       expect(response).toHaveProperty('date', date);
       expect(response).toHaveProperty('flowMeter', { value: 150 });

@@ -3,8 +3,8 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { AgGridReact } from "ag-grid-react";
 import { useRef, useState } from "react";
-import { dateFormatter, initPlaceholderData } from "../helpers";
-import { ColDef } from "ag-grid-community";
+import { calculatedValueGetter, calculatedValueSetter, dateFormatter, getCellClassRules, initPlaceholderData } from "./helpers";
+import { CellValueChangedEvent, ColDef } from "ag-grid-community";
 
 interface Props {
   meterReadings: MeterReading[],
@@ -42,50 +42,91 @@ const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
       minWidth: 150,
       editable: false,
       sort: 'asc',
-      valueFormatter: dateFormatter
+      valueFormatter: dateFormatter,
+      cellClassRules: getCellClassRules('date')
     },
     { 
       field: 'flowMeter',
       minWidth: 120,
-      valueGetter: (params) => params.data.flowMeter ? params.data.flowMeter.value : '',
+      valueGetter: (params) => calculatedValueGetter(params, 'flowMeter'),
+      valueSetter: (params) => calculatedValueSetter(params, 'flowMeter'),
       tooltipField: 'flowMeter.calculationMessage',
+      cellClassRules: getCellClassRules('flowMeter')
     },
     { 
       field: 'powerMeter',
-      valueGetter: (params) => params.data.powerMeter ? params.data.powerMeter.value : ''
+      valueGetter: (params) => calculatedValueGetter(params, 'powerMeter'),
+      valueSetter: (params) => calculatedValueSetter(params, 'powerMeter'),
+      tooltipField: 'powerMeter.calculationMessage',
+      cellClassRules: getCellClassRules('powerMeter')
     },
     { 
       field: 'powerConsumptionCoef',
-      valueGetter: (params) => params.data.powerConsumptionCoef ? params.data.powerConsumptionCoef.value : ''
+      valueGetter: (params) => calculatedValueGetter(params, 'powerConsumptionCoef'),
+      valueSetter: (params) => calculatedValueSetter(params, 'powerConsumptionCoef'),
+      tooltipField: 'powerConsumptionCoef.calculationMessage',
+      cellClassRules: getCellClassRules('powerConsumptionCoef')
     },
     { 
       field: 'pumpedThisPeriod',
-      valueGetter: (params) => params.data.pumpedThisPeriod ? params.data.pumpedThisPeriod.value : ''
+      valueGetter: (params) => calculatedValueGetter(params, 'pumpedThisPeriod'),
+      valueSetter: (params) => calculatedValueSetter(params, 'pumpedThisPeriod'),
+      tooltipField: 'pumpedThisPeriod.calculationMessage',
+      cellClassRules: getCellClassRules('pumpedThisPeriod')
     },
     { 
       field: 'pumpedYearToDate',
-      valueGetter: (params) => params.data.pumpedYearToDate ? params.data.pumpedYearToDate.value : ''
+      valueGetter: (params) => calculatedValueGetter(params, 'pumpedYearToDate'),
+      valueSetter: (params) => calculatedValueSetter(params, 'pumpedYearToDate'),
+      tooltipField: 'pumpedYearToDate.calculationMessage',
+      cellClassRules: getCellClassRules('pumpedYearToDate')
     },
-    { 
+    {
       field: 'availableThisYear',
-      valueGetter: (params) => params.data.pumpedYearToDate ? params.data.pumpedYearToDate.value : ''
+      valueGetter: (params) => calculatedValueGetter(params, 'availableThisYear'),
+      valueSetter: (params) => calculatedValueSetter(params, 'availableThisYear'),
+      tooltipField: 'availableThisYear.calculationMessage',
+      cellClassRules: getCellClassRules('availableThisYear')
     },
     { field: 'readBy' },
     { field: 'comments' },
-    { field: 'updatedBy' },
+    { 
+      field: 'updatedBy',
+      editable: false,
+      cellClassRules: getCellClassRules('updatedBy')
+    },
   ])
+
+  const handleCellValueChange = ({ data }: CellValueChangedEvent) => {
+    const url = `/api/v1/meter-readings/${data.permitNumber}/${data.date}`
+    fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+      .catch(error => error)
+      .then(data => { 
+        console.log(data)
+        return data
+      })
+  }
 
   return (
     <div className="ag-theme-alpine" style={{ height: 600 }}>
-    <AgGridReact
-      ref={gridRef}
-      onGridReady={onGridReady}
-      rowData={rowData}
-      defaultColDef={defaultColDef}
-      columnDefs={columnDefs}
-    >
-    </AgGridReact>
-</div>
+      <AgGridReact
+        ref={gridRef}
+        onGridReady={onGridReady}
+        rowData={rowData}
+        defaultColDef={defaultColDef}
+        columnDefs={columnDefs}
+        onCellValueChanged={(event) => handleCellValueChange(event)}
+        tooltipShowDelay={0}
+      >
+      </AgGridReact>
+  </div>
   )
 }
 

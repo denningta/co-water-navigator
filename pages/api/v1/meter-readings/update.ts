@@ -5,17 +5,9 @@ import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
 import { HttpError } from "../interfaces/HttpError";
 import validateQuery from "../validatorFunctions";
 
-function updateMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {  
+function updateMeterReadings(meterReadings: MeterReading[]): Promise<MeterReading[]> {  
   return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'queryExists',
-      'bodyExists',
-      'validMeterReadingsArray'
-    ]);
-
-    if (errors.length) reject(errors);
-
-    const meterReadings: MeterReading[] = req.body
+    const errors: any[] = []
 
     const updateQueries = meterReadings.map(meterReading => {
       return q.Replace(
@@ -40,6 +32,15 @@ function updateMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
         });
       reject(errors);
     });
+
+    if (!response) {
+      reject(new HttpError(
+        'No data',
+        `No data found matching query parameters`,
+        404
+      ))
+      return
+    }
 
     resolve(response.map((el: any) => el.data));
   });

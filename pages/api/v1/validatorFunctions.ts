@@ -103,7 +103,8 @@ const allowedProperties = [
   'pumpedYearToDate',
   'availableThisYear',
   'readBy',
-  'comments'
+  'comments',
+  'updatedBy'
 ];
 
 const validateMeterReading = (meterReading: MeterReading): string[] => {

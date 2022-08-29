@@ -27,7 +27,12 @@ const MeterReadingsHeader = ({ permitNumber, owner, location }: Props) => {
       }
       <div className="grow"></div>
       <div>
-        <button type="button" className='text-3xl mr-10'><TiExport /></button>
+        <button type="button" className='mr-10 flex items-center bg-primary rounded-lg hover:drop-shadow-lg px-4 py-2 text-white'>
+          <span className='text-2xl'>
+            <TiExport /> 
+          </span>
+          <span className='ml-2'>Export</span>
+        </button>
       </div>
     </div>
   )

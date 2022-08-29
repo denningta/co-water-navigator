@@ -12,7 +12,8 @@ const verifyPumpedThisPeriod = (
 
   if (!meterReading.pumpedThisPeriod) {
     return {
-      value: shouldBe
+      value: shouldBe,
+      source: 'calculation'
     }
   }
 
@@ -28,6 +29,7 @@ const verifyPumpedThisPeriod = (
     delete updatedValue.shouldBe
     delete updatedValue.calculationState
     delete updatedValue.calculationMessage
+    delete updatedValue.source
   }
 
 

@@ -15,6 +15,7 @@
     "@visx/event": "^2.6.0",
     "@visx/grid": "^2.12.2",
     "@visx/group": "^2.10.0",
+    "@visx/heatmap": "^2.10.0",
     "@visx/legend": "^2.10.0",
     "@visx/marker": "^2.12.2",
     "@visx/mock-data": "^2.1.2",

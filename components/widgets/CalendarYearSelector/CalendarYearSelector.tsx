@@ -3,50 +3,38 @@ import { AgGridReact } from "ag-grid-react"
 import { useRouter } from "next/router"
 import { useCallback, useEffect, useRef, useState } from "react"
 import YearPicker from "./YearPicker"
-import { initCalendarYearPlaceholderData } from "../helpers"
+import { initCalendarYearPlaceholderData } from "./helpers"
+import useSWR from "swr"
+import MeterReading from "../../../interfaces/MeterReading"
+import { AdministrativeReport } from "../../../interfaces/AdministrativeReport"
+import DataSummaryCellRenderer from "./DataSummaryCellRenderer"
 
 export interface CalendarYearSelectorData {
   year: string
-  dbb004Summary?: {
-    month: number
-    data: boolean
-  }[]
-  dbb013Summary?: {
-    record: number
-    data: boolean
-  }
+  dbb004Summary?: MeterReading[]
+  dbb013Summary?: AdministrativeReport[]
 }
 
-const CalendarYearSelector = () => {
-  const [calendarYearData] = useState<CalendarYearSelectorData[]>([
-    { 
-      year: '1900', 
-      dbb004Summary: [
-        { month: 1, data: true},
-        { month: 2, data: true},
-        { month: 3, data: true},
-        { month: 4, data: true},
-        { month: 5, data: true},
-        { month: 6, data: true},
-        { month: 7, data: true},
-        { month: 8, data: true},
-      ]
-    },
-    { 
-      year: '1901', 
-      dbb004Summary: [
-        { month: 4, data: true},
-        { month: 5, data: true},
-        { month: 6, data: true},
-        { month: 7, data: true},
-        { month: 8, data: true},
-      ]
-    },
-  ])
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
+const CalendarYearSelector = () => {
+  const router = useRouter()
+  const { query } = router
+  let permitNumber: string | undefined = undefined
+
+  if (router.isReady) {
+    permitNumber = Array.isArray(query.permitNumber) ? query.permitNumber[0] : query.permitNumber
+  }
+  
+  const { data, error } = useSWR(
+    (permitNumber) 
+    ? `/api/v1/data-summary?permitNumber=${permitNumber}` 
+    : null, 
+    fetcher
+  )
 
   const gridRef = useRef<AgGridReact>(null);
-  const router = useRouter()
+
   const [api, setApi] = useState<GridApi | undefined>(undefined)
   const [columnApi, setColumnApi] = useState<ColumnApi | undefined>(undefined)
   const [rowData, setRowData] = useState<CalendarYearSelectorData[] | undefined>(undefined)
@@ -60,12 +48,12 @@ const CalendarYearSelector = () => {
   }, [router.isReady, router.query.year])
 
   useEffect(() => {
-    if (!year) return
-    const data = initCalendarYearPlaceholderData(year, 5).map(record => 
-      calendarYearData.find(el => record.year === el.year) ?? record
+    if (!year || !data) return
+    const rowData = initCalendarYearPlaceholderData(year, 5).map(record => 
+      data.find((el: any) => record.year === el.year) ?? record
     )
-    setRowData(data)
-  }, [calendarYearData, year])
+    setRowData(rowData)
+  }, [data, year])
 
 
   const onGridReady = () => {
@@ -94,7 +82,10 @@ const CalendarYearSelector = () => {
       field: 'year',
       maxWidth: 100
     },
-    { field: 'dbb004Summary' },
+    { 
+      field: 'dbb004Summary',
+      cellRenderer: DataSummaryCellRenderer
+    },
     { field: 'dbb013Summary' }
   ])
 

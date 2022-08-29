@@ -5,7 +5,7 @@
  * @group calculations
  */
 
-import { runCalculations } from "."
+import { calculate } from "."
 import MeterReading from "../../../../../../interfaces/MeterReading"
 
 describe('DBB-004 calculations', () => {
@@ -37,7 +37,7 @@ describe('DBB-004 calculations', () => {
 
   describe('initial value for calculated fields from flowMeter data', () => {
     beforeAll(() => {
-      result = runCalculations(meterReadings)
+      result = calculate(meterReadings)
     })
   
     test('calculate pumpedThisPeriod', () => {
