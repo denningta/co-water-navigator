@@ -47,9 +47,10 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
     expect(result).toBe('no update required')
   })
 
-  test('not equal to current flowMeter minus prev flowMeter', () => {
+  test('user enters incorrect value sets warning state', () => {
     meterReading.pumpedThisPeriod = {
-      value: 150
+      value: 150,
+      source: 'user'
     }
 
     const result = verifyPumpedThisPeriod(meterReading, prevRecord, index)

@@ -20,6 +20,8 @@ const verifyPumpedThisPeriod = (
 
   if (meterReading.pumpedThisPeriod?.value === updatedValue.value) return 'no update required'
 
+  return updatedValue;
+
   // if (!meterReading.pumpedThisPeriod) {
   //   return {
   //     value: shouldBe
@@ -46,7 +48,7 @@ const verifyPumpedThisPeriod = (
   //   && meterReading.pumpedThisPeriod.shouldBe === updatedValue.shouldBe
   // ) return 'no update required'
 
-  return updatedValue;
+
 }
 
 export default verifyPumpedThisPeriod;

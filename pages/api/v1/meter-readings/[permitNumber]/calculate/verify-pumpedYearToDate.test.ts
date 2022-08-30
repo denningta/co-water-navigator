@@ -20,6 +20,7 @@ describe('DBB-004 verification: pumpedYearToDate', () => {
       {
         permitNumber: 'XX-00002',
         date: '1900-01',
+        flowMeter: { value: 100 },
         pumpedThisPeriod: {
           value: 10
         }
@@ -27,6 +28,7 @@ describe('DBB-004 verification: pumpedYearToDate', () => {
       {
         permitNumber: 'XX-00002',
         date: '1900-02',
+        flowMeter: { value: 120 },
         pumpedThisPeriod: {
           value: 10
         }
@@ -34,6 +36,7 @@ describe('DBB-004 verification: pumpedYearToDate', () => {
       {
         permitNumber: 'XX-00002',
         date: '1900-03',
+        flowMeter: { value: 135 },
         pumpedThisPeriod: {
           value: 15
         }
@@ -41,6 +44,7 @@ describe('DBB-004 verification: pumpedYearToDate', () => {
       {
         permitNumber: 'XX-00002',
         date: '1900-04',
+        flowMeter: { value: 150 },
         pumpedThisPeriod: {
           value: 15
         },
@@ -74,6 +78,10 @@ describe('DBB-004 verification: pumpedYearToDate', () => {
       throw new Error('Function returned \'no update required\' when an update was required.')
     }
 
+    if (result === 'delete me') {
+      throw new Error('Function returned \'delete me\' when an update was required')
+    }
+
     expect(result.calculationState).toBe('warning')
     expect(result.calculationMessage).toBeTruthy()
     expect(result.shouldBe).toBe(shouldBe)
@@ -91,6 +99,10 @@ describe('DBB-004 verification: pumpedYearToDate', () => {
 
     if (result === 'no update required') {
       throw new Error('Function returned \'no update required\' when an update was required.')
+    }
+
+    if (result === 'delete me') {
+      throw new Error('Function returned \'delete me\' when an update was required')
     }
 
     expect(result.shouldBe).toBe(undefined)
@@ -115,6 +127,10 @@ describe('DBB-004 verification: pumpedYearToDate', () => {
 
     if (result === 'no update required') {
       throw new Error('Function returned \'no update required\' when an update was required.')
+    }
+
+    if (result === 'delete me') {
+      throw new Error('Function returned \'delete me\' when an update was required')
     }
 
     expect(result.value).toBe(shouldBe)

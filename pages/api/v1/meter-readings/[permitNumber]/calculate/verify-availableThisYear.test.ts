@@ -18,6 +18,7 @@ describe('DBB-004 verification: availiableThisYear', () => {
     meterReading = {
       permitNumber: 'XX-00002',
       date: '1900-01',
+      flowMeter: { value: 100 },
       pumpedYearToDate: {
         value: 70
       },
@@ -51,6 +52,10 @@ describe('DBB-004 verification: availiableThisYear', () => {
       throw new Error('Function returned \'no update required\' when an update was required.')
     }
 
+    if (result === 'delete me') {
+      throw new Error('Function returned \'delete me\' when an update was required')
+    }
+
     expect(result.shouldBe).toBe(shouldBe)
     expect(result.calculationState).toBe('warning')
     expect(result.calculationMessage).toBeTruthy()
@@ -70,6 +75,10 @@ describe('DBB-004 verification: availiableThisYear', () => {
       throw new Error('Function returned \'no update required\' when an update was required.')
     }
 
+    if (result === 'delete me') {
+      throw new Error('Function returned \'delete me\' when an update was required')
+    }
+
     expect(result.value).toBe(meterReading.availableThisYear.value)
     expect(result.shouldBe).toBe(undefined)
     expect(result.calculationState).toBe(undefined)
@@ -83,6 +92,10 @@ describe('DBB-004 verification: availiableThisYear', () => {
 
     if (result === 'no update required') {
       throw new Error('Function returned \'no update required\' when an update was required.')
+    }
+
+    if (result === 'delete me') {
+      throw new Error('Function returned \'delete me\' when an update was required')
     }
 
     expect(result.value).toBe(shouldBe)

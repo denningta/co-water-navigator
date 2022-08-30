@@ -105,11 +105,25 @@ const getMeterReadings = (permitNumber: string | string[]): Promise<MeterReading
   })
 }
 
+type StatusRecord = {
+  flowMeter?: CalculatedValue | 'no update required'
+  powerMeter?: CalculatedValue | 'no update required'
+  powerConsumptionCoef?: CalculatedValue | 'no update required'
+  pumpedThisPeriod?: CalculatedValue | 'no update required' | 'delete me'
+  pumpedYearToDate?: CalculatedValue | 'no update required' | 'delete me'
+  availableThisYear?: CalculatedValue | 'no update required' | 'delete me'
+}
+
 export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
   const updatedMeterReadings: MeterReading[] = []
   meterReadings.forEach((meterReading, index, meterReadings) => {
     const prevRecord = meterReadings[index - 1];
-    const newRecord: any = {};
+    const statusRecord: any = {
+      ...meterReading
+    };
+    const valueRecord: MeterReading = {
+      ...meterReading
+    }
     const updatedRecord: any = {
       ...meterReading
     }
@@ -117,23 +131,30 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
     // TODO: Dynamically query for pumpingLimitThisYear
     const pumpingLimitThisYear = 250
 
-    newRecord.flowMeter = verifyGreaterThanPrevValue(meterReading, prevRecord, index, 'flowMeter')
-    newRecord.powerMeter = verifyGreaterThanPrevValue(meterReading, prevRecord, index, 'powerMeter')
-    newRecord.powerConsumptionCoef = verifyEqualToPrevValue(meterReading, prevRecord, index, 'powerConsumptionCoef')
-    newRecord.pumpedThisPeriod = verifyPumpedThisPeriod(meterReading, prevRecord, index)
+    statusRecord.flowMeter = verifyGreaterThanPrevValue(meterReading, prevRecord, index, 'flowMeter')
+      statusRecord.flowMeter !== 'no update required' 
+        ? valueRecord.flowMeter = statusRecord.flowMeter 
+        : valueRecord.flowMeter = meterReading.flowMeter
+    statusRecord.powerMeter = verifyGreaterThanPrevValue(valueRecord, prevRecord, index, 'powerMeter')
+      statusRecord.powerMeter !== 'no update required' 
+        ? valueRecord.powerMeter = statusRecord.powerMeter 
+        : valueRecord.powerMeter = meterReading.powerMeter
+    statusRecord.powerConsumptionCoef = verifyEqualToPrevValue(valueRecord, prevRecord, index, 'powerConsumptionCoef')
+      statusRecord.powerConsumptionCoef !== 'no update required' 
+        ? valueRecord.powerConsumptionCoef = statusRecord.powerConsumptionCoef 
+        : valueRecord.powerConsumptionCoef = meterReading.powerConsumptionCoef
+    statusRecord.pumpedThisPeriod = verifyPumpedThisPeriod(valueRecord, prevRecord, index)
+      statusRecord.pumpedThisPeriod !== 'no update required' 
+        ? valueRecord.pumpedThisPeriod = statusRecord.pumpedThisPeriod 
+        : valueRecord.pumpedThisPeriod = meterReading.pumpedThisPeriod
+    statusRecord.pumpedYearToDate = verifyPumpedYearToDate(valueRecord, index, meterReadings)
+      statusRecord.pumpedYearToDate !== 'no update required' 
+        ? valueRecord.pumpedYearToDate = statusRecord.pumpedYearToDate 
+        : valueRecord.pumpedYearToDate = meterReading.pumpedYearToDate
+    statusRecord.availableThisYear = verifyAvailableThisYear(valueRecord, pumpingLimitThisYear, index)
 
-    if (newRecord.pumpedThisPeriod !== 'no update required') {
-      meterReading.pumpedThisPeriod = newRecord.pumpedThisPeriod
-    }
-    newRecord.pumpedYearToDate = verifyPumpedYearToDate(meterReading, index, meterReadings)
-    
-    if (newRecord.pumpedYearToDate !== 'no update required') {
-      meterReading.pumpedYearToDate = newRecord.pumpedYearToDate
-    }
-    newRecord.availableThisYear = verifyAvailableThisYear(meterReading, pumpingLimitThisYear, index)
 
-
-    Object.entries(newRecord).map(([key, value]) => {
+    Object.entries(statusRecord).map(([key, value]) => {
       if (value === 'no update required') return;
       if (value === 'delete me') {
         delete updatedRecord[key]
@@ -145,9 +166,9 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
       return {[key]: value};
     }).filter(value => value !== undefined)
 
-    // console.log(meterReading)
-    // console.log(updatedRecord)
-    // console.log(!_.isEqual(meterReading, updatedRecord))
+    console.log(meterReading)
+    console.log(updatedRecord)
+    console.log(!_.isEqual(meterReading, updatedRecord))
 
     if (!_.isEqual(meterReading, updatedRecord)) {
       updatedMeterReadings.push(updatedRecord)
