@@ -2,9 +2,9 @@ import MeterReading from "../../../interfaces/MeterReading"
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { AgGridReact } from "ag-grid-react";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { calculatedValueGetter, calculatedValueSetter, dateFormatter, getCellClassRules, initPlaceholderData } from "./helpers";
-import { CellValueChangedEvent, ColDef } from "ag-grid-community";
+import { CellValueChangedEvent, ColDef, ColumnApi, GetRowIdFunc, GetRowIdParams, GridApi } from "ag-grid-community";
 
 interface Props {
   meterReadings: MeterReading[],
@@ -14,6 +14,8 @@ interface Props {
 
 const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
+  const [gridApi, setGridApi] = useState<GridApi | null>(null)
+  const [columnApi, setColumnApi] = useState<ColumnApi | null>(null)
 
   const rowData = initPlaceholderData(permitNumber, year).map(record => {
     return meterReadings.find(el => {
@@ -25,7 +27,23 @@ const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
     if (!gridRef.current) return
     const { api, columnApi } = gridRef.current
     if (api == null || columnApi == null) return
+    setGridApi(api)
+    setColumnApi(columnApi)
     api.sizeColumnsToFit()
+  }
+
+  const getRowId = useMemo<GetRowIdFunc>(() => {
+    return (params: GetRowIdParams) => {
+      return params.data.date
+    }
+  }, [])
+
+  const updateGridRows = (meterReadings: MeterReading[]) => {
+    console.log(meterReadings)
+    meterReadings.forEach(meterReading => {
+      const rowNode = gridApi?.getRowNode(meterReading.date)
+      rowNode?.setData(meterReading)
+    })
   }
 
   const defaultColDef = {
@@ -98,6 +116,7 @@ const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
   ])
 
   const handleCellValueChange = ({ data }: CellValueChangedEvent) => {
+    console.log(data)
     const url = `/api/v1/meter-readings/${data.permitNumber}/${data.date}`
     fetch(url, {
       method: 'PATCH',
@@ -108,10 +127,7 @@ const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
     })
       .then(res => res.json())
       .catch(error => error)
-      .then(data => { 
-        console.log(data)
-        return data
-      })
+      .then(data => updateGridRows(data))
   }
 
   return (
@@ -124,6 +140,7 @@ const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
         columnDefs={columnDefs}
         onCellValueChanged={(event) => handleCellValueChange(event)}
         tooltipShowDelay={0}
+        getRowId={getRowId}
       >
       </AgGridReact>
   </div>

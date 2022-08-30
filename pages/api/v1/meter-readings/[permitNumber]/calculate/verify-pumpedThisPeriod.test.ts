@@ -24,7 +24,7 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
       }
     }
     meterReading = {
-      permitNumber: 'XX-00022',
+      permitNumber: 'XX-00002',
       date: '1900-02',
       flowMeter: {
         value: 500
@@ -58,6 +58,10 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
       throw new Error('Function returned \'no update required\' when an update was required.')
     }
 
+    if (result === 'delete me') {
+      throw new Error('Function returned \'delete me\' when an update was required')
+    }
+
     expect(result.calculationState).toBeTruthy()
     expect(result.calculationMessage).toBeTruthy()
     expect(result.shouldBe).toBe(shouldBe)
@@ -82,6 +86,9 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
     if (result === 'no update required') {
       throw new Error('Function returned \'no update required\' when an update was required.')
     }
+    if (result === 'delete me') {
+      throw new Error('Function returned \'delete me\' when an update was required')
+    }
 
     expect(result.shouldBe).toBe(undefined)
     expect(result.calculationState).toBe(undefined)
@@ -102,7 +109,9 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
     if (result === 'no update required') {
       throw new Error('Function returned \'no update required\' when an update was required.')
     }
-
+    if (result === 'delete me') {
+      throw new Error('Function returned \'delete me\' when an update was required')
+    }
     if (!meterReading.flowMeter || !prevRecord.flowMeter) {
       throw new Error('Missing setup data')
     }

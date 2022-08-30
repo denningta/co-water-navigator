@@ -1,5 +1,6 @@
 import { verify } from "crypto";
 import { Get } from "faunadb";
+import _ from "lodash";
 import { NextApiRequest, NextApiResponse } from "next";
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
@@ -69,7 +70,7 @@ export const runCalculationsInternal = (permitNumber: string): Promise<MeterRead
     if (!meterReadings) {
       reject(new HttpError(
         'Meter reading calculations failed: No Data',
-        `No data found matching the query paramters:` + 
+        `No data found matching the query paramters: ` + 
         `'permitNumber': ${permitNumber}`,
         404
       ))
@@ -105,17 +106,20 @@ const getMeterReadings = (permitNumber: string | string[]): Promise<MeterReading
 }
 
 export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
-  return meterReadings.map((meterReading, index, meterReadings) => {
+  const updatedMeterReadings: MeterReading[] = []
+  meterReadings.forEach((meterReading, index, meterReadings) => {
     const prevRecord = meterReadings[index - 1];
     const newRecord: any = {};
+    const updatedRecord: any = {
+      ...meterReading
+    }
 
     // TODO: Dynamically query for pumpingLimitThisYear
     const pumpingLimitThisYear = 250
 
     newRecord.flowMeter = verifyGreaterThanPrevValue(meterReading, prevRecord, index, 'flowMeter')
     newRecord.powerMeter = verifyGreaterThanPrevValue(meterReading, prevRecord, index, 'powerMeter')
-    newRecord.powerConsumptionCoef = 
-      verifyEqualToPrevValue(meterReading, prevRecord, index, 'powerConsumptionCoef')
+    newRecord.powerConsumptionCoef = verifyEqualToPrevValue(meterReading, prevRecord, index, 'powerConsumptionCoef')
     newRecord.pumpedThisPeriod = verifyPumpedThisPeriod(meterReading, prevRecord, index)
 
     if (newRecord.pumpedThisPeriod !== 'no update required') {
@@ -128,25 +132,35 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
     }
     newRecord.availableThisYear = verifyAvailableThisYear(meterReading, pumpingLimitThisYear, index)
 
-    const updatedRecord: any = {
-      ...meterReading
-    }
 
     Object.entries(newRecord).map(([key, value]) => {
       if (value === 'no update required') return;
+      if (value === 'delete me') {
+        delete updatedRecord[key]
+        return
+      }
       updatedRecord[key] = value;
       updatedRecord.permitNumber = meterReading.permitNumber
       updatedRecord.date = meterReading.date
       return {[key]: value};
     }).filter(value => value !== undefined)
 
-    return updatedRecord;
+    // console.log(meterReading)
+    // console.log(updatedRecord)
+    // console.log(!_.isEqual(meterReading, updatedRecord))
 
-  }).filter(obj => obj
+    if (!_.isEqual(meterReading, updatedRecord)) {
+      updatedMeterReadings.push(updatedRecord)
+    }
+
+  })
+  
+  updatedMeterReadings.filter(obj => obj
     && Object.keys(obj).length !== 0
     && Object.getPrototypeOf(obj) === Object.prototype
   )
 
+  return updatedMeterReadings
 }
 
 export default handler;

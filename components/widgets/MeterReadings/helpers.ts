@@ -29,10 +29,6 @@ export function initPlaceholderData(permitNumber: string, year: string): MeterRe
 
 export function calculatedValueGetter({ data }: ValueGetterParams, field: string) {
   if (data[field] && data[field].value !== undefined) {
-    if (['pumpedThisPeriod', 'pumpedYearToDate', 'availableThisYear'].includes(field)) {
-      return data[field].shouldBe
-    }
-    console.log(field)
     return data[field].value
   } else {
     return data[field]
@@ -40,7 +36,7 @@ export function calculatedValueGetter({ data }: ValueGetterParams, field: string
 }
 
 export function calculatedValueSetter({ data, newValue }: ValueSetterParams, field: string) {
-  if (data[field] && data[field].value === '') {
+  if (data[field] && newValue === '') {
     delete data[field]
     return true
   }

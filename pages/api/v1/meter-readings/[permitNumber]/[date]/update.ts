@@ -56,9 +56,9 @@ function updateMeterReading(req: NextApiRequest): Promise<MeterReading[]> {
       reject(errors);
     })
 
-    runCalculationsInternal(permitNumber)
+    const calculationUpdates = await runCalculationsInternal(permitNumber)
 
-    resolve(response.data)
+    resolve(calculationUpdates)
   });
 }
 

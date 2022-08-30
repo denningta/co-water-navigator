@@ -4,8 +4,9 @@ const verifyAvailableThisYear = (
   meterReading: MeterReading, 
   pumpingLimitThisYear: number,
   index: number,
-): CalculatedValue | 'no update required' => {
+): CalculatedValue | 'no update required' | 'delete me' => {
   if (index === 0) return 'no update required'
+  if (!meterReading.flowMeter) return 'delete me'
 
   if (!meterReading.pumpedYearToDate) return 'no update required'
 
