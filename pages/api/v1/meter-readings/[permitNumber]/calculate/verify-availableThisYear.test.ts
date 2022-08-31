@@ -90,14 +90,6 @@ describe('DBB-004 verification: availiableThisYear', () => {
 
     const result = verifyAvailableThisYear(meterReading, pumpingLimitThisYear, index)
 
-    if (result === 'no update required') {
-      throw new Error('Function returned \'no update required\' when an update was required.')
-    }
-
-    if (result === 'delete me') {
-      throw new Error('Function returned \'delete me\' when an update was required')
-    }
-
     expect(result.value).toBe(shouldBe)
     expect(result.shouldBe).toBe(undefined)
     expect(result.calculationState).toBe(undefined)

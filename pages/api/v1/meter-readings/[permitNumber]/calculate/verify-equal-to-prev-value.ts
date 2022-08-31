@@ -5,13 +5,14 @@ const verifyEqualToPrevValue = (
   prevRecord: MeterReading, 
   index: number,
   property: keyof Pick<MeterReading, 'powerConsumptionCoef'>
-): CalculatedValue | 'no update required' => {
+): CalculatedValue | undefined => {
 
   const calculatedValue: CalculatedValue | undefined = meterReading[property];
   const prevValue: CalculatedValue | undefined = prevRecord ? prevRecord[property] : undefined;
   
-  if (!calculatedValue || index === 0 || !calculatedValue.value) return 'no update required';
-  if (!prevValue || !prevValue.value) return 'no update required';
+  if (index === 0) return calculatedValue
+  if (!calculatedValue || !calculatedValue.value) return
+  if (!prevValue || !prevValue.value) return
 
   const updatedValue: CalculatedValue = {
     ...calculatedValue
@@ -30,13 +31,7 @@ const verifyEqualToPrevValue = (
     delete updatedValue.calculationState
     delete updatedValue.calculationMessage
   }
-
-  // Is this old news and we dont need to make an update?
-  if (
-    calculatedValue.calculationState === updatedValue.calculationState &&
-    calculatedValue.calculationMessage === updatedValue.calculationMessage
-  ) return 'no update required';
-
+  
   return updatedValue;
 }
 

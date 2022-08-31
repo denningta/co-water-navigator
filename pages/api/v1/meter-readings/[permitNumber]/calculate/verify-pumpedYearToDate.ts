@@ -5,8 +5,7 @@ const verifyPumpedYearToDate = (
   currentRecord: MeterReading,
   currentIndex: number,
   meterReadings: MeterReading[], 
-): CalculatedValue | 'no update required' | 'delete me' => {
-  if (!currentRecord.flowMeter) return 'delete me'
+): CalculatedValue | undefined => {
   const readingsThisYear = getMeterReadingsPerYear(meterReadings, currentIndex)
 
   const shouldBe = readingsThisYear.reduce((n, {pumpedThisPeriod}) => {
@@ -14,36 +13,26 @@ const verifyPumpedYearToDate = (
     return n + pumpedThisPeriod.value
   }, 0)
 
-  if (currentIndex === 0) return 'no update required'
+  if (currentIndex === 0) return
 
   const updatedValue: CalculatedValue = {
     ...currentRecord.pumpedYearToDate,
     value: shouldBe
   }
 
-  if (currentRecord.pumpedYearToDate?.value === updatedValue.value) return 'no update required'
-
-  // if (!currentRecord.pumpedYearToDate) {
-  //   return {
-  //     value: shouldBe
-  //   }
-  // }
-  
-  // if (currentRecord.pumpedYearToDate.value !== shouldBe) {
-  //   updatedValue.shouldBe = shouldBe
-  //   updatedValue.calculationState = 'warning'
-  //   updatedValue.calculationMessage = `Expected: ${shouldBe} acre feet.  Provide a comment to resolve this warning.`
-  // } else {
-  //   delete updatedValue.shouldBe
-  //   delete updatedValue.calculationState
-  //   delete updatedValue.calculationMessage
-  // }
-
-  // if (
-  //   currentRecord.pumpedYearToDate.calculationMessage === updatedValue.calculationMessage
-  //   && currentRecord.pumpedYearToDate.calculationState === updatedValue.calculationState
-  //   && currentRecord.pumpedYearToDate.shouldBe === updatedValue.shouldBe
-  // ) return 'no update required'
+  if (currentRecord.pumpedYearToDate?.source === 'user') {
+    updatedValue.value = currentRecord.pumpedYearToDate.value
+      if (currentRecord.pumpedYearToDate.value !== shouldBe) {
+        updatedValue.shouldBe = shouldBe
+        updatedValue.calculationState = 'warning'
+        updatedValue.calculationMessage = `Expected: ${shouldBe} acre feet.  Provide a comment to resolve this warning.`
+      } else {
+        delete updatedValue.shouldBe
+        delete updatedValue.calculationState
+        delete updatedValue.calculationMessage
+        delete updatedValue.source
+      }
+  }
 
   return updatedValue;
 }

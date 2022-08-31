@@ -107,12 +107,6 @@ describe('DBB-004 verification: pumpedThisPeriod', () => {
 
     const result = verifyPumpedThisPeriod(meterReading, prevRecord, index)
 
-    if (result === 'no update required') {
-      throw new Error('Function returned \'no update required\' when an update was required.')
-    }
-    if (result === 'delete me') {
-      throw new Error('Function returned \'delete me\' when an update was required')
-    }
     if (!meterReading.flowMeter || !prevRecord.flowMeter) {
       throw new Error('Missing setup data')
     }

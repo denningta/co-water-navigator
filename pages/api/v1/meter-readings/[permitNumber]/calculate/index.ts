@@ -2,6 +2,7 @@ import { verify } from "crypto";
 import { Get } from "faunadb";
 import _ from "lodash";
 import { NextApiRequest, NextApiResponse } from "next";
+import { FaRegFrown } from "react-icons/fa";
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
@@ -105,82 +106,60 @@ const getMeterReadings = (permitNumber: string | string[]): Promise<MeterReading
   })
 }
 
-type StatusRecord = {
-  flowMeter?: CalculatedValue | 'no update required'
-  powerMeter?: CalculatedValue | 'no update required'
-  powerConsumptionCoef?: CalculatedValue | 'no update required'
-  pumpedThisPeriod?: CalculatedValue | 'no update required' | 'delete me'
-  pumpedYearToDate?: CalculatedValue | 'no update required' | 'delete me'
-  availableThisYear?: CalculatedValue | 'no update required' | 'delete me'
-}
+
+const calculatedFields = [
+  'flowMeter',
+  'powerMeter',
+  'powerConsumptionCoef',
+  'pumpedThisPeriod',
+  'pumpedYearToDate',
+  'availableThisYear'
+]
 
 export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
   const updatedMeterReadings: MeterReading[] = []
+  const refMeterReadings: MeterReading[] = [meterReadings[0]]
+  // TODO: Dynamically query for pumpingLimitThisYear
+  const pumpingLimitThisYear = 250
+
   meterReadings.forEach((meterReading, index, meterReadings) => {
     const prevRecord = meterReadings[index - 1];
-    const statusRecord: any = {
-      ...meterReading
-    };
-    const valueRecord: MeterReading = {
-      ...meterReading
-    }
-    const updatedRecord: any = {
+
+    const refRecord = {
       ...meterReading
     }
 
-    // TODO: Dynamically query for pumpingLimitThisYear
-    const pumpingLimitThisYear = 250
-
-    statusRecord.flowMeter = verifyGreaterThanPrevValue(meterReading, prevRecord, index, 'flowMeter')
-      statusRecord.flowMeter !== 'no update required' 
-        ? valueRecord.flowMeter = statusRecord.flowMeter 
-        : valueRecord.flowMeter = meterReading.flowMeter
-    statusRecord.powerMeter = verifyGreaterThanPrevValue(valueRecord, prevRecord, index, 'powerMeter')
-      statusRecord.powerMeter !== 'no update required' 
-        ? valueRecord.powerMeter = statusRecord.powerMeter 
-        : valueRecord.powerMeter = meterReading.powerMeter
-    statusRecord.powerConsumptionCoef = verifyEqualToPrevValue(valueRecord, prevRecord, index, 'powerConsumptionCoef')
-      statusRecord.powerConsumptionCoef !== 'no update required' 
-        ? valueRecord.powerConsumptionCoef = statusRecord.powerConsumptionCoef 
-        : valueRecord.powerConsumptionCoef = meterReading.powerConsumptionCoef
-    statusRecord.pumpedThisPeriod = verifyPumpedThisPeriod(valueRecord, prevRecord, index)
-      statusRecord.pumpedThisPeriod !== 'no update required' 
-        ? valueRecord.pumpedThisPeriod = statusRecord.pumpedThisPeriod 
-        : valueRecord.pumpedThisPeriod = meterReading.pumpedThisPeriod
-    statusRecord.pumpedYearToDate = verifyPumpedYearToDate(valueRecord, index, meterReadings)
-      statusRecord.pumpedYearToDate !== 'no update required' 
-        ? valueRecord.pumpedYearToDate = statusRecord.pumpedYearToDate 
-        : valueRecord.pumpedYearToDate = meterReading.pumpedYearToDate
-    statusRecord.availableThisYear = verifyAvailableThisYear(valueRecord, pumpingLimitThisYear, index)
-
-
-    Object.entries(statusRecord).map(([key, value]) => {
-      if (value === 'no update required') return;
-      if (value === 'delete me') {
-        delete updatedRecord[key]
-        return
-      }
-      updatedRecord[key] = value;
-      updatedRecord.permitNumber = meterReading.permitNumber
-      updatedRecord.date = meterReading.date
-      return {[key]: value};
-    }).filter(value => value !== undefined)
-
-    console.log(meterReading)
-    console.log(updatedRecord)
-    console.log(!_.isEqual(meterReading, updatedRecord))
-
-    if (!_.isEqual(meterReading, updatedRecord)) {
-      updatedMeterReadings.push(updatedRecord)
+    refRecord.flowMeter = verifyGreaterThanPrevValue(refRecord, prevRecord, index, 'flowMeter')
+    refRecord.powerMeter = verifyGreaterThanPrevValue(refRecord, prevRecord, index, 'powerMeter')
+    refRecord.powerConsumptionCoef = verifyEqualToPrevValue(refRecord, prevRecord, index, 'powerConsumptionCoef')
+    refRecord.pumpedThisPeriod = verifyPumpedThisPeriod(refRecord, prevRecord, index)
+    refMeterReadings[index] = refRecord
+    console.log(refMeterReadings)
+    refRecord.pumpedYearToDate = verifyPumpedYearToDate(refRecord, index, refMeterReadings)
+    refRecord.availableThisYear = verifyAvailableThisYear(refRecord, pumpingLimitThisYear, index)
+    
+    if (!refRecord.flowMeter) {
+      delete refRecord.pumpedThisPeriod
+      delete refRecord.pumpedYearToDate
+      delete refRecord.availableThisYear
     }
 
+    if (index > 0) refMeterReadings.push(refRecord)
+    
+    let updateRecord = false
+    const keys = Object.keys(refRecord) as (keyof typeof refRecord)[]
+    
+    keys.forEach((key, index) => {
+      if (!calculatedFields.includes(key)) return
+      if (refRecord[key] === undefined) delete refRecord[key]
+      if(_.isEqual(refRecord[key], meterReading[key])) return
+      updateRecord = true
+    })
+    
+    if (!updateRecord) return
+    updatedMeterReadings.push(refRecord)
   })
   
-  updatedMeterReadings.filter(obj => obj
-    && Object.keys(obj).length !== 0
-    && Object.getPrototypeOf(obj) === Object.prototype
-  )
-
   return updatedMeterReadings
 }
 

@@ -43,6 +43,7 @@ export function calculatedValueSetter({ data, newValue }: ValueSetterParams, fie
   
   data[field] = {
     value: +newValue,
+    source: 'user'
   }
   return true
 }
@@ -53,11 +54,11 @@ export function getCellClassRules(field: string) {
       if (value === undefined) return false;
       return data[field].calculationState === 'warning' && !data.comments;
     },
-    'bg-gray-100': ({ colDef }: CellClassParams) => {
+    'bg-gray-500 bg-opacity-10': ({ colDef }: CellClassParams) => {
       return !colDef.editable
     },
     // global style in style.scss
-    'bg-primary bg-opacity-50': ({ value, data }: CellClassParams) => {
+    'bg-green-500 bg-opacity-30': ({ value, data }: CellClassParams) => {
       if (!value) return false;
       return data[field].calculationState === 'warning' && data.comments
     }
