@@ -10,6 +10,8 @@ import { NextPageWithLayout } from '../../../_app'
 
 const WellPermit: NextPageWithLayout = () => {
   const { query } = useRouter()
+
+
   const permitNumber = Array.isArray(query.permitNumber) ? query.permitNumber[0] : query.permitNumber
   const widgets: Widget[] = [
     { 

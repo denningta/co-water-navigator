@@ -8,7 +8,14 @@ import ModifiedBankingSummary from "./ModifiedBankingSummary"
 import MeterReading from "../../../interfaces/MeterReading"
 import TableLoading from "../../common/TableLoading"
 
+interface Props {
+  meterReadings: MeterReading[]
+  permitNumber: string
+  year: string
+}
+
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
+
 
 const MeterReadingsComponent = () => {
   const router = useRouter()
