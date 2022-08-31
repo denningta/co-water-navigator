@@ -6,6 +6,7 @@ import CalendarYearSelector from "../CalendarYearSelector/CalendarYearSelector"
 import WellUsage from "./WellUsage"
 import ModifiedBankingSummary from "./ModifiedBankingSummary"
 import MeterReading from "../../../interfaces/MeterReading"
+import TableLoading from "../../common/TableLoading"
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -41,7 +42,7 @@ const MeterReadingsComponent = () => {
 
       <div className="col-span-3">
         { !data && 
-          <div>Loading ...</div>
+          <TableLoading height={600} numberOfRows={11} />
         }
         { (data && permitNumber && year) && 
           <ReadingsGrid meterReadings={data} permitNumber={permitNumber} year={year} /> 

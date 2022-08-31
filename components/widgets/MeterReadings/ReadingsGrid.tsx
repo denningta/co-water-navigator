@@ -5,6 +5,7 @@ import { AgGridReact } from "ag-grid-react";
 import { useMemo, useRef, useState } from "react";
 import { calculatedValueGetter, calculatedValueSetter, dateFormatter, getCellClassRules, initPlaceholderData } from "./helpers";
 import { CellValueChangedEvent, ColDef, ColumnApi, GetRowIdFunc, GetRowIdParams, GridApi } from "ag-grid-community";
+import TableLoading from "../../common/TableLoading";
 
 interface Props {
   meterReadings: MeterReading[],
@@ -39,7 +40,6 @@ const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
   }, [])
 
   const updateGridRows = (meterReadings: MeterReading[]) => {
-    console.log(meterReadings)
     meterReadings.forEach(meterReading => {
       const rowNode = gridApi?.getRowNode(meterReading.date)
       rowNode?.setData(meterReading)
