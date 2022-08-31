@@ -134,27 +134,26 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
     refRecord.powerConsumptionCoef = verifyEqualToPrevValue(refRecord, prevRecord, index, 'powerConsumptionCoef')
     refRecord.pumpedThisPeriod = verifyPumpedThisPeriod(refRecord, prevRecord, index)
     refMeterReadings[index] = refRecord
-    console.log(refMeterReadings)
     refRecord.pumpedYearToDate = verifyPumpedYearToDate(refRecord, index, refMeterReadings)
     refRecord.availableThisYear = verifyAvailableThisYear(refRecord, pumpingLimitThisYear, index)
-    
-    if (!refRecord.flowMeter) {
-      delete refRecord.pumpedThisPeriod
-      delete refRecord.pumpedYearToDate
-      delete refRecord.availableThisYear
-    }
 
     if (index > 0) refMeterReadings.push(refRecord)
     
     let updateRecord = false
     const keys = Object.keys(refRecord) as (keyof typeof refRecord)[]
     
-    keys.forEach((key, index) => {
+    keys.forEach((key) => {
       if (!calculatedFields.includes(key)) return
-      if (refRecord[key] === undefined) delete refRecord[key]
       if(_.isEqual(refRecord[key], meterReading[key])) return
+      if (refRecord[key] === undefined) delete refRecord[key]
       updateRecord = true
     })
+
+    if (refRecord.flowMeter === undefined) {
+      delete refRecord.pumpedThisPeriod
+      delete refRecord.pumpedYearToDate
+      delete refRecord.availableThisYear
+    }
     
     if (!updateRecord) return
     updatedMeterReadings.push(refRecord)
