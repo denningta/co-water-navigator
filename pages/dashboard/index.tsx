@@ -1,26 +1,30 @@
-import { ReactElement } from 'react'
+import { Context, ReactElement } from 'react'
 import AppLayout from '../../components/AppLayout'
 import { NextPageWithLayout } from '../_app'
-import { getServerSidePropsWrapper, getSession, UserProvider } from '@auth0/nextjs-auth0'
+import { getServerSidePropsWrapper, getSession, UserProvider, useUser, withPageAuthRequired } from '@auth0/nextjs-auth0'
 import WellPermitTable from '../../components/widgets/WellPermits/WellPermitTable'
 import MainContent, { Widget } from '../../components/MainContent'
 import Header from '../../components/widgets/Header'
 import WellPermitsContainer from '../../components/widgets/WellPermits/WellPermitsContainer'
 import WellPermitSearch from '../../components/widgets/WellPermits/WellPermitSearch'
-import { GetServerSideProps } from 'next'
+import PermitPreview from '../../components/widgets/PermitPreview'
+import AgentDetails from '../../components/widgets/AgentDetails'
+import { GetServerSideProps, NextApiRequest, NextApiResponse } from 'next'
+import { AppContext } from 'next/app'
 
-const WellPermits: NextPageWithLayout = () => {
+const Dashboard: NextPageWithLayout = () => {
+  const { user } = useUser()
 
   const widgets: Widget[] = [
     { 
       component: <Header 
-        title="Well Permits"
-        subtitle="Manage well permits and access meter readings"
+        title={`Hello, ${user && user.given_name}`}
+        subtitle='Your wells at a glance'
       />, 
       colspan: 3
     },
-    { component: <WellPermitsContainer />, colspan: 3 },
-    { component: <WellPermitSearch />, colspan: 3 }
+    { component: <PermitPreview />, colspan: 2 },
+    { component: <AgentDetails />, colspan: 1 }
   ]
 
   return (
@@ -36,7 +40,8 @@ export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(
   return { props: { user: session.user } }
 })
 
-WellPermits.getLayout = function getLayout(page: ReactElement) {
+
+Dashboard.getLayout = function getLayout(page: ReactElement) {
   return (
     <AppLayout>
       {page}
@@ -44,4 +49,9 @@ WellPermits.getLayout = function getLayout(page: ReactElement) {
   )
 }
 
-export default WellPermits
+interface DataFetchProps {
+  req: NextApiRequest
+  res: NextApiResponse
+}
+
+export default Dashboard

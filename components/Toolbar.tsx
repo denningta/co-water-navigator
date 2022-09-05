@@ -21,7 +21,7 @@ const Toolbar = () => {
   const handleMouseLeave = () => {
     setCollapsed(true)
   }
-
+  
   return (
     <div 
       className={`flex flex-col items-center bg-black drop-shadow-lg text-white h-full transition-all ease-in-out ${collapsed ? 'w-[75px]' : 'w-[150px] px-4'}`}
@@ -33,7 +33,7 @@ const Toolbar = () => {
           <GiWaterSplash />
         </div>
       </Link>
-      <NavButton title="Dashboard" route="/" size={collapsed ? 'small' : 'normal'}>
+      <NavButton title="Dashboard" route="/dashboard" size={collapsed ? 'small' : 'normal'}>
         <IoHome/>
       </NavButton>
       <NavButton title="Well Permits" route="/well-permits" size={collapsed ? 'small' : 'normal'}>

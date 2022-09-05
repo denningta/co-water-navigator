@@ -17,24 +17,14 @@ export interface CalendarYearSelectorData {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
-const CalendarYearSelector = () => {
-  const router = useRouter()
-  const { query } = router
-  let permitNumber: string | undefined = undefined
+interface Props {
+  data: CalendarYearSelectorData[]
+}
 
-  if (router.isReady) {
-    permitNumber = Array.isArray(query.permitNumber) ? query.permitNumber[0] : query.permitNumber
-  }
-  
-  const { data, error } = useSWR(
-    (permitNumber) 
-    ? `/api/v1/data-summary?permitNumber=${permitNumber}` 
-    : null, 
-    fetcher
-  )
+const CalendarYearSelector = ({ data }: Props) => {
+  const router = useRouter()
 
   const gridRef = useRef<AgGridReact>(null);
-
   const [api, setApi] = useState<GridApi | undefined>(undefined)
   const [columnApi, setColumnApi] = useState<ColumnApi | undefined>(undefined)
   const [rowData, setRowData] = useState<CalendarYearSelectorData[] | undefined>(undefined)
