@@ -3,7 +3,7 @@ import Image from "next/image"
 
 const ProfileContainer = () => {
   const { user, error, isLoading } = useUser()
-  console.log(user)
+
   return (
     <div>
 

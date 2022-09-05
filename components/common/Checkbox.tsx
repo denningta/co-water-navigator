@@ -3,9 +3,9 @@ import { FaCheck } from "react-icons/fa"
 
 interface Props {
   title?: string | undefined
-  checked: boolean
+  checked?: boolean
   value: string | undefined
-  onChange: ([value, checked]: [string, boolean]) => void
+  onChange?: ([value, checked]: [string, boolean]) => void
 }
 
 const Checkbox = ({ 
@@ -32,7 +32,7 @@ const Checkbox = ({
 
   const handleClick = () => {
     setCheck(!check)
-    onChange([value, !check])
+    onChange && onChange([value, !check])
   }
 
   return (

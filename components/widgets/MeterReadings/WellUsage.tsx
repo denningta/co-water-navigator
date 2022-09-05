@@ -5,10 +5,10 @@ const WellUsage = () => {
     <div className="mx-4">
       <div className="font-bold text-xl">Well Usage</div>
       <div className="grid grid-cols-1 gap-3 my-3 ml-5">
-        <Checkbox title="Expanded Acres" />
-        <Checkbox title="Comingled Wells" />
-        <Checkbox title="Change of Use" />
-        <Checkbox title="Other" />
+        <Checkbox title="Expanded Acres" value="expandedAcres" />
+        <Checkbox title="Comingled Wells" value="comingledWells" />
+        <Checkbox title="Change of Use" value="changeOfUse" />
+        <Checkbox title="Other" value="other" />
       </div>
     </div>
   )

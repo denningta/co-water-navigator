@@ -7,7 +7,7 @@ import listMeterReading from "./list";
 import updateMeterReading from "./update";
 
 type HandlerFunctions = { 
-  [key: string]: (req: NextApiRequest) => Promise<MeterReading> 
+  [key: string]: (req: NextApiRequest) => Promise<MeterReading | MeterReading[]> 
 };
 
 function handler(
