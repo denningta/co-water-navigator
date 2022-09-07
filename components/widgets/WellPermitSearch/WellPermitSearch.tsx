@@ -5,7 +5,7 @@ import Select, { SingleValue } from 'react-select'
 import searchOptions, { SearchTermName, SelectOption } from "./search-data";
 import useSWR from "swr";
 import wellPermitColumnDefs from "./well-permit-search-column-defs";
-import { IoAdd } from "react-icons/io5";
+import { IoAdd, IoSearchSharp } from "react-icons/io5";
 
 interface SearchTerm {
   term: string
@@ -72,7 +72,7 @@ const WellPermitSearch = () => {
   }
 
   const handleAddPermits = () => {
-    console.log('send permit update request to api', selectedRowData)
+    console.log('TODO: send permit update request to api', selectedRowData)
   }
 
 
@@ -122,11 +122,15 @@ const WellPermitSearch = () => {
           )}
           <input type="date" className="px-2 border border-gray-300 rounded h-[38px]" placeholder="Modified" />
         </div>
-        <button className="mb-4 px-3 py-1 bg-primary text-white rounded-lg w-fit h-fit">Search</button>
+        <button className="flex items-center mb-4 px-3 py-2 bg-primary text-white rounded-lg w-fit h-fit">
+          <IoSearchSharp />
+          <span className="ml-2">Search</span>
+        </button>
       </form>
-      <div 
+      <button 
         onClick={handleAddPermits}
-        className={`flex items-center mb-4  rounded-lg py-3 cursor-pointer drop-shadow w-fit transition ease-in-out ${(selectedRowData && selectedRowData.length) ? 'bg-green-600 text-white' : 'bg-slate-200 text-slate-400'}`}>
+        className={`flex items-center mb-4  rounded-lg py-3 drop-shadow w-fit transition ease-in-out ${(selectedRowData && selectedRowData.length) ? 'bg-green-600 text-white' : 'bg-slate-200 text-slate-400'}`}
+        disabled={!selectedRowData?.length}>
         <span className="border-r border-slate-300 px-4 ">
           { selectedRowData ? selectedRowData.length : 0 } selected
         </span>
@@ -136,7 +140,7 @@ const WellPermitSearch = () => {
             </span>
             <span className="ml-1">Add permits to account</span>
           </div>
-      </div>
+      </button>
       <WellPermitTable 
         columnDefs={wellPermitColumnDefs} 
         rowData={rowData} 
