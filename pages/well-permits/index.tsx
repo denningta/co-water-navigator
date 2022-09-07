@@ -2,11 +2,11 @@ import { ReactElement } from 'react'
 import AppLayout from '../../components/AppLayout'
 import { NextPageWithLayout } from '../_app'
 import { getServerSidePropsWrapper, getSession, UserProvider } from '@auth0/nextjs-auth0'
-import WellPermitTable from '../../components/widgets/WellPermits/WellPermitTable'
+import WellPermitTable from '../../components/widgets/WellPermitsTable/WellPermitTable'
 import MainContent, { Widget } from '../../components/MainContent'
 import Header from '../../components/widgets/Header'
-import WellPermitsContainer from '../../components/widgets/WellPermits/WellPermitsContainer'
-import WellPermitSearch from '../../components/widgets/WellPermits/WellPermitSearch'
+import WellTablePermitsContainer from '../../components/widgets/WellPermitsContainer'
+import WellPermitSearch from '../../components/widgets/WellPermitSearch/WellPermitSearch'
 import { GetServerSideProps } from 'next'
 
 const WellPermits: NextPageWithLayout = () => {
@@ -19,7 +19,7 @@ const WellPermits: NextPageWithLayout = () => {
       />, 
       colspan: 3
     },
-    { component: <WellPermitsContainer />, colspan: 3 },
+    { component: <WellTablePermitsContainer />, colspan: 3 },
     { component: <WellPermitSearch />, colspan: 3 }
   ]
 

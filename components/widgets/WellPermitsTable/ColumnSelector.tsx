@@ -3,11 +3,13 @@ import Checkbox from "../../common/Checkbox"
 
 interface Props {
   columnDefs: ColDef[]
+  expanded: boolean
   selectionChanged?: (columnDefs: ColDef[]) => void
 }
 
 const ColumnSelector = ({ 
   columnDefs, 
+  expanded = false,
   selectionChanged = () => null
 }: Props) => {
 
@@ -31,9 +33,9 @@ const ColumnSelector = ({
   })
 
   return (
-    <>
-      { columnData }
-    </>
+    <div className="p-3">
+      <div>{ expanded && columnData }</div>
+    </div>
   )
 }
 
