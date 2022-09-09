@@ -1,19 +1,19 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { AdministrativeReport } from "../../../../../../interfaces/AdministrativeReport";
+import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
 import { HttpError } from "../../../interfaces/HttpError";
-import createAdministrativeReport from "./create";
-import deleteAdministrativeReport from "./delete";
-import listAdministrativeReport from "./list";
-import updateAdministrativeReport from "./update";
+import createModifiedBanking from "./create";
+import deleteModifiedBanking from "./delete";
+import listModifiedBanking from "./list";
+import updateModifiedBanking from "./update";
 
 type HandlerFunctions = { 
-  [key: string]: (req: NextApiRequest) => Promise<AdministrativeReport> 
+  [key: string]: (req: NextApiRequest) => Promise<ModifiedBanking> 
 };
 
 function handler(
   req: NextApiRequest, 
   res: NextApiResponse
-): Promise<AdministrativeReport | HttpError> {
+): Promise<ModifiedBanking | HttpError> {
     if (!req || !req.method) {
       return Promise.reject(new HttpError(
         'No Request or Invalid Request Method',
@@ -23,10 +23,10 @@ function handler(
     }
   
     const handlers: HandlerFunctions = {
-      GET: listAdministrativeReport,
-      POST: createAdministrativeReport,
-      PATCH: updateAdministrativeReport,
-      DELETE: deleteAdministrativeReport
+      GET: listModifiedBanking,
+      POST: createModifiedBanking,
+      PATCH: updateModifiedBanking,
+      DELETE: deleteModifiedBanking
     }
   
     return handlers[req.method](req)

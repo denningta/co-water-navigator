@@ -6,13 +6,13 @@ import YearPicker from "./YearPicker"
 import { initCalendarYearPlaceholderData } from "./helpers"
 import useSWR from "swr"
 import MeterReading from "../../../interfaces/MeterReading"
-import { AdministrativeReport } from "../../../interfaces/AdministrativeReport"
+import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
 import DataSummaryCellRenderer from "./DataSummaryCellRenderer"
 
 export interface CalendarYearSelectorData {
   year: string
   dbb004Summary?: MeterReading[]
-  dbb013Summary?: AdministrativeReport[]
+  dbb013Summary?: ModifiedBanking[]
 }
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())

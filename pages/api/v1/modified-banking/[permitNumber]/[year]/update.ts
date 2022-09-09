@@ -1,10 +1,10 @@
 import { NextApiRequest } from "next";
-import { AdministrativeReport } from "../../../../../../interfaces/AdministrativeReport";
+import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
 
-function updateAdministrativeReport(req: NextApiRequest): Promise<AdministrativeReport> {
+function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'bodyExists',
@@ -45,4 +45,4 @@ function updateAdministrativeReport(req: NextApiRequest): Promise<Administrative
   });
 }
 
-export default updateAdministrativeReport;
+export default updateModifiedBanking;

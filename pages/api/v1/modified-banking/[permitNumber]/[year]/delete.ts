@@ -1,10 +1,10 @@
 import { NextApiRequest } from "next";
-import { AdministrativeReport } from "../../../../../../interfaces/AdministrativeReport";
+import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
 
-async function deleteAdministrativeReport(req: NextApiRequest): Promise<AdministrativeReport> {
+async function deleteModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
@@ -46,4 +46,4 @@ async function deleteAdministrativeReport(req: NextApiRequest): Promise<Administ
 
 }
 
-export default deleteAdministrativeReport;
+export default deleteModifiedBanking;

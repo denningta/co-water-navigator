@@ -1,12 +1,12 @@
 import { Get, Lambda } from "faunadb";
 import { NextApiRequest } from "next";
-import { AdministrativeReport } from "../../../../../../interfaces/AdministrativeReport";
+import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
 import MeterReading from "../../../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
 
-async function createAdministrativeReport(req: NextApiRequest): Promise<AdministrativeReport> {
+async function createModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
@@ -55,4 +55,4 @@ async function createAdministrativeReport(req: NextApiRequest): Promise<Administ
   });
 }
 
-export default createAdministrativeReport;
+export default createModifiedBanking;

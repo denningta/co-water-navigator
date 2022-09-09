@@ -8,6 +8,7 @@ import MainContent, { Widget } from '../../../../components/MainContent'
 import CalendarYearSelector from '../../../../components/widgets/CalendarYearSelector/CalendarYearSelector'
 import MeterReadingsComponent from '../../../../components/widgets/MeterReadings/MeterReadings'
 import MeterReadingsHeader from '../../../../components/widgets/MeterReadings/MeterReadingsHeader'
+import ModifiedBanking from '../../../../components/widgets/ModifiedBanking/ModifiedBanking'
 import { NextPageWithLayout } from '../../../_app'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
@@ -36,6 +37,13 @@ const WellPermit: NextPageWithLayout = () => {
     fetcher
   )
 
+  const modifiedBankingData = useSWR(
+    (permitNumber && year)
+    ? `/api/v1/modified-banking/${permitNumber}/${year}`
+    : null,
+    fetcher
+  )
+
   const widgets: Widget[] = [
     { 
       component: <MeterReadingsHeader permitNumber={permitNumber}/>, 
@@ -49,6 +57,10 @@ const WellPermit: NextPageWithLayout = () => {
       component: <MeterReadingsComponent 
         meterReadings={meterReadings.data} permitNumber={permitNumber} year={year}   
       />,
+      colspan: 3
+    },
+    {
+      component: <ModifiedBanking modifiedBankingData={modifiedBankingData.data} permitNumber={permitNumber} year={year} />,
       colspan: 3
     }
   ]

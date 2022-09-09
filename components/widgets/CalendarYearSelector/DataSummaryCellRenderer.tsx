@@ -1,9 +1,6 @@
 import { ICellRendererParams } from "ag-grid-community";
-import { Divide } from "faunadb";
-import { AdministrativeReport } from "../../../interfaces/AdministrativeReport";
 import MeterReading from "../../../interfaces/MeterReading";
-import { HeatmapRect } from "@visx/heatmap";
-import { ClassAttributes, useRef } from "react";
+import { useRef } from "react";
 
 const Dbb004SummaryCellRenderer = (
   cellData: ICellRendererParams<MeterReading[]>
