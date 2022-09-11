@@ -8,6 +8,7 @@ export interface FormMetaData {
   formControlDisabled?: boolean;
   status?: 'committed' | 'reference' | 'warning' | 'undefined' | 'unsaved';
   shouldBe?: number;
+  focus?: boolean;
 }
 
 export type ModifiedBankingFormControls = 'originalAppropriation' | 'allowedAppropriation' | 'line3' | 'bankingReserveLastYear' | 'maxBankingReserve' | 'pumpingLimitThisYear' | 'totalPumpedThisYear' | 'changeInBankingReserveThisYear' | 'bankingReserveThisYear' | 'line10' | 'pumpingLimitNextYear'

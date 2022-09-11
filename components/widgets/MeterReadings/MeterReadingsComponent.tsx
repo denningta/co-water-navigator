@@ -7,6 +7,9 @@ import WellUsage from "./WellUsage"
 import ModifiedBankingSummary from "./ModifiedBankingSummary"
 import MeterReading from "../../../interfaces/MeterReading"
 import TableLoading from "../../common/TableLoading"
+import { BsInfoLg } from 'react-icons/bs'
+import { Dialog, DialogTitle, List } from "@mui/material"
+import MeterReadingsInfoDialog from "./MeterReadingsInfoDialog"
 
 interface Props {
   meterReadings: MeterReading[]
@@ -15,11 +18,22 @@ interface Props {
 }
 
 const MeterReadingsComponent = ({meterReadings, permitNumber, year}: Props) => {
+  const [openDialog, setOpenDialog] = useState(false)
+
+  const handleClick = () => {
+    setOpenDialog(true)
+  }
+
+  const handleClose = () => {
+    setOpenDialog(false)
+  }
+
   return (
     <div className="grid grid-cols-3 gap-3">
-      <div className="col-span-3 font-bold text-2xl">
-        Meter Readings (DBB-004)
-        <span className="ml-8 mr-1 font-thin text-xl">CALENDAR YEAR</span> {year}
+      <div className="col-span-3 font-bold text-2xl flex items-center">
+        <div>Meter Readings (DBB-004)</div>
+        <div className="grow"><span className="ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>
+        <div><button className="btn-round" onClick={handleClick}><BsInfoLg /></button></div>
       </div>
       <div className="col-span-1">
         <WellUsage />
@@ -36,6 +50,10 @@ const MeterReadingsComponent = ({meterReadings, permitNumber, year}: Props) => {
           <ReadingsGrid meterReadings={meterReadings} permitNumber={permitNumber} year={year} /> 
         }
       </div>
+
+      <MeterReadingsInfoDialog open={openDialog} onClose={handleClose} />
+
+
     </div>
   )
 

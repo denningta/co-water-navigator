@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import MeterReading from "../../../../interfaces/MeterReading";
 import { HttpError } from "../interfaces/HttpError";
-import getWellPermitsFromApi from "./get-well-permits-from-api";
+import listWellPermits from './list'
 
 
 type HandlerFunctions = { 
@@ -22,7 +22,7 @@ function handler(
     }
   
     const handlers: HandlerFunctions = {
-      GET: getWellPermitsFromApi,
+      GET: listWellPermits,
     }
 
     return handlers[req.method](req)

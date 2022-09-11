@@ -6,12 +6,21 @@ import useSWR from 'swr'
 import AppLayout from '../../../../components/AppLayout'
 import MainContent, { Widget } from '../../../../components/MainContent'
 import CalendarYearSelector from '../../../../components/widgets/CalendarYearSelector/CalendarYearSelector'
-import MeterReadingsComponent from '../../../../components/widgets/MeterReadings/MeterReadings'
+import MeterReadingsComponent from '../../../../components/widgets/MeterReadings/MeterReadingsComponent'
 import MeterReadingsHeader from '../../../../components/widgets/MeterReadings/MeterReadingsHeader'
-import ModifiedBanking from '../../../../components/widgets/ModifiedBanking/ModifiedBanking'
+import ModifiedBanking from '../../../../components/widgets/ModifiedBanking/ModifiedBankingForm'
+import ModifiedBankingComponent from '../../../../components/widgets/ModifiedBanking/ModifiedBankingComponent'
 import { NextPageWithLayout } from '../../../_app'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+const fetcher = async (url: string) => {
+  const res = await fetch(url)
+  if (!res.ok) {
+    const error = new Error('An error occurred while fetching the data.')
+    error.message = await res.json()
+    throw error
+  }
+  return res.json()
+}
 
 const WellPermit: NextPageWithLayout = () => {
   const router = useRouter()
@@ -60,9 +69,22 @@ const WellPermit: NextPageWithLayout = () => {
       colspan: 3
     },
     {
-      component: <ModifiedBanking modifiedBankingData={modifiedBankingData.data} permitNumber={permitNumber} year={year} />,
+      component: <ModifiedBankingComponent 
+        permitNumber={permitNumber} year={year} modifiedBankingData={modifiedBankingData.data} 
+      />,
       colspan: 3
     }
+    // {
+    //   component: <ModifiedBanking 
+    //     modifiedBankingData={
+    //       !(modifiedBankingData.error) 
+    //         ? modifiedBankingData.data
+    //         : undefined 
+    //     } 
+    //     permitNumber={permitNumber} 
+    //     year={year} />,
+    //   colspan: 3
+    // }
   ]
 
   return (

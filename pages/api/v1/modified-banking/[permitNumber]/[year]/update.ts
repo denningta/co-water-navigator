@@ -18,12 +18,36 @@ function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
     const { permitNumber, year } = req.query;
 
     const response: any = await faunaClient.query(
-      q.Update(
-        q.Select(['ref'], q.Get(
-          q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])
-        )),
-        { data: req.body }
+      q.Let(
+        {
+          match: q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])
+        },
+        q.If(
+          q.Exists(q.Var('match')),
+          q.Replace(
+            q.Select(['ref'], q.Get(
+              q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])
+            )),
+            { data: req.body }
+          ),
+          q.Create(
+            q.Collection('administrativeReports'), 
+            { data: 
+              { 
+                ...req.body, 
+                permitNumber: permitNumber, 
+                year: year 
+              } 
+            }
+          )
+        )
       )
+      // q.Update(
+      //   q.Select(['ref'], q.Get(
+      //     q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])
+      //   )),
+      //   { data: req.body }
+      // )
     ).catch(err => {
       errors.push({
         ...err, 

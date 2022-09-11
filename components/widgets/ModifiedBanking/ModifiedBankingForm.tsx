@@ -2,19 +2,20 @@ import { BaseSyntheticEvent, InputHTMLAttributes, useEffect, useState } from "re
 import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
 import { FormMetaData, generateFormMetaData, ModifiedBankingFormControls } from "./generatre-form-metadata"
 import { Formik, Form } from 'formik';
-import Cell from "./Cell";
+import Cell, { CellValueChangedEvent } from "./Cell";
 import useKeyPress from "../../../hooks/useKeyPress";
 import { ChangeEvent } from "react";
-
+import { CalculatedValue } from "../../../interfaces/MeterReading";
+import _ from "lodash";
 
 interface Props {
   permitNumber: string | undefined
   year: string | undefined
-  modifiedBankingData: ModifiedBanking
+  modifiedBankingData: ModifiedBanking | undefined
 }
 
 
-const ModifiedBanking = ({ 
+const ModifiedBankingForm = ({ 
   permitNumber, 
   year, 
   modifiedBankingData = {
@@ -23,7 +24,6 @@ const ModifiedBanking = ({
   }
 }: Props) => {
   const [formMetaData, setFormMetaData] = useState<FormMetaData[] | undefined>(undefined)
-  const enterPressed = useKeyPress('Enter')
 
   useEffect(() => {
     if (!year) return
@@ -36,26 +36,36 @@ const ModifiedBanking = ({
   }
 
   const handleGetValue = (values: ModifiedBanking, formControl: ModifiedBankingFormControls) => {
-    if (!values && !values[formControl]) return ''
+    if (!values || !values[formControl] || !values[formControl]?.value) return ''
     return values[formControl]?.value.toString() ?? ''
   }
 
-  const handleChange = (
-    { target }: ChangeEvent<HTMLInputElement>, 
-    values: ModifiedBanking,
-    formControl: ModifiedBankingFormControls,
-    setFieldValue: (field: string, value: any, shouldValidate?: boolean | undefined) => void
+  const handleCellValueChanged = async (
+    event: CellValueChangedEvent, 
+    formControl: ModifiedBankingFormControls
   ) => {
-    setFieldValue(formControl, { ...values, value: target.value })
+    const body = {
+      ...modifiedBankingData,
+      permitNumber: permitNumber,
+      year: year,
+      [formControl]: event.newValue
+    }
+    if (event.newValue && event.newValue.value === '') delete body[formControl]
+
+    const url = `/api/v1/modified-banking/${permitNumber}/${year}`
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    })
+      .then(res => res.json())
+      .catch(error => error)
   }
 
   return (
     <div>
-      <div className="font-bold text-2xl mb-4">
-        Three Year Modified Banking (DBB-013)
-        <span className="ml-8 mr-1 font-thin text-xl">CALENDAR YEAR</span> {year}
-      </div>
-
       <Formik
         initialValues={modifiedBankingData}
         enableReinitialize={true}
@@ -69,7 +79,7 @@ const ModifiedBanking = ({
           touched,
           setFieldValue
         }) => (
-          <Form>
+          <Form className="border">
             { formMetaData && formMetaData.map((element, i) => 
               <div key={i} className={`grid grid-cols-10 gap-x-6 min-h-[100px] bg-opacity-50 p-3 pr-6 ${i%2 === 1 ? 'bg-gray-200' : 'bg-gray-100'}`}>
                 <div className="col-span-1 text-center flex justify-center items-center text-2xl font-bold">{ element.lineNumber }
@@ -84,7 +94,12 @@ const ModifiedBanking = ({
                   <Cell 
                     name={element.formControl}
                     value={handleGetValue(values, element.formControl)}
-                    onChange={(event) => handleChange(event, values, element.formControl, setFieldValue)}
+                    changeContext={{ 
+                      values: values, 
+                      formControl: element.formControl, 
+                      setFieldValue: setFieldValue 
+                    }}
+                    onCellValueChanged={(event) => handleCellValueChanged(event, element.formControl)}
                   />
                 </div>
               </div>
@@ -99,4 +114,4 @@ const ModifiedBanking = ({
   )
 }
 
-export default ModifiedBanking
+export default ModifiedBankingForm

@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^1.9.1",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/material": "^5.10.4",
     "@visx/axis": "^2.12.2",
     "@visx/event": "^2.6.0",
     "@visx/grid": "^2.12.2",
