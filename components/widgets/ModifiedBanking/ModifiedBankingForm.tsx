@@ -101,7 +101,7 @@ const ModifiedBankingForm = ({
       setEditingIndex(null)
     }
     if (clicked) {
-      setFocusIndex(index)
+      setTimeout(() => setFocusIndex(index), 1)
     }
   }
 

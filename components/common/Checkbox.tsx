@@ -40,7 +40,7 @@ const Checkbox = ({
       onClick={handleClick} 
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="flex items-center cursor-pointer select-none">
+      className="flex items-center cursor-pointer select-none w-fit">
       <div 
         className={`w-[20px] h-[20px] border border-gray-300 rounded overflow-clip transition ease-in-out ${hover && 'bg-gray-100'}`
         }
