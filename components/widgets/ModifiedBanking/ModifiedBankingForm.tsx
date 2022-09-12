@@ -1,19 +1,26 @@
-import { BaseSyntheticEvent, InputHTMLAttributes, useEffect, useState } from "react"
+/* eslint-disable react-hooks/exhaustive-deps */
+import { BaseSyntheticEvent, createRef, InputHTMLAttributes, MouseEvent, useEffect, useRef, useState } from "react"
 import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
 import { FormMetaData, generateFormMetaData, ModifiedBankingFormControls } from "./generatre-form-metadata"
-import { Formik, Form } from 'formik';
-import Cell, { CellValueChangedEvent } from "./Cell";
+import { Formik, Form, useFormikContext, useFormik } from 'formik';
+import Cell from "./Cell";
 import useKeyPress from "../../../hooks/useKeyPress";
 import { ChangeEvent } from "react";
 import { CalculatedValue } from "../../../interfaces/MeterReading";
 import _ from "lodash";
+import useFocus from "../../../hooks/useFocus";
 
-interface Props {
-  permitNumber: string | undefined
-  year: string | undefined
-  modifiedBankingData: ModifiedBanking | undefined
+export type CellValueChangedEvent = {
+  oldValue: any | undefined
+  newValue: any | undefined
 }
 
+interface Props {
+  permitNumber: string
+  year: string
+  modifiedBankingData: ModifiedBanking | undefined,
+  onCellValueChanged?: (e: CellValueChangedEvent, formControl: ModifiedBankingFormControls) => void
+}
 
 const ModifiedBankingForm = ({ 
   permitNumber, 
@@ -21,95 +28,141 @@ const ModifiedBankingForm = ({
   modifiedBankingData = {
     permitNumber: '',
     year: ''
-  }
+  },
+  onCellValueChanged = () => {}
 }: Props) => {
-  const [formMetaData, setFormMetaData] = useState<FormMetaData[] | undefined>(undefined)
 
-  useEffect(() => {
-    if (!year) return
-    setFormMetaData(generateFormMetaData(year))
-  }, [year])
+  const [formMetaData] = useState<FormMetaData[]>(generateFormMetaData(year))
+  const containerRef = useRef<HTMLDivElement>(null)
+  const containerFocus = useFocus(containerRef)
+  const [focusIndex, setFocusIndex] = useState<number | null>(null)
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const arrowDown = useKeyPress('ArrowDown')
+  const arrowUp = useKeyPress('ArrowUp')
+  const tab = useKeyPress('Tab')
+  const shift = useKeyPress('Shift')
+  const enter = useKeyPress('Enter')
 
   const handleFormValidation = (values: any) => {
     const errors = {}
     return errors
   }
 
-  const handleGetValue = (values: ModifiedBanking, formControl: ModifiedBankingFormControls) => {
+  const { values, setFieldValue } = useFormik({
+    initialValues: modifiedBankingData,
+    enableReinitialize: true,
+    validate: handleFormValidation,
+    validateOnChange: true,
+    onSubmit: () => {},
+  })
+
+  useEffect(() => {
+    if (!containerFocus) setFocusIndex(null)
+  }, [containerFocus])
+
+  useEffect(() => {
+    if (!containerFocus) return
+    arrowDown.event?.preventDefault()
+    arrowUp.event?.preventDefault()
+    tab.event?.preventDefault()
+    shift.event?.preventDefault()
+    if (!formMetaData) return
+    if (arrowDown.pressed) {
+      let newIndex = focusIndex !== null ? focusIndex + 1 : 0
+      if (newIndex >= (formMetaData.length - 1)) newIndex = (formMetaData.length - 1)
+      setFocusIndex(newIndex)
+    }
+    if (arrowUp.pressed) {
+      let newIndex = focusIndex !== null ? focusIndex - 1 : 0
+      if (newIndex <= 0) newIndex = 0
+      setFocusIndex(newIndex)
+    }
+    if (tab.pressed && !shift.pressed) {
+      let newIndex = focusIndex !== null ? focusIndex + 1 : 0
+      if (newIndex >= (formMetaData.length)) newIndex = 0
+      setFocusIndex(newIndex)
+    }
+    if (tab.pressed && shift.pressed) {
+      let newIndex = focusIndex !== null ? focusIndex - 1 : 0
+      if (newIndex < 0) newIndex = formMetaData.length - 1
+      setFocusIndex(newIndex)
+    }
+  }, [arrowDown, arrowUp, tab])
+
+  useEffect(() => {
+    if (!containerFocus) return
+    enter.event?.preventDefault()
+    if (enter.pressed) setEditingIndex(editingIndex === null ? focusIndex : null)
+  }, [enter])
+
+  const handleCellClick = (clicked: boolean, index: number) => {
+    if (!clicked) {
+      setFocusIndex(null)
+      setEditingIndex(null)
+    }
+    if (clicked) {
+      setFocusIndex(index)
+    }
+  }
+
+  const handleChange = (
+    { target }: ChangeEvent<HTMLInputElement>, 
+    formControl: ModifiedBankingFormControls,
+  ) => {
+    setFieldValue(formControl, cellValueSetter(target.value, formControl))
+  }
+
+  const cellValueGetter = (formControl: ModifiedBankingFormControls) => {
     if (!values || !values[formControl] || !values[formControl]?.value) return ''
     return values[formControl]?.value.toString() ?? ''
   }
 
-  const handleCellValueChanged = async (
-    event: CellValueChangedEvent, 
-    formControl: ModifiedBankingFormControls
-  ) => {
-    const body = {
-      ...modifiedBankingData,
-      permitNumber: permitNumber,
-      year: year,
-      [formControl]: event.newValue
+  const cellValueSetter = (value: string, formControl: ModifiedBankingFormControls) => {
+    return { 
+      ...values[formControl], 
+      value: value === '' ? '' : +value 
     }
-    if (event.newValue && event.newValue.value === '') delete body[formControl]
-
-    const url = `/api/v1/modified-banking/${permitNumber}/${year}`
-    const res = await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    })
-      .then(res => res.json())
-      .catch(error => error)
   }
 
+  const handleCellValueChanged = (event: CellValueChangedEvent, formControl: ModifiedBankingFormControls) => {
+    onCellValueChanged(
+      { 
+        oldValue: cellValueSetter(event.oldValue, formControl),
+        newValue: cellValueSetter(event.newValue, formControl)
+      }, 
+      formControl
+    )
+  }
+
+
   return (
-    <div>
-      <Formik
-        initialValues={modifiedBankingData}
-        enableReinitialize={true}
-        validate={handleFormValidation}
-        validateOnChange={true}
-        onSubmit={() => {}}
-      >
-        {({
-          values,
-          errors,
-          touched,
-          setFieldValue
-        }) => (
-          <Form className="border">
-            { formMetaData && formMetaData.map((element, i) => 
-              <div key={i} className={`grid grid-cols-10 gap-x-6 min-h-[100px] bg-opacity-50 p-3 pr-6 ${i%2 === 1 ? 'bg-gray-200' : 'bg-gray-100'}`}>
-                <div className="col-span-1 text-center flex justify-center items-center text-2xl font-bold">{ element.lineNumber }
-                </div>
-                <div className="col-span-6 flex flex-col justify-center">
-                  <div className="font-bold">{ element.title }</div>
-                  <div>{ element.description }</div>
-                  <div>{ element.descriptionAlt }</div>
-                </div>
-                <div className="col-span-3 flex flex-col justify-center w-full">
-                  <div className="text-sm font-thin mb-1">{ element.shortTitle }</div>
-                  <Cell 
-                    name={element.formControl}
-                    value={handleGetValue(values, element.formControl)}
-                    changeContext={{ 
-                      values: values, 
-                      formControl: element.formControl, 
-                      setFieldValue: setFieldValue 
-                    }}
-                    onCellValueChanged={(event) => handleCellValueChanged(event, element.formControl)}
-                  />
-                </div>
-              </div>
-            )}
-          </Form>
+    <div ref={containerRef}>
+      <form className="border">
+        {formMetaData && formMetaData.map(
+          ({ lineNumber, title, description, descriptionAlt, shortTitle, formControl }, i) => 
+          <div key={i} className={`grid grid-cols-10 gap-x-6 min-h-[100px] bg-opacity-50 p-3 pr-6 ${i%2 === 1 ? 'bg-gray-200' : 'bg-gray-100'}`}>
+            <div className="col-span-1 text-center flex justify-center items-center text-2xl font-bold">
+              { lineNumber }
+            </div>
+            <div className="col-span-6 flex flex-col justify-center">
+              <div className="font-bold">{ title }</div>
+              <div>{ description }</div>
+              <div>{ descriptionAlt }</div>
+            </div>
+            <div className="col-span-3 flex flex-col justify-center w-full">
+              <div className="text-sm font-thin mb-1">{ shortTitle }</div>
+              <Cell 
+                value={cellValueGetter(formControl)}
+                onChange={(e) => handleChange(e, formControl)}
+                onFocusClick={(clicked) => handleCellClick(clicked, i)}
+                focus={focusIndex === i}
+                editing={editingIndex === i}
+                onCellValueChanged={(e) => handleCellValueChanged(e, formControl)}
+              />
+            </div>
+          </div>
         )}
-      </Formik>
-
-
-
+      </form>
     </div>
   )
 }

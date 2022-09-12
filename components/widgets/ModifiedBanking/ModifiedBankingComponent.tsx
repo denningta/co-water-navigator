@@ -1,6 +1,7 @@
 import { BsInfoLg } from "react-icons/bs"
 import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
-import ModifiedBankingForm from "./ModifiedBankingForm"
+import { ModifiedBankingFormControls } from "./generatre-form-metadata"
+import ModifiedBankingForm, { CellValueChangedEvent } from "./ModifiedBankingForm"
 
 interface Props {
   permitNumber: string | undefined
@@ -9,15 +10,43 @@ interface Props {
 }
 
 const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: Props) => {
+
+  const handleCellValueChanged = async (
+    event: CellValueChangedEvent, 
+    formControl: ModifiedBankingFormControls
+  ) => {
+    const body = {
+      ...modifiedBankingData,
+      permitNumber: permitNumber,
+      year: year,
+      [formControl]: event.newValue
+    }
+    if (event.newValue && event.newValue.value === '') delete body[formControl]
+
+    const url = `/api/v1/modified-banking/${permitNumber}/${year}`
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    })
+      .then(res => res.json())
+      .catch(error => error)
+  }
+
   return (
     <div>
         <div className="flex items-center font-bold text-2xl mb-4">
           <div>Three Year Modified Banking (DBB-013)</div>
           <div className="grow"><span className="ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>
       </div>
-      { permitNumber && year && modifiedBankingData &&
+      { permitNumber && year &&
         <ModifiedBankingForm 
-          permitNumber={permitNumber} year={year} modifiedBankingData={modifiedBankingData} 
+          permitNumber={permitNumber} 
+          year={year} 
+          modifiedBankingData={modifiedBankingData}
+          onCellValueChanged={handleCellValueChanged}
         />
       }
     </div>
