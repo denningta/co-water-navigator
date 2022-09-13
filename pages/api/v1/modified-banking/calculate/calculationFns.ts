@@ -3,9 +3,9 @@ import { ModifiedBanking, ModifiedBankingCalculatedFields } from "../../../../..
 
 export interface CalculationProps {
   data: ModifiedBanking
-  dataLastYear: ModifiedBanking
-  bankingReserveLastYear: number
-  totalPumpedThisYear: number
+  dataLastYear: ModifiedBanking | undefined
+  bankingReserveLastYear: number | undefined
+  totalPumpedThisYear: number | undefined
 }
 
 type CalculationFn = (props: CalculationProps) => CalculatedValue | undefined
@@ -44,12 +44,21 @@ const abstractCalculationFn = (
 
 const calculationFns: CalculationFns = {
   originalAppropriation: ({ data, dataLastYear }) => {
+    if (!dataLastYear) {
+      if (!data.originalAppropriation) return
+      return { value: data.originalAppropriation.value }
+    }
     if (!dataLastYear.originalAppropriation) return
     const shouldBe = dataLastYear.originalAppropriation.value
-    return abstractCalculationFn('originalAppropriation', data, shouldBe)
+    const update = abstractCalculationFn('originalAppropriation', data, shouldBe)
+    return update
   },
 
   allowedAppropriation: ({ data, dataLastYear }) => {
+    if (!dataLastYear) {
+      if (!data.allowedAppropriation) return
+      return { value: data.allowedAppropriation.value }
+    }
     if (!dataLastYear.allowedAppropriation) return
     const shouldBe = dataLastYear.allowedAppropriation.value
     return abstractCalculationFn('allowedAppropriation', data, shouldBe)
@@ -57,18 +66,21 @@ const calculationFns: CalculationFns = {
 
   line3: ({ data }) => {
     if (!data.allowedAppropriation || !data.originalAppropriation) return
-    const shouldBe = data.allowedAppropriation.value - data.originalAppropriation.value
+    const shouldBe = data.originalAppropriation.value - data.allowedAppropriation.value
     return abstractCalculationFn('line3', data, shouldBe)
   },
 
   maxBankingReserve: ({ data }) => {
     if (!data.allowedAppropriation || !data.originalAppropriation) return
-    const shouldBe = 3 * (data.allowedAppropriation.value - data.originalAppropriation.value)
+    const shouldBe = 3 * (data.originalAppropriation.value - data.allowedAppropriation.value)
     return abstractCalculationFn('maxBankingReserve', data, shouldBe)
   },
 
   bankingReserveLastYear: ({ data, bankingReserveLastYear }) => {
-    if (!bankingReserveLastYear) return
+    if (!bankingReserveLastYear) {
+      if (data.bankingReserveLastYear) return data.bankingReserveLastYear
+      return
+    }
     const shouldBe = bankingReserveLastYear
     return abstractCalculationFn('bankingReserveLastYear', data, shouldBe)
   },

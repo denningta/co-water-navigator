@@ -68,32 +68,45 @@ export const queryDependencies = (
           )
         )
         },
-        q.Subtract(
-          q.Select(0, q.Max(q.Var('flowMeterArray'))), 
-          q.Select(0, q.Min(q.Var('flowMeterArray')))
+        q.If(
+          q.IsEmpty(q.Select(['data'], q.Var('flowMeterArray'))),
+          null,
+          q.Subtract(
+            q.Select(0, q.Max(q.Var('flowMeterArray'))), 
+            q.Select(0, q.Min(q.Var('flowMeterArray')))
+          ),
         )
       )
 
     const dataLastYearQuery = 
-      q.Select(['data', 0], q.Map(
-        q.Paginate(
-          q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, (+year - 1).toString()])
-        ),
-        q.Lambda(
-          'ref',
-          q.Select(['data'], q.Get(q.Var('ref')))
+    q.Let({
+      data: q.Map(
+          q.Paginate(
+            q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, (+year - 1).toString()])
+          ),
+          q.Lambda(
+            'ref',
+            q.Select(['data'], q.Get(q.Var('ref')))
+          )
         )
-      ))
+      },
+      q.If(
+        q.ContainsPath(['data', 0], q.Var('data')),
+        q.Select(['data', 0], q.Var('data')),
+        null
+      )
+    )
 
     const response: any = await faunaClient.query(
       q.Let({ dataLastYear: dataLastYearQuery },
         {
           dataLastYear: q.Var('dataLastYear'),
-          bankingReserveLastYear: q.If(
-            q.ContainsPath(['bankingReserveThisYear', 'value'], q.Var('dataLastYear')),
-            q.Select(['bankingReserveThisYear', 'value'], q.Var('dataLastYear')),
-            null
-          ),
+          bankingReserveLastYear:
+            q.If(
+              q.ContainsPath(['bankingReserveThisYear', 'value'], q.Var('dataLastYear')),
+              q.Select(['bankingReserveThisYear', 'value'], q.Var('dataLastYear')),
+              null
+            ),
           totalPumpedThisYear: totalPumpedThisYearQuery
         }
       )

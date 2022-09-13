@@ -15,10 +15,11 @@ const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: P
 
   const handleCellValueChanged = async (
     event: CellValueChangedEvent, 
-    formControl: ModifiedBankingFormControls
+    formControl: ModifiedBankingFormControls,
+    values: ModifiedBanking
   ) => {
     const body = {
-      ...modifiedBankingData,
+      ...values,
       permitNumber: permitNumber,
       year: year,
       [formControl]: {
@@ -28,6 +29,32 @@ const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: P
     }
     if (event.newValue && event.newValue.value === '') delete body[formControl]
 
+    await updateDatabase(body)
+      .then(res => res)
+      .catch(error => error)
+  }
+
+  const handleCommentsChanged = async (
+    comments: string[], 
+    formControl: ModifiedBankingFormControls,
+    values: ModifiedBanking  
+  ) => {
+    const body = {
+      ...values,
+      permitNumber: permitNumber,
+      year: year,
+      [formControl]: {
+        ...values[formControl],
+        comments: comments
+      }
+    }
+
+    await updateDatabase(body)
+      .then(res => res)
+      .catch(error => error)
+  }
+
+  const updateDatabase = async (body: any) => {
     const url = `/api/v1/modified-banking/${permitNumber}/${year}`
     const res = await fetch(url, {
       method: 'PATCH',
@@ -39,8 +66,7 @@ const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: P
       .then(res => res.json())
       .catch(error => error)
 
-    console.log(res)
-    if (!formRef) return
+    if (!formRef && !res) return
     formRef.current?.setFormValues(res)
   }
 
@@ -57,6 +83,7 @@ const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: P
           year={year} 
           modifiedBankingData={modifiedBankingData}
           onCellValueChanged={handleCellValueChanged}
+          onCommentsChanged={handleCommentsChanged}
         />
       }
     </div>

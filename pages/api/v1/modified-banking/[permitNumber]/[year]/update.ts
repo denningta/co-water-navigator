@@ -5,7 +5,7 @@ import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
 import { runCalculationsInternal } from "../../calculate";
 
-function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
+function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking | undefined> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'bodyExists',
@@ -27,6 +27,7 @@ function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
     }
 
     const calculationUpdates = await runCalculationsInternal(req.body, permitNumber, year)
+    const updateData = calculationUpdates ? { ...req.body, ...calculationUpdates } : req.body
 
     const response: any = await faunaClient.query(
       q.Let(
@@ -41,7 +42,7 @@ function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
             )),
             { data:
               { 
-                ...calculationUpdates, 
+                ...updateData, 
                 permitNumber: permitNumber, 
                 year: year 
               } 
@@ -51,7 +52,7 @@ function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
             q.Collection('administrativeReports'), 
             { data: 
               { 
-                ...calculationUpdates, 
+                ...updateData, 
                 permitNumber: permitNumber, 
                 year: year 
               } 
