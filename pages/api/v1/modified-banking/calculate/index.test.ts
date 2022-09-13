@@ -49,6 +49,7 @@ describe('DBB-013 Calcuations', () => {
 
   test('retrieve dependencies', async () => {
     const res = await queryDependencies('XX-00000', '1900')
+    console.log(res)
   })
 
 })

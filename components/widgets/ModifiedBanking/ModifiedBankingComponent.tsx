@@ -12,7 +12,6 @@ interface Props {
 
 const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: Props) => {
   const formRef = useRef<ModifiedBankingFormApi>(null)
-  console.log(formRef)
 
   const handleCellValueChanged = async (
     event: CellValueChangedEvent, 
@@ -41,9 +40,7 @@ const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: P
       .catch(error => error)
 
     console.log(res)
-
     if (!formRef) return
-
     formRef.current?.setFormValues(res)
   }
 

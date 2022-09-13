@@ -8,9 +8,10 @@ interface Props {
   value?: string | undefined
   focus?: boolean
   editing?: boolean
+  className?: string
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
-  onFocusClick?: (clicked: boolean) => void
+  onFocusClick?: (focusEvent: { state: boolean, detail: number }) => void
   onCellValueChanged?: (e: CellValueChangedEvent) => void
 }
 
@@ -18,6 +19,7 @@ const Cell = ({
   value = '', 
   focus = false,
   editing = false,
+  className = '',
   onChange = () => {},
   onClick = () => {},
   onFocusClick = () => {},
@@ -28,7 +30,6 @@ const Cell = ({
   const focusClick = useFocus(cellRef)
   const [oldValue, setOldValue] = useState<string | null>(null)
 
-
   useEffect(() => {
     onFocusClick(focusClick)
   }, [focusClick])
@@ -36,7 +37,10 @@ const Cell = ({
   useEffect(() => {
     if (editing) {
       setOldValue(value)
-      setTimeout(() => inputRef.current?.focus(), 10)
+      setTimeout(() => {
+        inputRef.current?.focus()
+        inputRef.current?.select()
+      }, 10)
     }
     if (!editing) {
       if (oldValue === null) return
@@ -60,7 +64,9 @@ const Cell = ({
       onClick={handleClick} 
       className={`h-[38px] w-full bg-white hover:bg-primary hover:bg-opacity-10 ${focus ? 'outline outline-primary' : 'outline-none'} ${editing ? 'drop-shadow-lg' : 'drop-shadow-none'}`}>
       { !editing && 
-        <div className="w-full h-full px-3 flex items-center select-none">{value}</div> 
+        <div className={`w-full h-full px-3 flex items-center select-none ${className}`}>
+          {value}
+        </div> 
       }
       { editing && 
         <input

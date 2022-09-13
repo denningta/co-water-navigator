@@ -77,7 +77,7 @@ export const queryDependencies = (
     const dataLastYearQuery = 
       q.Select(['data', 0], q.Map(
         q.Paginate(
-          q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])
+          q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, (+year - 1).toString()])
         ),
         q.Lambda(
           'ref',
@@ -86,11 +86,17 @@ export const queryDependencies = (
       ))
 
     const response: any = await faunaClient.query(
-      {
-        dataLastYear: dataLastYearQuery,
-        bankingReserveLastYear: q.Select(['bankingReserveThisYear', 'value'], dataLastYearQuery),
-        totalPumpedThisYear: totalPumpedThisYearQuery
-      }
+      q.Let({ dataLastYear: dataLastYearQuery },
+        {
+          dataLastYear: q.Var('dataLastYear'),
+          bankingReserveLastYear: q.If(
+            q.ContainsPath(['bankingReserveThisYear', 'value'], q.Var('dataLastYear')),
+            q.Select(['bankingReserveThisYear', 'value'], q.Var('dataLastYear')),
+            null
+          ),
+          totalPumpedThisYear: totalPumpedThisYearQuery
+        }
+      )
     ).catch(error => reject(error))
 
     const result: Omit<CalculationProps, 'data'> = { ...response }

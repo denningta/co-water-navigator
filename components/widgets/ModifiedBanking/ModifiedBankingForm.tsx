@@ -8,6 +8,7 @@ import useKeyPress from "../../../hooks/useKeyPress";
 import { ChangeEvent } from "react";
 import _ from "lodash";
 import useFocus from "../../../hooks/useFocus";
+import { Tooltip } from "@mui/material";
 
 export type CellValueChangedEvent = {
   oldValue: any | undefined
@@ -108,13 +109,17 @@ const ModifiedBankingForm = forwardRef((props: Props, ref: ForwardedRef<Modified
     if (enter.pressed) setEditingIndex(editingIndex === null ? focusIndex : null)
   }, [enter])
 
-  const handleCellClick = (clicked: boolean, index: number) => {
-    if (!clicked) {
+  const handleCellClick = (focusEvent: { state: boolean, detail: number }, index: number) => {
+    if (!focusEvent.state) {
       setFocusIndex(null)
       setEditingIndex(null)
     }
-    if (clicked) {
+    if (focusEvent.state) {
       setTimeout(() => setFocusIndex(index), 1)
+    }
+
+    if (focusEvent.state && focusEvent.detail === 2) {
+      setTimeout(() => setEditingIndex(index), 1)
     }
   }
 
@@ -147,7 +152,6 @@ const ModifiedBankingForm = forwardRef((props: Props, ref: ForwardedRef<Modified
     )
   }
 
-
   return (
     <div ref={containerRef}>
       <form className="border">
@@ -164,14 +168,23 @@ const ModifiedBankingForm = forwardRef((props: Props, ref: ForwardedRef<Modified
             </div>
             <div className="col-span-3 flex flex-col justify-center w-full">
               <div className="text-sm font-thin mb-1">{ shortTitle }</div>
-              <Cell 
-                value={cellValueGetter(formControl)}
-                onChange={(e) => handleChange(e, formControl)}
-                onFocusClick={(clicked) => handleCellClick(clicked, i)}
-                focus={focusIndex === i}
-                editing={editingIndex === i}
-                onCellValueChanged={(e) => handleCellValueChanged(e, formControl)}
-              />
+                <Tooltip 
+                  disableHoverListener={!values[formControl]?.calculationMessage}
+                  title={values[formControl]?.calculationMessage ?? 'success'}
+                  arrow={true}
+                >
+                  <div>
+                    <Cell
+                      value={cellValueGetter(formControl)}
+                      onChange={(e) => handleChange(e, formControl)}
+                      onFocusClick={(focusEvent) => handleCellClick(focusEvent, i)}
+                      focus={focusIndex === i}
+                      editing={editingIndex === i}
+                      onCellValueChanged={(e) => handleCellValueChanged(e, formControl)}
+                      className={values[formControl]?.calculationState === 'warning' ? 'bg-orange-500 bg-opacity-25' : ''}
+                    />
+                  </div>
+                </Tooltip>
             </div>
           </div>
         )}
