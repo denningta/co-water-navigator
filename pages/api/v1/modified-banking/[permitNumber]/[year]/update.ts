@@ -3,6 +3,7 @@ import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
+import { runCalculationsInternal } from "../../calculate";
 
 function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
   return new Promise(async (resolve, reject) => {
@@ -16,6 +17,16 @@ function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
     if (errors.length) return reject(errors);
 
     const { permitNumber, year } = req.query;
+    if (!permitNumber || Array.isArray(permitNumber)) {
+      reject('permitNumber does not exist or is an array')
+      return
+    }
+    if (!year || Array.isArray(year)) {
+      reject('year does not exist or is an array')
+      return
+    }
+
+    const calculationUpdates = await runCalculationsInternal(req.body, permitNumber, year)
 
     const response: any = await faunaClient.query(
       q.Let(
@@ -28,13 +39,19 @@ function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
             q.Select(['ref'], q.Get(
               q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])
             )),
-            { data: req.body }
+            { data:
+              { 
+                ...calculationUpdates, 
+                permitNumber: permitNumber, 
+                year: year 
+              } 
+            }
           ),
           q.Create(
             q.Collection('administrativeReports'), 
             { data: 
               { 
-                ...req.body, 
+                ...calculationUpdates, 
                 permitNumber: permitNumber, 
                 year: year 
               } 
@@ -42,12 +59,6 @@ function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
           )
         )
       )
-      // q.Update(
-      //   q.Select(['ref'], q.Get(
-      //     q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])
-      //   )),
-      //   { data: req.body }
-      // )
     ).catch(err => {
       errors.push({
         ...err, 

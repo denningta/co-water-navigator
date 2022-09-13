@@ -10,7 +10,7 @@ export interface ModifiedBanking {
   dateTimeCreated?: string
   line10?: CalculatedValue
   line3?: CalculatedValue
-  line6Option?: CalculatedValue
+  line6Option?: 'a' | 'b'
   maxBankingReserve?: CalculatedValue
   originalAppropriation?: CalculatedValue
   pumpingLimitNextYear?: CalculatedValue
@@ -25,3 +25,5 @@ export interface ModifiedBanking {
     other?: boolean
   }
 }
+
+export type ModifiedBankingCalculatedFields = 'allowedAppropriation' | 'bankingReserveLastYear' | 'bankingReserveThisYear' | 'changeInBankingReserveThisYear' | 'line10' | 'line3' | 'maxBankingReserve' | 'originalAppropriation' | 'pumpingLimitNextYear' | 'pumpingLimitThisYear' | 'totalPumpedThisYear' 

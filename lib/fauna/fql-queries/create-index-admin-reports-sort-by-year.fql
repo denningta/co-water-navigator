@@ -1,0 +1,11 @@
+CreateIndex({
+  name: 'admin-reports-sort-by-year-asc',
+  source: Collection('administrativeReports'),
+  terms: [
+    { field: ['ref'] }
+  ],
+  values: [
+    { field: ['data', 'year'] },
+    { field: ['ref'] }
+  ]
+})

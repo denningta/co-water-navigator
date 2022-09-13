@@ -1,7 +1,8 @@
+import { useRef } from "react"
 import { BsInfoLg } from "react-icons/bs"
 import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
 import { ModifiedBankingFormControls } from "./generatre-form-metadata"
-import ModifiedBankingForm, { CellValueChangedEvent } from "./ModifiedBankingForm"
+import ModifiedBankingForm, { CellValueChangedEvent, ModifiedBankingFormApi } from "./ModifiedBankingForm"
 
 interface Props {
   permitNumber: string | undefined
@@ -10,6 +11,8 @@ interface Props {
 }
 
 const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: Props) => {
+  const formRef = useRef<ModifiedBankingFormApi>(null)
+  console.log(formRef)
 
   const handleCellValueChanged = async (
     event: CellValueChangedEvent, 
@@ -19,7 +22,10 @@ const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: P
       ...modifiedBankingData,
       permitNumber: permitNumber,
       year: year,
-      [formControl]: event.newValue
+      [formControl]: {
+        ...event.newValue,
+        source: 'user'
+      }
     }
     if (event.newValue && event.newValue.value === '') delete body[formControl]
 
@@ -33,6 +39,12 @@ const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: P
     })
       .then(res => res.json())
       .catch(error => error)
+
+    console.log(res)
+
+    if (!formRef) return
+
+    formRef.current?.setFormValues(res)
   }
 
   return (
@@ -43,6 +55,7 @@ const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: P
       </div>
       { permitNumber && year &&
         <ModifiedBankingForm 
+          ref={formRef}
           permitNumber={permitNumber} 
           year={year} 
           modifiedBankingData={modifiedBankingData}

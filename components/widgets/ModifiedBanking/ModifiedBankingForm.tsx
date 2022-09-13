@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { BaseSyntheticEvent, createRef, InputHTMLAttributes, MouseEvent, useEffect, useRef, useState } from "react"
+import { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
 import { FormMetaData, generateFormMetaData, ModifiedBankingFormControls } from "./generatre-form-metadata"
-import { Formik, Form, useFormikContext, useFormik } from 'formik';
+import { FormikErrors, useFormik } from 'formik';
 import Cell from "./Cell";
 import useKeyPress from "../../../hooks/useKeyPress";
 import { ChangeEvent } from "react";
-import { CalculatedValue } from "../../../interfaces/MeterReading";
 import _ from "lodash";
 import useFocus from "../../../hooks/useFocus";
 
@@ -15,23 +14,24 @@ export type CellValueChangedEvent = {
   newValue: any | undefined
 }
 
+export interface ModifiedBankingFormApi {
+  setFieldValue: (field: string, value: any, shouldValidate?: boolean | undefined) => Promise<void> | Promise<FormikErrors<ModifiedBanking>>
+  setFormValues: (data: ModifiedBanking) => void
+}
+
 interface Props {
   permitNumber: string
   year: string
   modifiedBankingData: ModifiedBanking | undefined,
   onCellValueChanged?: (e: CellValueChangedEvent, formControl: ModifiedBankingFormControls) => void
 }
-
-const ModifiedBankingForm = ({ 
-  permitNumber, 
-  year, 
-  modifiedBankingData = {
-    permitNumber: '',
-    year: ''
-  },
-  onCellValueChanged = () => {}
-}: Props) => {
-
+const ModifiedBankingForm = forwardRef((props: Props, ref: ForwardedRef<ModifiedBankingFormApi>) => {
+  const { 
+    permitNumber, 
+    year, 
+    modifiedBankingData = { permitNumber: '', year: '' }, 
+    onCellValueChanged = () => {}
+  } = props
   const [formMetaData] = useState<FormMetaData[]>(generateFormMetaData(year))
   const containerRef = useRef<HTMLDivElement>(null)
   const containerFocus = useFocus(containerRef)
@@ -55,6 +55,19 @@ const ModifiedBankingForm = ({
     validateOnChange: true,
     onSubmit: () => {},
   })
+
+  const setFormValues = (data: ModifiedBanking) => {
+    formMetaData.forEach(el => {
+      setFieldValue(el.formControl, data[el.formControl])
+    })
+  }
+
+  const formApi: ModifiedBankingFormApi = {
+    setFieldValue: setFieldValue,
+    setFormValues: setFormValues
+  }
+
+  useImperativeHandle(ref, () => formApi)
 
   useEffect(() => {
     if (!containerFocus) setFocusIndex(null)
@@ -120,7 +133,7 @@ const ModifiedBankingForm = ({
   const cellValueSetter = (value: string, formControl: ModifiedBankingFormControls) => {
     return { 
       ...values[formControl], 
-      value: value === '' ? '' : +value 
+      value: value === '' ? '' : +value
     }
   }
 
@@ -165,6 +178,8 @@ const ModifiedBankingForm = ({
       </form>
     </div>
   )
-}
+})
+
+ModifiedBankingForm.displayName = 'ModifiedBankingForm'
 
 export default ModifiedBankingForm
