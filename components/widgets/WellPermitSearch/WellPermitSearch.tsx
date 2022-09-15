@@ -6,6 +6,8 @@ import searchOptions, { SearchTermName, SelectOption } from "./search-data";
 import useSWR from "swr";
 import wellPermitColumnDefs from "./well-permit-search-column-defs";
 import { IoAdd, IoSearchSharp } from "react-icons/io5";
+import { useUser } from "@auth0/nextjs-auth0";
+import { UserData } from "../../../interfaces/User";
 
 interface SearchTerm {
   term: string
@@ -26,6 +28,7 @@ const initialSearchTerms: SearchTerms = {
 }
 
 const WellPermitSearch = () => {
+  const { user } = useUser()
   const [url, setUrl] = useState<string | null>(null)
   const [pageIndex, setPageIndex] = useState(1)
   const [searchTerms, setSearchTerms] = useState(initialSearchTerms)
@@ -71,8 +74,28 @@ const WellPermitSearch = () => {
     setSelectedRowData(rowData)
   }
 
-  const handleAddPermits = () => {
-    console.log('TODO: send permit update request to api', selectedRowData)
+  const handleAddPermits = async () => {
+    const url = `/api/v1/well-permits`
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(selectedRowData)
+    })
+      .then(res => res.json())
+      .catch(error => error)
+
+    if (!user) throw new Error('No user: cannot create reference to well permits for this user')
+    const permitRefs = res.map((el: any) => ({ document_id: el.id, status: 'requested' }))
+
+    await fetch('/api/auth/user/update-app-meta-data', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ permitRefs: permitRefs })
+    })
   }
 
 

@@ -5,7 +5,7 @@ import { getServerSidePropsWrapper, getSession, UserProvider, useUser, withPageA
 import WellPermitTable from '../../components/widgets/WellPermitsTable/WellPermitTable'
 import MainContent, { Widget } from '../../components/MainContent'
 import Header from '../../components/widgets/Header'
-import WellPermitsContainer from '../../components/widgets/WellPermitsContainer'
+import WellPermitsContainer from '../../components/widgets/WellPermitsAssignment/WellPermitsAssignment'
 import WellPermitSearch from '../../components/widgets/WellPermitSearch/WellPermitSearch'
 import PermitPreview from '../../components/widgets/PermitPreview'
 import AgentDetails from '../../components/widgets/AgentDetails'

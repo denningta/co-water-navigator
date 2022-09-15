@@ -1,3 +1,4 @@
+import BreadcrumbsRouter from "../common/BreadcrumbsRouter"
 
 interface Props {
   title: string
@@ -8,8 +9,9 @@ const Header = ({ title = 'Hello', subtitle = 'Welcome to Colorado Water Export'
 
   return (
     <>        
-      <div className="text-3xl mb-1 font-extrabold">{title}</div>
-      <div className="text-gray-400">{subtitle}</div>
+      <div className="text-3xl font-extrabold">{title}</div>
+      <div className="text-gray-400 mb-2">{subtitle}</div>
+      <BreadcrumbsRouter />
     </>
   )
 }

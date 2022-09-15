@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import MeterReading from "../../../../interfaces/MeterReading";
 import { HttpError } from "../interfaces/HttpError";
+import createWellPermits from "./create";
 import listWellPermits from './list'
 
 
@@ -12,17 +13,17 @@ function handler(
   req: NextApiRequest, 
   res: NextApiResponse
 ): Promise<any | HttpError> {
-
-    if (!req || !req.method) {
-      return Promise.reject(new HttpError(
-        'No Request or Invalid Request Method',
-        'No request or an invalid request method was sent to the server',
-        400
-      ));
-    }
+  if (!req || !req.method) {
+    return Promise.reject(new HttpError(
+      'No Request or Invalid Request Method',
+      'No request or an invalid request method was sent to the server',
+      400
+    ));
+  }
   
     const handlers: HandlerFunctions = {
       GET: listWellPermits,
+      POST: createWellPermits
     }
 
     return handlers[req.method](req)

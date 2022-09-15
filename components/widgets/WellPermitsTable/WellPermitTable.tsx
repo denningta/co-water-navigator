@@ -1,4 +1,5 @@
-import { ColDef, ColumnApi, GridApi, SetFilterModelValue } from 'ag-grid-community';
+import { useUser } from '@auth0/nextjs-auth0';
+import { ColDef, ColumnApi, GridApi, SelectionChangedEvent, SetFilterModelValue } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 import { AgGridReact } from "ag-grid-react"
@@ -11,6 +12,7 @@ interface Props {
   rowData: any[] | undefined
   height?: number
   filterModel?: { [key: string]: any; }
+  rowSelection?: 'single' | 'multiple'
   onRowSelectionChanged?: (rowData: any[]) => void | null
 }
 
@@ -19,6 +21,7 @@ const WellPermitTable = ({
   rowData, 
   height = 400, 
   filterModel, 
+  rowSelection = 'multiple',
   onRowSelectionChanged = () => null 
 }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
@@ -55,8 +58,9 @@ const WellPermitTable = ({
     gridRef.current?.api.setColumnDefs(columnDefs)
   }
 
-  const handleRowSelectionChange = ({ api }: any) => {
+  const handleRowSelectionChange = ({ api }: SelectionChangedEvent) => {
     onRowSelectionChanged(api.getSelectedRows())
+    api.redrawRows()
   }
 
   return (
@@ -69,8 +73,9 @@ const WellPermitTable = ({
           columnDefs={columnDefs}
           pagination={true}
           onGridReady={onGridReady}
-          rowSelection='multiple'
+          rowSelection={rowSelection}
           onSelectionChanged={handleRowSelectionChange}
+          suppressCellFocus={true}
         >
         </AgGridReact>
       </div>

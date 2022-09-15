@@ -3,6 +3,7 @@ import Link from '@mui/material/Link'
 import { TiExport } from 'react-icons/ti'
 import { IoHome } from 'react-icons/io5'
 import { BsChevronRight } from 'react-icons/bs'
+import BreadcrumbsRouter from '../../common/BreadcrumbsRouter'
 
 interface Props {
   permitNumber?: string
@@ -41,7 +42,8 @@ const MeterReadingsHeader = ({ permitNumber, owner, location }: Props) => {
         </div>
       </div>
       <div className="mt-2">
-        <Breadcrumbs aria-label='breadcrumb' separator={<BsChevronRight/>}>
+        <BreadcrumbsRouter />
+        {/* <Breadcrumbs aria-label='breadcrumb' separator={<BsChevronRight/>}>
           <Link underline="hover" href="/">
             <IoHome/>
           </Link>
@@ -51,7 +53,7 @@ const MeterReadingsHeader = ({ permitNumber, owner, location }: Props) => {
           <Link underline="hover" href={`/well-permits/${permitNumber}`}>
             { permitNumber }
           </Link>
-        </Breadcrumbs>
+        </Breadcrumbs> */}
       </div>
     </div>
   )

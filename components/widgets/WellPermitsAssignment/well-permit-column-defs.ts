@@ -1,19 +1,43 @@
-const wellPermitColumnDefs = [
+import { ColDef, ICellRendererParams } from "ag-grid-community"
+import AccessCellRenderer from "./AccessCellRenderer"
+
+const wellPermitColumnDefs: ColDef[] = [
+  {
+    field: '',
+    filter: false,
+    maxWidth: 55,
+    pinned: true,
+    suppressMovable: true,
+    checkboxSelection: true
+  },
   {
     field: 'permit',
-    hide: false
+    hide: false,
+    initialWidth: 150
+  },
+  {
+    field: 'status',
+    headerName: 'Access',
+    hide: false,
+    initialWidth: 150,
+    cellRenderer: AccessCellRenderer
+  },
+  {
+    field: 'latestMeterReading',
+    hide: false,
+    initialWidth: 150
   },
   {
     field: 'receipt',
-    hide: false
+    hide: true
   },
   {
     field: 'contactName',
-    hide: false
+    hide: true
   },
   {
     field: 'permitCurrentStatusDescr',
-    hide: false
+    hide: true
   },
   {
     field: 'asBuiltAquifers',

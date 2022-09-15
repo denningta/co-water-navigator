@@ -10,25 +10,19 @@ function listModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
       'queryExists',
     ]);
 
-    const { user } = req.query
-
+    const { id } = req.query
+    if (!id) throw new Error('id query is undefined')
+    
     if (errors.length) reject(errors);
 
-    const userQuery = user && q.Union(
-      !Array.isArray(user)
-        ? q.Match(q.Index('wellpermits-by-user'), user)
-        : user.map(el => q.Match(q.Index('wellpermits-by-user'), el))
-    )
-
     const query = q.Map(
-      q.Paginate(
-        q.Intersection(
-          [
-            userQuery
-          ].filter(el => el)
-        )
-      ),
-      (record) => q.Get(record)
+      Array.isArray(id) ? id : [id],
+      q.Lambda('id', 
+        {
+          document: q.Select(['data'], q.Get(q.Ref(q.Collection('wellPermits'), q.Var('id')))),
+          id: q.Var('id')
+        }
+      )
     )
 
     const response = await faunaClient.query(query)
@@ -39,7 +33,7 @@ function listModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
         return err;
       });
 
-    if (!response.data) {
+    if (!response) {
       errors.push(
         new HttpError(
           'No Data',
@@ -50,7 +44,7 @@ function listModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
       reject(errors);
     }
     
-    resolve(response.data.map((record: any) => record.data)[0]);
+    resolve(response);
   });
 }
 
