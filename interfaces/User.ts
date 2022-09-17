@@ -1,10 +1,5 @@
-export default interface User {
-  email: string;
-  key: string;
-  roles: string[];
-  _token: string;
-  _tokenExpiration: Date;
-}
+import { Role, UserMetadata, AppMetadata, User } from "auth0";
+
 
 export interface UserData {
   uid: string;
@@ -13,3 +8,5 @@ export interface UserData {
     status: 'requested' | 'approved'
   }
 }
+
+export type UserManagement = User<AppMetadata, UserMetadata> & { roles?: Role[] }

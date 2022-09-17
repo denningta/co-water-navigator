@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react"
 import useSWRInfinite from "swr/infinite";
-import WellPermitTable from "../WellPermitsTable/WellPermitTable";
+import WellPermitTable from "../DataTable/DataTable";
 import Select, { SingleValue } from 'react-select'
 import searchOptions, { SearchTermName, SelectOption } from "./search-data";
 import useSWR from "swr";

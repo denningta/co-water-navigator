@@ -2,7 +2,7 @@ import { Context, ReactElement } from 'react'
 import AppLayout from '../../components/AppLayout'
 import { NextPageWithLayout } from '../_app'
 import { getServerSidePropsWrapper, getSession, UserProvider, useUser, withPageAuthRequired } from '@auth0/nextjs-auth0'
-import WellPermitTable from '../../components/widgets/WellPermitsTable/WellPermitTable'
+import WellPermitTable from '../../components/widgets/DataTable/DataTable'
 import MainContent, { Widget } from '../../components/MainContent'
 import Header from '../../components/widgets/Header'
 import WellPermitsContainer from '../../components/widgets/WellPermitsAssignment/WellPermitsAssignment'
@@ -32,13 +32,7 @@ const Dashboard: NextPageWithLayout = () => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(async ({ req, res }) => {
-  const session = getSession(req, res)
-  if (!session || !session.user) {
-    return { redirect: { destination: '/api/auth/login', permanent: false } }
-  }
-  return { props: { user: session.user } }
-})
+export const getServerSideProps = withPageAuthRequired()
 
 
 Dashboard.getLayout = function getLayout(page: ReactElement) {
@@ -47,11 +41,6 @@ Dashboard.getLayout = function getLayout(page: ReactElement) {
       {page}
     </AppLayout>
   )
-}
-
-interface DataFetchProps {
-  req: NextApiRequest
-  res: NextApiResponse
 }
 
 export default Dashboard

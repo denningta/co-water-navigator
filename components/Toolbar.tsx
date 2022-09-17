@@ -1,7 +1,7 @@
 import { IoHome, IoUmbrellaSharp } from "react-icons/io5"
-import { FaUserCircle, FaListAlt } from "react-icons/fa"
+import { FaUserCircle, FaListAlt, FaUserShield } from "react-icons/fa"
 import { GiWaterSplash } from "react-icons/gi"
-import { MdLogout } from "react-icons/md"
+import { MdAdminPanelSettings, MdLogout } from "react-icons/md"
 import Image from 'next/image'
 import NavButton from "./NavButton"
 import { useUser } from "@auth0/nextjs-auth0"
@@ -41,6 +41,9 @@ const Toolbar = () => {
       </NavButton>
       <NavButton title="Profile" route="/profile" size={collapsed ? 'small' : 'normal'}>
         <FaUserCircle/>
+      </NavButton>
+      <NavButton title="Manage Users" route="/manage-users" size={collapsed ? 'small' : 'normal'}>
+        <FaUserShield />
       </NavButton>
       <div className="grow"></div>
       { user &&

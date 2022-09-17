@@ -1,22 +1,41 @@
 import { getServerSidePropsWrapper, getSession, withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { User } from 'auth0'
 import type { GetServerSideProps, NextPage } from 'next'
 import { ReactElement } from 'react'
+import useSWR from 'swr'
 import AppLayout from '../../components/AppLayout'
 import MainContent, { Widget } from '../../components/MainContent'
 import Header from '../../components/widgets/Header'
 import ProfileContainer from '../../components/widgets/Profile/ProfileContainer'
+import UserManager from '../../components/widgets/UserManager/UserManager'
 import { NextPageWithLayout } from '../_app'
 
-const Profile: NextPageWithLayout = () => {
+const fetcher = async (url: string) => {
+  const res = await fetch(url)
+  if (!res.ok) {
+    const error = new Error('An error occurred while fetching the data.')
+    error.message = await res.json()
+    throw error
+  }
+  return res.json()
+}
+
+const ManageUsers: NextPageWithLayout = () => {
+  const users = useSWR('/api/auth/users', fetcher)
+
+
   const widgets: Widget[] = [
     { 
       component: <Header 
-        title="Well Permits"
-        subtitle="Manage well permits and access meter readings"
+        title="Manage Users"
+        subtitle="Assign permissions and manage access to well permits"
       />, 
       colspan: 3
     },
-    { component: <ProfileContainer />, colspan: 3 },
+    {
+      component: <UserManager users={users.data} />,
+      colspan: 3
+    }
   ]
 
   return (
@@ -26,7 +45,7 @@ const Profile: NextPageWithLayout = () => {
 
 export const getServerSideProps = withPageAuthRequired()
 
-Profile.getLayout = function getLayout(page: ReactElement) {
+ManageUsers.getLayout = function getLayout(page: ReactElement) {
   return (
     <AppLayout>
       {page}
@@ -34,4 +53,4 @@ Profile.getLayout = function getLayout(page: ReactElement) {
   )
 }
 
-export default Profile
+export default ManageUsers

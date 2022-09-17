@@ -1,11 +1,11 @@
-import { NextApiRequest } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import { resolve } from "path";
 import MeterReading from "../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
 import { HttpError } from "../interfaces/HttpError";
 import validateQuery from "../validatorFunctions";
 
-function createWellPermits(req: NextApiRequest): Promise<MeterReading[]> {  
+function createWellPermits(req: NextApiRequest, res: NextApiResponse): Promise<MeterReading[]> {  
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',

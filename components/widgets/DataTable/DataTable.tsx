@@ -2,6 +2,7 @@ import { useUser } from '@auth0/nextjs-auth0';
 import { ColDef, ColumnApi, GridApi, SelectionChangedEvent, SetFilterModelValue } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
+import styles from './DataTable.module.css'
 import { AgGridReact } from "ag-grid-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { IoIosArrowBack } from 'react-icons/io';
@@ -16,7 +17,7 @@ interface Props {
   onRowSelectionChanged?: (rowData: any[]) => void | null
 }
 
-const WellPermitTable = ({ 
+const DataTable = ({ 
   columnDefs, 
   rowData, 
   height = 400, 
@@ -101,4 +102,4 @@ const WellPermitTable = ({
   )
 }
 
-export default WellPermitTable
+export default DataTable

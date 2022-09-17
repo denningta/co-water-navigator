@@ -1,4 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { getAccessToken, getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
+import { NextJwtVerifier } from "@serverless-jwt/next";
+import { NextAuthenticatedApiRequest } from "@serverless-jwt/next/dist/types";
+import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import MeterReading from "../../../../interfaces/MeterReading";
 import { HttpError } from "../interfaces/HttpError";
 import createWellPermits from "./create";
@@ -6,10 +9,10 @@ import listWellPermits from './list'
 
 
 type HandlerFunctions = { 
-  [key: string]: (req: NextApiRequest) => Promise<any> 
+  [key: string]: (req: NextApiRequest, res: NextApiResponse) => Promise<any> 
 };
 
-function handler(
+async function handler(
   req: NextApiRequest, 
   res: NextApiResponse
 ): Promise<any | HttpError> {
@@ -21,22 +24,22 @@ function handler(
     ));
   }
   
-    const handlers: HandlerFunctions = {
-      GET: listWellPermits,
-      POST: createWellPermits
-    }
+  const handlers: HandlerFunctions = {
+    GET: listWellPermits,
+    POST: createWellPermits
+  }
 
-    return handlers[req.method](req)
-    .then((response) => {
-      res.status(200).json(response);
-      return response;
-    })
-    .catch((errors) => {
-      res.status(errors[0].status || 500).json({errors: errors})
-      return errors;
-    });
+  return handlers[req.method](req, res)
+  .then((response) => {
+    res.status(200).json(response);
+    return response;
+  })
+  .catch((errors) => {
+    res.status(errors[0].status || 500).json({errors: errors})
+    return errors;
+  });
 
 }
 
-export default handler;
+export default withApiAuthRequired(handler);
 

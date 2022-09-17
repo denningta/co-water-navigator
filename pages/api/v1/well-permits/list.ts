@@ -1,10 +1,11 @@
-import { NextApiRequest } from "next";
+import { getAccessToken, getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
+import { NextApiRequest, NextApiResponse } from "next";
 import { ModifiedBanking } from "../../../../interfaces/ModifiedBanking";
 import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
 import { HttpError } from "../interfaces/HttpError";
 import validateQuery from "../validatorFunctions";
 
-function listModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
+function listModifiedBanking(req: NextApiRequest, res: NextApiResponse): Promise<ModifiedBanking> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
@@ -12,7 +13,7 @@ function listModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
 
     const { id } = req.query
     if (!id) throw new Error('id query is undefined')
-    
+
     if (errors.length) reject(errors);
 
     const query = q.Map(
@@ -48,4 +49,4 @@ function listModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
   });
 }
 
-export default listModifiedBanking;
+export default listModifiedBanking

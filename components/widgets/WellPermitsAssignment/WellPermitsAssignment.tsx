@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { MdOutlineModeEditOutline } from "react-icons/md"
 import wellPermitColumnDefs from "./well-permit-column-defs"
-import WellPermitTable from "../WellPermitsTable/WellPermitTable"
+import WellPermitTable from "../DataTable/DataTable"
 import { useRouter } from "next/router"
 
 interface Props {

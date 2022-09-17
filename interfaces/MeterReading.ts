@@ -26,5 +26,5 @@ export interface CalculatedValue {
   calculationState?: 'success' | 'warning' | 'error' | undefined;
   calculationMessage?: string;
   source?: 'user' | 'calculation';
-  comments?: string[]
+  comments?: string
 }
