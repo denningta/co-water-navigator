@@ -1,6 +1,7 @@
 import { Tooltip } from "@mui/material";
 import { ICellRendererParams } from "ag-grid-community";
 import { Role } from "auth0";
+import RoleTag from "../../common/RoleTag";
 
 const RolesCellRenderer = (params: ICellRendererParams) => {
   return (
@@ -11,8 +12,8 @@ const RolesCellRenderer = (params: ICellRendererParams) => {
 
         return (
           <Tooltip key={i} title={role.description ?? ''}>
-            <span  className={`mr-2 px-3 py-1 rounded font-semibold ${color}`}>
-              {role.name && role.name.charAt(0).toUpperCase() + role.name.slice(1)}
+            <span>
+              <RoleTag role={role} />
             </span>
           </Tooltip>
         )

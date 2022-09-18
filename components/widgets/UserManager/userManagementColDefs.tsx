@@ -1,8 +1,17 @@
 import { ColDef, ICellRendererParams, ValueFormatterParams } from "ag-grid-community";
+import ActionsCellRenderer from "./ActionsCellRenderer";
 import NameCellRenderer from "./NameCellRenderer";
 import RolesCellRenderer from "./RolesCellRenderer";
+import WellPermitsCellRenderer from "./WellPermitsCellRenderer";
 
 const userManagementColDefs: ColDef[] = [
+  {
+    field: '',
+    pinned: 'left',
+    width: 70,
+    cellRenderer: ActionsCellRenderer,
+    cellStyle: { textAlign: 'center' }
+  },
   {
     field: 'name',
     hide: false,
@@ -20,7 +29,9 @@ const userManagementColDefs: ColDef[] = [
       params.value ? new Date(params.value).toDateString() : ''
   },
   {
-    field: 'wellPermits'
+    field: 'wellPermits',
+    minWidth: 250,
+    cellRenderer: WellPermitsCellRenderer
   },
   {
     field: 'roles',
@@ -34,10 +45,6 @@ const userManagementColDefs: ColDef[] = [
   { 
     field: 'family_name',
     headerName: 'Last Name',
-    hide: true
-  },
-  { 
-    field: 'app_metadata',
     hide: true
   },
   { 

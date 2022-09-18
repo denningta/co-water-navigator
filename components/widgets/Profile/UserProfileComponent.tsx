@@ -1,12 +1,16 @@
-import { useUser } from "@auth0/nextjs-auth0"
+import { UserProfile, useUser } from "@auth0/nextjs-auth0"
 import Image from "next/image"
+import { UserManagement } from "../../../interfaces/User"
 
-const ProfileContainer = () => {
-  const { user, error, isLoading } = useUser()
+interface Props {
+  user: UserManagement | UserProfile | undefined
+}
+
+const UserProfileComponent = ({ user }: Props) => {
+  const test = useUser()
 
   return (
     <div>
-
       { user && 
         <div className="grid grid-cols-4">
           <div className="col-span-1 flex flex-col items-center border-r">
@@ -29,8 +33,11 @@ const ProfileContainer = () => {
           </div>
 
           <div className="flex flex-col col-span-3">
-            <div className="grow border-b p-4">profile info</div>
-            <div className="grow p-4">roles</div>
+            <div className="grow p-4 border-b">
+              <span className="text-xl font-semibold">Roles</span>
+              
+            </div>
+            <div className="grow p-4">profile info</div>
           </div>
         </div>
       }
@@ -38,4 +45,4 @@ const ProfileContainer = () => {
   )
 }
 
-export default ProfileContainer
+export default UserProfileComponent

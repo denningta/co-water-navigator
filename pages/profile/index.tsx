@@ -1,13 +1,15 @@
-import { getServerSidePropsWrapper, getSession, withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { getServerSidePropsWrapper, getSession, useUser, withPageAuthRequired } from '@auth0/nextjs-auth0'
 import type { GetServerSideProps, NextPage } from 'next'
 import { ReactElement } from 'react'
 import AppLayout from '../../components/AppLayout'
 import MainContent, { Widget } from '../../components/MainContent'
 import Header from '../../components/widgets/Header'
-import ProfileContainer from '../../components/widgets/Profile/ProfileContainer'
+import ProfileContainer from '../../components/widgets/Profile/UserProfileComponent'
 import { NextPageWithLayout } from '../_app'
 
 const Profile: NextPageWithLayout = () => {
+  const { user } = useUser()
+
   const widgets: Widget[] = [
     { 
       component: <Header 
@@ -16,7 +18,7 @@ const Profile: NextPageWithLayout = () => {
       />, 
       colspan: 3
     },
-    { component: <ProfileContainer />, colspan: 3 },
+    { component: <ProfileContainer user={user} />, colspan: 3 },
   ]
 
   return (

@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react"
+import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react"
 import useSWRInfinite from "swr/infinite";
 import WellPermitTable from "../DataTable/DataTable";
 import Select, { SingleValue } from 'react-select'
@@ -8,6 +8,9 @@ import wellPermitColumnDefs from "./well-permit-search-column-defs";
 import { IoAdd, IoSearchSharp } from "react-icons/io5";
 import { useUser } from "@auth0/nextjs-auth0";
 import { UserData } from "../../../interfaces/User";
+import { Alert, CircularProgress, Snackbar } from "@mui/material";
+import { RowNode } from "ag-grid-community";
+import { useSnackbar } from "notistack";
 
 interface SearchTerm {
   term: string
@@ -33,21 +36,21 @@ const WellPermitSearch = () => {
   const [pageIndex, setPageIndex] = useState(1)
   const [searchTerms, setSearchTerms] = useState(initialSearchTerms)
   const [rowData, setRowData] = useState<any[] | undefined>([])
-  const [selectedRowData, setSelectedRowData] = useState<any[] | undefined>(undefined)
-  const [filterModel, setFilterModel] = useState<{}>({
-    permitCurrentStatusDescr: {
-      filterType: 'text',
-      type: 'contains',
-      filter: 'issued'
-    }
-  })
+  const [selectedRowNodes, setSelectedRowNodes] = useState<RowNode[] | undefined>(undefined)
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+  const [filterModel, setFilterModel] = useState<{}>()
+  const [addPermitsLoading, setAddPermitsLoading] = useState(false)
+  const [searchLoading, setSearchLoading] = useState(false)
+
   const { data, error } = useSWR(
     url,
     fetcher
   );
 
   useEffect(() => {
+    console.log(data)
     if (data) setRowData(data.ResultList)
+
   }, [data])
 
   const handleInputChange = (termName: SearchTermName, { target }: ChangeEvent<HTMLInputElement>) => {
@@ -70,32 +73,40 @@ const WellPermitSearch = () => {
     setSearchTerms({...searchTerms})
   }
 
-  const handleRowSelectionChange = (rowData: any[]) => {
-    setSelectedRowData(rowData)
+  const handleRowSelectionChange = (rowNodes: RowNode[]) => {
+    setSelectedRowNodes(rowNodes)
   }
 
   const handleAddPermits = async () => {
-    const url = `/api/v1/well-permits`
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(selectedRowData)
-    })
-      .then(res => res.json())
-      .catch(error => error)
+    try {
+      setAddPermitsLoading(true)
+      if (!selectedRowNodes) throw new Error('No rows selected')
+      const url = `/api/v1/well-permits`
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(selectedRowNodes.map(rowNode => rowNode.data))
+      }).then(res => res.json())
+  
+      if (!user) throw new Error('User not defined')
+      const permitRefs = res.map((el: any) => ({ document_id: el.id, status: 'requested' }))
+  
+      const appMetaDataRes = await fetch('/api/auth/user/update-app-meta-data', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ permitRefs: permitRefs })
+      }).then(res => res.json())
 
-    if (!user) throw new Error('No user: cannot create reference to well permits for this user')
-    const permitRefs = res.map((el: any) => ({ document_id: el.id, status: 'requested' }))
-
-    await fetch('/api/auth/user/update-app-meta-data', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ permitRefs: permitRefs })
-    })
+      enqueueSnackbar(`Success! ${res.length} permit(s) added to your account`)
+      setAddPermitsLoading(false)
+    } catch (error: any) {
+      setAddPermitsLoading(false)
+      enqueueSnackbar('Something went wrong, try again')
+    }
   }
 
 
@@ -116,7 +127,6 @@ const WellPermitSearch = () => {
   return (
     <div className="w-full">
       <div className="mb-4 text-xl font-bold">Search for well permits</div>
-
       <form onSubmit={handleSubmit} className="flex items-center">
         <div className="grid grid-cols-3 gap-2 mb-4 grow mr-6">
           <input
@@ -145,23 +155,31 @@ const WellPermitSearch = () => {
           )}
           <input type="date" className="px-2 border border-gray-300 rounded h-[38px]" placeholder="Modified" />
         </div>
-        <button className="flex items-center mb-4 px-3 py-2 bg-primary text-white rounded-lg w-fit h-fit">
-          <IoSearchSharp />
-          <span className="ml-2">Search</span>
+        <button className="flex items-center mb-4 px-3 py-2 bg-primary text-white rounded-lg w-fit h-[50px]">
+          { ((!data && !url) || (data && url)) && 
+            <IoSearchSharp size={30} />
+          }
+          {!data && url && 
+            <CircularProgress color="inherit" size={30} />
+          }
+              <span className="ml-2">Search</span>
         </button>
       </form>
       <button 
         onClick={handleAddPermits}
-        className={`flex items-center mb-4  rounded-lg py-3 drop-shadow w-fit transition ease-in-out ${(selectedRowData && selectedRowData.length) ? 'bg-green-600 text-white' : 'bg-slate-200 text-slate-400'}`}
-        disabled={!selectedRowData?.length}>
+        className={`flex items-center mb-4  rounded-lg py-3 drop-shadow w-fit transition ease-in-out ${(selectedRowNodes && selectedRowNodes.length) ? 'bg-green-600 text-white' : 'bg-slate-200 text-slate-400'}`}
+        disabled={!selectedRowNodes?.length}>
         <span className="border-r border-slate-300 px-4 ">
-          { selectedRowData ? selectedRowData.length : 0 } selected
+          { selectedRowNodes ? selectedRowNodes.length : 0 } selected
         </span>
-          <div className="flex items-center px-4">
-            <span className="text-xl">
-              <IoAdd className=" font-extrabold" />
-            </span>
-            <span className="ml-1">Add permits to account</span>
+          <div className="flex items-center justify-center px-4 w-[150px] ">
+              {!addPermitsLoading && 
+                <IoAdd className=" font-extrabold" size={20} />
+              }
+              {addPermitsLoading && 
+                <CircularProgress color="inherit" size={20} />
+              }
+            <span className="ml-1">Add permits</span>
           </div>
       </button>
       <WellPermitTable 
@@ -169,9 +187,8 @@ const WellPermitSearch = () => {
         rowData={rowData} 
         height={400} 
         filterModel={filterModel}
-        onRowSelectionChanged={(rowData) => handleRowSelectionChange(rowData)}
+        onRowSelectionChanged={handleRowSelectionChange}
       />
-
     </div>
   )
 }

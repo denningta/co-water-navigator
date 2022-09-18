@@ -33,7 +33,7 @@ const wellPermitColumnDefs: ColDef[] = [
   },
   {
     field: 'contactName',
-    hide: true
+    hide: false
   },
   {
     field: 'permitCurrentStatusDescr',

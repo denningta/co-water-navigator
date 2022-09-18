@@ -9,12 +9,12 @@ interface Props {
 }
 
 const UserManager = ({ users }: Props) => {
-  console.log(users)
   return (
     <div>
       <DataTable 
         columnDefs={userManagementColDefs}
         rowData={users}
+        suppressRowClickSelection={true}
       />
     </div>
   )

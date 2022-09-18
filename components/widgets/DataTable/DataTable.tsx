@@ -1,5 +1,5 @@
 import { useUser } from '@auth0/nextjs-auth0';
-import { ColDef, ColumnApi, GridApi, SelectionChangedEvent, SetFilterModelValue } from 'ag-grid-community';
+import { ColDef, ColumnApi, GridApi, RowNode, SelectionChangedEvent, SetFilterModelValue } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 import styles from './DataTable.module.css'
@@ -14,7 +14,8 @@ interface Props {
   height?: number
   filterModel?: { [key: string]: any; }
   rowSelection?: 'single' | 'multiple'
-  onRowSelectionChanged?: (rowData: any[]) => void | null
+  suppressRowClickSelection?: boolean
+  onRowSelectionChanged?: (rowNodes: RowNode[]) => void | null
 }
 
 const DataTable = ({ 
@@ -23,6 +24,7 @@ const DataTable = ({
   height = 400, 
   filterModel, 
   rowSelection = 'multiple',
+  suppressRowClickSelection = false,
   onRowSelectionChanged = () => null 
 }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
@@ -47,6 +49,7 @@ const DataTable = ({
   useEffect(() => {
     if (!api) return
     api.setFilterModel(filterModel)
+    api.sizeColumnsToFit()
   }, [api, filterModel])
 
   const handleClick = () => {
@@ -60,7 +63,7 @@ const DataTable = ({
   }
 
   const handleRowSelectionChange = ({ api }: SelectionChangedEvent) => {
-    onRowSelectionChanged(api.getSelectedRows())
+    onRowSelectionChanged(api.getSelectedNodes())
     api.redrawRows()
   }
 
@@ -77,6 +80,7 @@ const DataTable = ({
           rowSelection={rowSelection}
           onSelectionChanged={handleRowSelectionChange}
           suppressCellFocus={true}
+          suppressRowClickSelection={suppressRowClickSelection}
         >
         </AgGridReact>
       </div>
