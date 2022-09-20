@@ -19,7 +19,9 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 
   return getLayout(
     <UserProvider>
-      <SnackbarProvider>
+      <SnackbarProvider
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
         <Component {...pageProps} />
       </SnackbarProvider>
     </UserProvider>

@@ -7,10 +7,11 @@ import WellPermitsCellRenderer from "./WellPermitsCellRenderer";
 const userManagementColDefs: ColDef[] = [
   {
     field: '',
-    pinned: 'left',
+    pinned: 'right',
     width: 70,
     cellRenderer: ActionsCellRenderer,
-    cellStyle: { textAlign: 'center' }
+    cellStyle: { textAlign: 'center' },
+    filter: false
   },
   {
     field: 'name',

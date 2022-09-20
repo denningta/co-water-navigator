@@ -11,6 +11,7 @@ import { UserData } from "../../../interfaces/User";
 import { Alert, CircularProgress, Snackbar } from "@mui/material";
 import { RowNode } from "ag-grid-community";
 import { useSnackbar } from "notistack";
+import { WellPermit } from "../../../interfaces/WellPermit";
 
 interface SearchTerm {
   term: string
@@ -27,20 +28,18 @@ type SearchTerms = {
 };
 
 const initialSearchTerms: SearchTerms = {
-  permit: undefined, contactName: undefined, receipt: undefined, county: undefined, designatedBasinName: undefined, division: undefined, managementDistrictName: undefined, waterDistrict: undefined, modified: undefined, fields: 'receipt%2Cpermit%2CcontactName%2CpermitCurrentStatusDescr', format: 'json'
+  permit: undefined, contactName: undefined, receipt: undefined, county: undefined, designatedBasinName: undefined, division: undefined, managementDistrictName: undefined, waterDistrict: undefined, modified: undefined, fields: 'receipt%2Cpermit%2CcontactName%2CpermitCurrentStatusDescr%2Cmodified', format: 'json'
 }
 
 const WellPermitSearch = () => {
   const { user } = useUser()
   const [url, setUrl] = useState<string | null>(null)
-  const [pageIndex, setPageIndex] = useState(1)
   const [searchTerms, setSearchTerms] = useState(initialSearchTerms)
   const [rowData, setRowData] = useState<any[] | undefined>([])
   const [selectedRowNodes, setSelectedRowNodes] = useState<RowNode[] | undefined>(undefined)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
   const [filterModel, setFilterModel] = useState<{}>()
   const [addPermitsLoading, setAddPermitsLoading] = useState(false)
-  const [searchLoading, setSearchLoading] = useState(false)
 
   const { data, error } = useSWR(
     url,
@@ -48,9 +47,8 @@ const WellPermitSearch = () => {
   );
 
   useEffect(() => {
-    console.log(data)
-    if (data) setRowData(data.ResultList)
-
+    if (!data) return
+    setRowData(data.ResultList)
   }, [data])
 
   const handleInputChange = (termName: SearchTermName, { target }: ChangeEvent<HTMLInputElement>) => {
@@ -81,6 +79,7 @@ const WellPermitSearch = () => {
     try {
       setAddPermitsLoading(true)
       if (!selectedRowNodes) throw new Error('No rows selected')
+
       const url = `/api/v1/well-permits`
       const res = await fetch(url, {
         method: 'POST',
@@ -91,7 +90,11 @@ const WellPermitSearch = () => {
       }).then(res => res.json())
   
       if (!user) throw new Error('User not defined')
-      const permitRefs = res.map((el: any) => ({ document_id: el.id, status: 'requested' }))
+      const permitRefs = res.map((el: any) => ({ 
+        document_id: el.document_id, 
+        permit:el.permit, 
+        status: 'requested' 
+      }))
   
       const appMetaDataRes = await fetch('/api/auth/user/update-app-meta-data', {
         method: 'PATCH',
@@ -101,11 +104,11 @@ const WellPermitSearch = () => {
         body: JSON.stringify({ permitRefs: permitRefs })
       }).then(res => res.json())
 
-      enqueueSnackbar(`Success! ${res.length} permit(s) added to your account`)
+      enqueueSnackbar(appMetaDataRes, { variant: 'success' })
       setAddPermitsLoading(false)
     } catch (error: any) {
       setAddPermitsLoading(false)
-      enqueueSnackbar('Something went wrong, try again')
+      enqueueSnackbar('Something went wrong, please try again', { variant: 'error' })
     }
   }
 

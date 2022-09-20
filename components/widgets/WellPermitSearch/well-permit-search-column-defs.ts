@@ -6,11 +6,13 @@ const wellPermitColumnDefs: ColDef[] = [
     hide: false,
     checkboxSelection: true,
     headerCheckboxSelection: true,
-    headerCheckboxSelectionFilteredOnly: true
+    headerCheckboxSelectionFilteredOnly: true,
+    sortable: true,
   },
   {
     field: 'receipt',
-    hide: false
+    hide: false,
+    sortable: true
   },
   {
     field: 'contactName',

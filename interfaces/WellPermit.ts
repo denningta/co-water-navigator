@@ -71,3 +71,9 @@ export type WellPermitAssignment = WellPermit & {
   status?: WellPermitStatus
   document_id: string
 }
+
+export interface PermitRef {
+  status?: WellPermitStatus
+  document_id?: string
+  permit: string
+}
