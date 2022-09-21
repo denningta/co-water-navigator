@@ -1,5 +1,5 @@
 import { Role, UserMetadata, User } from "auth0";
-import { WellPermitStatus } from "./WellPermit";
+import { PermitRef, WellPermitStatus } from "./WellPermit";
 
 
 export interface UserData {
@@ -11,10 +11,7 @@ export interface UserData {
 }
 
 export interface AppMetadata {
-  permitRefs?: {
-    document_id?: string
-    status?: WellPermitStatus
-  }[]
+  permitRefs?: PermitRef[]
 }
 
 export type UserManagement = User<AppMetadata, UserMetadata> & { roles?: Role[] }

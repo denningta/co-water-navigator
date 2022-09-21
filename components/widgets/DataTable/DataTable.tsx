@@ -7,19 +7,22 @@ import { AgGridReact } from "ag-grid-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { IoIosArrowBack } from 'react-icons/io';
 import ColumnSelector from './ColumnSelector';
+import LoadingOverlay from './LoadingOverlay';
 
 interface Props {
   columnDefs: ColDef[]
+  defaultColDef?: ColDef
   rowData: any[] | undefined
   height?: number
   filterModel?: { [key: string]: any; }
   rowSelection?: 'single' | 'multiple'
   suppressRowClickSelection?: boolean
-  onRowSelectionChanged?: (rowNodes: RowNode[]) => void | null
+  onRowSelectionChanged?: (rowNodes: RowNode[], api: GridApi) => void | null
 }
 
 const DataTable = ({ 
   columnDefs, 
+  defaultColDef,
   rowData, 
   height = 400, 
   filterModel, 
@@ -32,12 +35,6 @@ const DataTable = ({
   const [columnApi, setColumnApi] = useState<ColumnApi | null>(null)
   const [expanded, setExpanded] = useState(false)
   const [dynamicColDefs, setDynamicColDefs] = useState<ColDef[]>(columnDefs)
-
-  const defaultColDef = useMemo<ColDef>(() => {
-    return {
-      filter: true
-    }
-  }, [])
 
   const onGridReady = () => {
     if (!gridRef) return
@@ -52,6 +49,15 @@ const DataTable = ({
     api.sizeColumnsToFit()
   }, [api, filterModel])
 
+  useEffect(() => {
+    if (!api) return
+    if (!rowData) api.showLoadingOverlay()
+    if (rowData) {
+      if (rowData.length < 1) api.showNoRowsOverlay()
+      else api.hideOverlay()
+    }
+  }, [api, rowData])
+
   const handleClick = () => {
     setExpanded(!expanded)
   }
@@ -63,7 +69,7 @@ const DataTable = ({
   }
 
   const handleRowSelectionChange = ({ api }: SelectionChangedEvent) => {
-    onRowSelectionChanged(api.getSelectedNodes())
+    onRowSelectionChanged(api.getSelectedNodes(), api)
     api.redrawRows()
   }
 
@@ -81,6 +87,7 @@ const DataTable = ({
           onSelectionChanged={handleRowSelectionChange}
           suppressCellFocus={true}
           suppressRowClickSelection={suppressRowClickSelection}
+          loadingOverlayComponent={LoadingOverlay}
         >
         </AgGridReact>
       </div>

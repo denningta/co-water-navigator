@@ -1,6 +1,5 @@
 import { ICellRendererParams } from "ag-grid-community"
 import { MouseEvent, useEffect, useState } from "react"
-import usePermitAssignments from "../../../hooks/usePermitAssignments"
 import { WellPermitAssignment } from "../../../interfaces/WellPermit"
 import { ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material'
 import { BsThreeDots } from "react-icons/bs"
@@ -23,7 +22,7 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
 
   const handleSelection = () => {
     handleClose()
-    router.push(`manage-users/${encodeURIComponent(params.data.user_id)}`)
+    router.push(`well-permits/${encodeURIComponent(params.data.permit)}`)
   }
 
   return (
@@ -42,7 +41,7 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
       >
         <MenuItem onClick={handleSelection}>
           <ListItemIcon><MdEdit /></ListItemIcon>
-          <ListItemText>User Details</ListItemText>
+          <ListItemText>Meter Readings</ListItemText>
         </MenuItem>
       </Menu>
     </div>

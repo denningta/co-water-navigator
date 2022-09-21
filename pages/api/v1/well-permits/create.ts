@@ -39,7 +39,7 @@ function createWellPermits(req: NextApiRequest, res: NextApiResponse): Promise<M
       return result
     })
 
-    const wellPermitRecords = 
+    const upsertWellPermitRecords = 
       q.Let({
         wellPermitRecords: q.Map(codwrPermits,
           q.Lambda('wellPermit',
@@ -75,8 +75,8 @@ function createWellPermits(req: NextApiRequest, res: NextApiResponse): Promise<M
       )
     )
 
-    const createOrUpdateWellPermits = q.Let({
-      wellPermitRecords: wellPermitRecords
+    const upsertWellPermits = q.Let({
+      wellPermitRecords: upsertWellPermitRecords
     },
       q.Map(q.Var('wellPermitRecords'),
         q.Lambda(['wellPermitRecord'],
@@ -125,11 +125,10 @@ function createWellPermits(req: NextApiRequest, res: NextApiResponse): Promise<M
       )
     )
 
-
     const response: any = await faunaClient.query(
       q.Let(
         {
-          response: createOrUpdateWellPermits
+          response: upsertWellPermits
         },
         q.Distinct(
           q.Map(q.Var('response'),

@@ -65,15 +65,14 @@ export interface WellPermit {
   wdid?: string, // DWR unique structure identifier
 }
 
+export interface PermitRef {
+  permit: string
+  document_id: string
+  status?: WellPermitStatus
+  ts?: number
+}
+
 export type WellPermitStatus = 'requested' | 'approved' | 'rejected'
 
-export type WellPermitAssignment = WellPermit & {
-  status?: WellPermitStatus
-  document_id: string
-}
+export type WellPermitAssignment = WellPermit & PermitRef
 
-export interface PermitRef {
-  status?: WellPermitStatus
-  document_id?: string
-  permit: string
-}

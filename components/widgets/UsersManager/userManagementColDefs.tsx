@@ -4,6 +4,10 @@ import NameCellRenderer from "./NameCellRenderer";
 import RolesCellRenderer from "./RolesCellRenderer";
 import WellPermitsCellRenderer from "./WellPermitsCellRenderer";
 
+export const userManagementDefaultColDefs: ColDef = {
+  resizable: true
+} 
+
 const userManagementColDefs: ColDef[] = [
   {
     field: '',

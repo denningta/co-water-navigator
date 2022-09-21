@@ -11,11 +11,11 @@ import { GetServerSideProps } from 'next'
 import useSWR from 'swr'
 import { Auth0AppMetadata } from '../../interfaces/Auth0UserProfile'
 import { AppMetadata } from '../../interfaces/User'
-import usePermitAssignments from '../../hooks/usePermitAssignments'
+import useSwr from 'swr'
 
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url)
+const fetcher = async (url: string, user_id: string) => {
+  const res = await fetch(url + '?user_id=' + user_id)
   if (!res.ok) {
     const error = new Error('An error occurred while fetching the data.')
     error.message = await res.json()
@@ -27,7 +27,10 @@ const fetcher = async (url: string) => {
 const WellPermits: NextPageWithLayout = () => {
   const { user }: any = useUser()
   const [permitRefs, setPermitRefs] = useState<AppMetadata['permitRefs']>()
-  const permitAssignments = usePermitAssignments(permitRefs)
+  // const { data } = usePermitAssignments(permitRefs)
+  const { data } = useSwr(user ? `/api/v1/well-permits/${user.sub}` : null, fetcher)
+
+  console.log(data)
 
   useEffect(() => {
     if (!user || !user.app_metadata) return
@@ -42,7 +45,7 @@ const WellPermits: NextPageWithLayout = () => {
       />, 
       colspan: 3
     },
-    { component: <WellPermitsAssignment rowData={permitAssignments} />, colspan: 3 },
+    { component: <WellPermitsAssignment rowData={data} />, colspan: 3 },
     { component: <WellPermitSearch />, colspan: 3 }
   ]
 

@@ -7,7 +7,7 @@ import AppLayout from '../../components/AppLayout'
 import MainContent, { Widget } from '../../components/MainContent'
 import Header from '../../components/widgets/Header'
 import ProfileContainer from '../../components/widgets/Profile/UserProfileComponent'
-import UserManager from '../../components/widgets/UserManager/UserManager'
+import UserManager from '../../components/widgets/UsersManager/UserManager'
 import { NextPageWithLayout } from '../_app'
 
 const fetcher = async (url: string) => {

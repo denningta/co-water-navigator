@@ -1,32 +1,24 @@
-import { getAccessToken, getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { NextApiRequest, NextApiResponse } from "next";
-import { ModifiedBanking } from "../../../../interfaces/ModifiedBanking";
+import { WellPermitAssignment } from "../../../../interfaces/WellPermit";
 import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
+import { getWellPermits } from "../../../../lib/fauna/ts-queries/wellPermits";
+import { getUser } from "../../auth/user/get-user";
 import { HttpError } from "../interfaces/HttpError";
 import validateQuery from "../validatorFunctions";
 
-function listModifiedBanking(req: NextApiRequest, res: NextApiResponse): Promise<ModifiedBanking> {
+function listWellPemits(req: NextApiRequest, res: NextApiResponse): Promise<WellPermitAssignment[]> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
     ]);
 
-    const { id } = req.query
-    if (!id) throw new Error('id query is undefined')
-
     if (errors.length) reject(errors);
 
-    const query = q.Map(
-      Array.isArray(id) ? id : [id],
-      q.Lambda('id', 
-        {
-          document: q.Select(['data'], q.Get(q.Ref(q.Collection('wellPermits'), q.Var('id')))),
-          id: q.Var('id')
-        }
-      )
-    )
+    const { document_id } = req.query
+    if (!document_id) throw new Error('document_id missing from query')
+    const document_ids = Array.isArray(document_id) ? document_id : [document_id]
 
-    const response = await faunaClient.query(query)
+    const response = await faunaClient.query(getWellPermits(document_ids))
       .then(res => res)
       .catch(err => {
         errors.push(err);
@@ -49,4 +41,4 @@ function listModifiedBanking(req: NextApiRequest, res: NextApiResponse): Promise
   });
 }
 
-export default listModifiedBanking
+export default listWellPemits

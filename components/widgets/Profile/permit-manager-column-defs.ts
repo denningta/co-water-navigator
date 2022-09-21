@@ -1,7 +1,5 @@
 import { ColDef, ICellRendererParams } from "ag-grid-community"
-import AccessCellRenderer from "./AccessCellRenderer"
-import ActionsCellRenderer from "./ActionsCellRenderer"
-import PermitCellRenderer from "./PermitCellRenderer"
+import AccessCellRenderer from "../WellPermitsAssignment/AccessCellRenderer"
 
 export const defaultColDef: ColDef = {
   resizable: true
@@ -11,19 +9,15 @@ const wellPermitColumnDefs: ColDef[] = [
   {
     field: '',
     filter: false,
-    width: 70,
-    pinned: 'right',
+    maxWidth: 55,
+    pinned: true,
     suppressMovable: true,
-    resizable: false,
-    suppressAutoSize: true,
-    cellRenderer: ActionsCellRenderer,
-    cellStyle: { textAlign: 'center' },
+    checkboxSelection: true
   },
   {
     field: 'permit',
     hide: false,
-    initialWidth: 150,
-    cellRenderer: PermitCellRenderer
+    initialWidth: 150
   },
   {
     field: 'status',

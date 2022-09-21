@@ -6,8 +6,9 @@ import { PermitRef } from "../../../../interfaces/WellPermit";
 import { HttpError } from "../../v1/interfaces/HttpError";
 import validateQuery from "../../v1/validatorFunctions";
 import { reject } from "lodash";
+import _ from "lodash";
 
-const updateAppMetaData = async (req: NextApiRequest, res: NextApiResponse) => {
+const handleUpdateAppMetaData = async (req: NextApiRequest, res: NextApiResponse) => {
   const errors = validateQuery(req, [
     'bodyExists'
   ]);
@@ -36,38 +37,35 @@ const updateAppMetaData = async (req: NextApiRequest, res: NextApiResponse) => {
   const id = session?.user.sub
 
   try {
-    const auth0 = managementClient
-    const { app_metadata } = await auth0.getUser({ id: id })
-
-    const newPermitRefs: PermitRef[] = body.permitRefs
-    const oldPermitRefs: PermitRef[] | undefined = app_metadata?.permitRefs
-    let updatedPermitRefs: PermitRef[] = oldPermitRefs ?? []
-    let difference: PermitRef[] = []
-
-    if (oldPermitRefs) {
-      difference = newPermitRefs.filter((newRef) => 
-        !oldPermitRefs.some((oldRef) => 
-          newRef.document_id === oldRef.document_id
-        )
-      ) 
-
-      updatedPermitRefs = [ ...oldPermitRefs, ...difference ]
-    }
-
-    const added = `${difference.length} permit(s) added`
-    const assigned = (newPermitRefs.length - difference.length) > 0 
-    ? `, ${(newPermitRefs.length - difference.length)} already assigned to your account`
-    : ''
-
-    await auth0.updateAppMetadata({ id: id }, { permitRefs: updatedPermitRefs })
-
-    res.status(200).json(`Success! ${added}${assigned}`)
-
+    const response = await updatePermitRefs(id, body.permitRefs)
+    res.status(200).json(response)
   } catch (error: any) {
     res.status(500).json({ statusCode: 500, message: error.message })
   }
-
-
 }
 
-export default withApiAuthRequired(updateAppMetaData)
+export const updatePermitRefs = async (user_id: string, newPermitRefs: PermitRef[]) => {
+  try {
+    const auth0 = managementClient
+    const { app_metadata } = await auth0.getUser({ id: user_id })
+
+    const oldPermitRefs: PermitRef[] | undefined = app_metadata?.permitRefs
+
+    if (oldPermitRefs) {
+      // Upsert
+      newPermitRefs.forEach((newRef, newIndex) => {
+        const matchIndex = oldPermitRefs.findIndex((oldRef) => oldRef.document_id === newRef.document_id)
+        if (matchIndex >= 0) oldPermitRefs[matchIndex] = newRef
+        else oldPermitRefs.push(newRef)
+      })
+    }
+
+    const response = await auth0.updateAppMetadata({ id: user_id }, { permitRefs: oldPermitRefs })
+    return response
+
+  } catch (error: any) {
+    return error
+  }
+}
+
+export default withApiAuthRequired(handleUpdateAppMetaData)

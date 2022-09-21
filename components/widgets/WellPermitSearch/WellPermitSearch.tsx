@@ -92,7 +92,7 @@ const WellPermitSearch = () => {
       if (!user) throw new Error('User not defined')
       const permitRefs = res.map((el: any) => ({ 
         document_id: el.document_id, 
-        permit:el.permit, 
+        permit: el.permit, 
         status: 'requested' 
       }))
   

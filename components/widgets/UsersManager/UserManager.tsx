@@ -1,7 +1,7 @@
 import { User } from "auth0"
 import { UserManagement } from "../../../interfaces/User"
 import DataTable from "../DataTable/DataTable"
-import userManagementColDefs from "./userManagementColDefs"
+import userManagementColDefs, { userManagementDefaultColDefs } from "./userManagementColDefs"
 
 
 interface Props {
@@ -12,6 +12,7 @@ const UserManager = ({ users }: Props) => {
   return (
     <div>
       <DataTable 
+        defaultColDef={userManagementDefaultColDefs}
         columnDefs={userManagementColDefs}
         rowData={users}
         suppressRowClickSelection={true}

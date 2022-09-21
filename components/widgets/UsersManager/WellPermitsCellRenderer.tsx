@@ -1,20 +1,24 @@
 import { ICellRendererParams } from "ag-grid-community"
 import { useEffect, useState } from "react"
-import usePermitAssignments from "../../../hooks/usePermitAssignments"
 import { WellPermitAssignment } from "../../../interfaces/WellPermit"
 import { Tooltip } from '@mui/material'
+import { mutate } from 'swr'
+import useWellPermitsByUser from "../../../hooks/useWellPermitsByUser"
+import { AiOutlineConsoleSql } from "react-icons/ai"
 
 const WellPermitsCellRenderer = (params: ICellRendererParams) => {
   const permitRefs = params.data && params.data.app_metadata && params.data.app_metadata.permitRefs
-  const permitAssignments = usePermitAssignments(permitRefs)
   const [requested, setRequested] = useState<WellPermitAssignment[]>()
   const [approved, setApproved] = useState<WellPermitAssignment[]>()
+  const [rejected, setRejected] = useState<WellPermitAssignment[]>()
+  const { data } = useWellPermitsByUser(params.data.user_id)
 
   useEffect(() => {
-    if (!permitAssignments) return
-    setApproved(permitAssignments.filter(permit => permit.status === 'approved'))
-    setRequested(permitAssignments.filter(permit => permit.status === 'requested'))
-  }, [permitAssignments])
+    if (!data) return
+    setApproved(data.filter(permit => permit.status === 'approved'))
+    setRequested(data.filter(permit => permit.status === 'requested'))
+    setRejected(data.filter(permit => permit.status === 'rejected'))
+  }, [data])
 
   const getPermitNumbers = (permits: WellPermitAssignment[], length = 5) => {
     const permitNumbers = permits.map(permit => permit.permit ?? '').slice(0, length).join(' ')
@@ -24,7 +28,7 @@ const WellPermitsCellRenderer = (params: ICellRendererParams) => {
 
   return (
     <span>
-      {permitAssignments && <>
+      {data && <>
         {requested && requested.length > 0 &&
           <Tooltip title={getPermitNumbers(requested)} arrow={true}>
             <span className="px-3 py-1 bg-violet-200 text-violet-700 rounded font-semibold">
@@ -39,8 +43,15 @@ const WellPermitsCellRenderer = (params: ICellRendererParams) => {
           </span>
         </Tooltip>
         }
+        {rejected && rejected.length > 0 &&
+          <Tooltip title={getPermitNumbers(rejected)} arrow={true}>
+            <span className="ml-2 px-3 py-1 bg-rose-200 text-rose-700 rounded font-semibold">
+              {rejected.length} rejected
+            </span>
+          </Tooltip>
+        }
       </>}
-      {!permitAssignments && 
+      {!data && 
         <span className=" px-16 rounded-full bg-gradient-to-r from-primary via-white to-primary bg-opacity-10 background-animate text-white">
           loading . . .
         </span>
