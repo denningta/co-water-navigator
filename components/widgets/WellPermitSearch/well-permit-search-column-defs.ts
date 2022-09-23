@@ -1,5 +1,9 @@
 import { ColDef } from "ag-grid-community"
 
+export const defaultColDef: ColDef = {
+  filter: true
+}
+
 const wellPermitColumnDefs: ColDef[] = [
   {
     field: 'permit',
@@ -8,6 +12,7 @@ const wellPermitColumnDefs: ColDef[] = [
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     sortable: true,
+    filter: true
   },
   {
     field: 'receipt',

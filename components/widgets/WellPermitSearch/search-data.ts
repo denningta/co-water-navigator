@@ -197,23 +197,23 @@ const countyOptions: SelectOption[] = counties.map(county => ({
 }))
 
 const designatedBasinOptions: SelectOption[] = designatedBasins.map(basin => ({
-value: basin.replace(' ', '+'),
-label: basin
+  value: basin.replace(' ', '+'),
+  label: basin
 }))
 
 const divisionOptions: SelectOption[] = divisions.map(div => ({
-value: div.division.toString(),
-label: div.divisionName
+  value: div.division.toString(),
+  label: `Division ${div.division} - ${div.divisionName}`
 }))
 
 const managementDistrictOptions: SelectOption[] = managementDistricts.map(district => ({
-value: district.replace(' ', '+'),
-label: district
+  value: district.replace(' ', '+'),
+  label: district
 }))
 
 const waterDistrictOptions: SelectOption[] = waterDistricts.map(dist => ({
-value: dist.district.toString(),
-label: dist.districtName
+  value: dist.district.toString(),
+  label: `${dist.districtName} (Div ${dist.division} - Dist ${dist.district}) `
 }))
 
 // https://dwr.state.co.us/Rest/GET/api/v2/wellpermits/wellpermit/?format=json&fields=receipt%2Cpermit%2CcontactName&designatedBasinName=*SOUTHERN+HIGH+PLAINS*&division=1&managementDistrictName=*LOST+CREEK*&min-modified=09%2F01%2F2022&receipt=*123*&waterDistrict=6
@@ -234,5 +234,13 @@ const searchOptions: SearchOption[] = [
   { title: 'Management District', name: 'managementDistrictName', options: managementDistrictOptions },
   { title: 'District', name: 'waterDistrict', options: waterDistrictOptions },
 ]
+
+export const filterOptions: SelectOption[] = [
+  { label: 'Permit Number', value: 'permit' },
+  { label: 'Contact Name', value: 'contactName' },
+  { label: 'Receipt', value: 'receipt' },
+  { label: 'Permit Status', value: 'permitCurrentStatusDescr' },
+] 
+
 
 export default searchOptions

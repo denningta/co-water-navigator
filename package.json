@@ -13,6 +13,7 @@
     "@auth0/nextjs-auth0": "^1.9.1",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@mui/base": "^5.0.0-alpha.98",
     "@mui/material": "^5.10.4",
     "@serverless-jwt/next": "^0.2.1",
     "@visx/axis": "^2.12.2",

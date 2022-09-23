@@ -4,7 +4,7 @@ import WellPermitTable from "../DataTable/DataTable";
 import Select, { SingleValue } from 'react-select'
 import searchOptions, { SearchTermName, SelectOption } from "./search-data";
 import useSWR from "swr";
-import wellPermitColumnDefs from "./well-permit-search-column-defs";
+import wellPermitColumnDefs, { defaultColDef } from "./well-permit-search-column-defs";
 import { IoAdd, IoSearchSharp } from "react-icons/io5";
 import { useUser } from "@auth0/nextjs-auth0";
 import { UserData } from "../../../interfaces/User";
@@ -12,6 +12,8 @@ import { Alert, CircularProgress, Snackbar } from "@mui/material";
 import { RowNode } from "ag-grid-community";
 import { useSnackbar } from "notistack";
 import { WellPermit } from "../../../interfaces/WellPermit";
+import TableFilters from "../../common/TableFilterSelect";
+import TableFilter from "./TableFilter";
 
 interface SearchTerm {
   term: string
@@ -127,47 +129,25 @@ const WellPermitSearch = () => {
     setUrl(baseUrl + '?' + urlQuery)
   }
 
+  const handleSearch = (searchQuery: string | undefined) => {
+    if (!searchQuery) return
+    setRowData(undefined)
+    setUrl(baseUrl + '?' + searchQuery)
+  }
+
+  console.log(filterModel)
+
   return (
     <div className="w-full">
       <div className="mb-4 text-xl font-bold">Search for well permits</div>
-      <form onSubmit={handleSubmit} className="flex items-center">
-        <div className="grid grid-cols-3 gap-2 mb-4 grow mr-6">
-          <input
-            className="border border-gray-300 rounded outline-blue-500 px-2 h-[38px] w-full placeholder:"
-            placeholder="Permit Number"
-            onChange={(event) => handleInputChange('permit', event)}>
-          </input>
-          <input
-            className="border border-gray-300 rounded outline-blue-500 px-2 h-[38px] w-full"
-            placeholder="Contact Name"
-            onChange={(event) => handleInputChange('contactName', event)}>
-          </input>
-          <input
-            className="border border-gray-300 rounded outline-blue-500 px-2 h-[38px] w-full"
-            placeholder="Receipt Number"
-            onChange={(event) => handleInputChange('receipt', event)}>
-          </input>
-          { selectTerms.map((term, i) =>
-            <Select key={i}
-              instanceId={term.name}
-              options={term.options}
-              isClearable={true}
-              placeholder={term.title}
-              onChange={(event) => handleSelectChange(term.name, event)}
-            />
-          )}
-          <input type="date" className="px-2 border border-gray-300 rounded h-[38px]" placeholder="Modified" />
-        </div>
-        <button className="flex items-center mb-4 px-3 py-2 bg-primary text-white rounded-lg w-fit h-[50px]">
-          { ((!data && !url) || (data && url)) && 
-            <IoSearchSharp size={30} />
-          }
-          {!data && url && 
-            <CircularProgress color="inherit" size={30} />
-          }
-              <span className="ml-2">Search</span>
-        </button>
-      </form>
+      <div className="mb-4">
+        <TableFilter
+          onFilterModelChange={setFilterModel}
+          onSearch={(q) => handleSearch(q)}
+          isLoading={!!(!data && url)}
+        />
+      </div>
+
       <button 
         onClick={handleAddPermits}
         className={`flex items-center mb-4  rounded-lg py-3 drop-shadow w-fit transition ease-in-out ${(selectedRowNodes && selectedRowNodes.length) ? 'bg-green-600 text-white' : 'bg-slate-200 text-slate-400'}`}
@@ -186,6 +166,7 @@ const WellPermitSearch = () => {
           </div>
       </button>
       <WellPermitTable 
+        defaultColDef={defaultColDef}
         columnDefs={wellPermitColumnDefs} 
         rowData={rowData} 
         height={400} 
