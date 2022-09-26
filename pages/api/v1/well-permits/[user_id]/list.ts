@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PermitRef, WellPermit, WellPermitAssignment } from "../../../../../interfaces/WellPermit";
 import faunaClient, { q } from "../../../../../lib/fauna/faunaClient";
-import { getUser } from "../../../auth/user/get-user";
+import { getUser } from "../../../auth/[user_id]/get-user";
 import { HttpError } from "../../interfaces/HttpError";
 import validateQuery from "../../validatorFunctions";
 import { getWellPermits } from '../../../../../lib/fauna/ts-queries/wellPermits' 
@@ -14,14 +14,14 @@ function handleListWellPemitsByUser(req: NextApiRequest, res: NextApiResponse): 
 
     if (errors.length) reject(errors);
 
-    const { userId } = req.query
+    const { user_id } = req.query
 
-    if (!userId) throw new Error('userId was not included in the query')
-    if (Array.isArray(userId)) throw new Error('Querying by a single userId is allowed at a time')
-    const user = await getUser(userId)
+    if (!user_id) throw new Error('user_id was not included in the query')
+    if (Array.isArray(user_id)) throw new Error('Querying by a single user_id is allowed at a time')
+    const user = await getUser(user_id)
       .then(res => res)
       .catch(err => reject(err))
-    if (!user) throw new Error(`User with userId: ${userId} not found`)
+    if (!user) throw new Error(`User with user_id: ${user_id} not found`)
     
     if (!user.app_metadata?.permitRefs) return resolve([])
     const permitRefs = user.app_metadata.permitRefs

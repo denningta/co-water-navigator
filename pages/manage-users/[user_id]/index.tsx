@@ -22,7 +22,7 @@ const UserDetailsPage: NextPageWithLayout = () => {
   const router = useRouter()
   const { user_id } = router.query
 
-  const { data, isValidating, error } = useSWR(`/api/auth/user/get-user?id=${user_id}`, fetcher)
+  const { data, isValidating, error } = useSWR(`/api/auth/${user_id}/get-user`, fetcher)
 
   const widgets: Widget[] = [
     { 

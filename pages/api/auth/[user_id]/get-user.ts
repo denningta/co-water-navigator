@@ -6,13 +6,13 @@ import managementClient from "../../../../lib/auth0/auth0ManagementClient"
 const getUserHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = getSession(req, res)
 
-  const { id } = Array.isArray(req.query) ? req.query[0] : req.query
+  const { user_id } = Array.isArray(req.query) ? req.query[0] : req.query
 
   if (session && session.user && !session.user['coWaterExport/roles'].includes('admin'))
     throw new Error('Not authorized')
 
   try {
-    const user = await getUser(id)
+    const user = await getUser(user_id)
     res.status(200).json(user)
   } catch (error: any) {
     res.status(500).json({ statusCode: error.status ?? 500, message: error.message })

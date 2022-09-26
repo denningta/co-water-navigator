@@ -1,7 +1,7 @@
 import { withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { NextApiRequest, NextApiResponse } from "next";
 import { PermitRef } from "../../../../../../interfaces/WellPermit";
-import { updatePermitRefs } from "../../../../auth/user/update-app-meta-data";
+import { updatePermitRefs } from "../../../../auth/[user_id]/update-app-meta-data";
 import { HttpError } from "../../../interfaces/HttpError";
 import { listWellPermitsByPermitRef } from "../list";
 

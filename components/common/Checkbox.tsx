@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { FaCheck } from "react-icons/fa"
 
 interface Props {
-  title?: string | undefined
+  title?: string | JSX.Element | undefined
   checked?: boolean
   value: string | undefined
   onChange?: ([value, checked]: [string, boolean]) => void
