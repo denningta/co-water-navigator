@@ -1,9 +1,9 @@
 import { ICellRendererParams } from "ag-grid-community"
 import { useEffect, useState } from "react"
-import { WellPermitAssignment } from "../../../interfaces/WellPermit"
+import { WellPermitAssignment } from "../../../../interfaces/WellPermit"
 import { Tooltip } from '@mui/material'
 import { mutate } from 'swr'
-import useWellPermitsByUser from "../../../hooks/useWellPermitsByUser"
+import useWellPermitsByUser from "../../../../hooks/useWellPermitsByUser"
 import { AiOutlineConsoleSql } from "react-icons/ai"
 
 const WellPermitsCellRenderer = (params: ICellRendererParams) => {

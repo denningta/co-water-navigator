@@ -17,6 +17,7 @@ interface Props {
   filterModel?: { [key: string]: any; }
   rowSelection?: 'single' | 'multiple'
   suppressRowClickSelection?: boolean
+  quickFilter?: string | undefined
   onRowSelectionChanged?: (rowNodes: RowNode[], api: GridApi) => void | null
 }
 
@@ -28,6 +29,7 @@ const DataTable = ({
   filterModel, 
   rowSelection = 'multiple',
   suppressRowClickSelection = false,
+  quickFilter,
   onRowSelectionChanged = () => null 
 }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
@@ -48,6 +50,14 @@ const DataTable = ({
     api.setFilterModel(filterModel)
     api.sizeColumnsToFit()
   }, [api, filterModel])
+
+  useEffect(() => {
+    if (!api) return
+    if (quickFilter === undefined) 
+      api.resetQuickFilter()
+    else
+      api.setQuickFilter(quickFilter)
+  }, [api, quickFilter])
 
   useEffect(() => {
     if (!api) return

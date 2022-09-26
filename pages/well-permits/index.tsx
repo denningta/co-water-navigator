@@ -30,8 +30,6 @@ const WellPermits: NextPageWithLayout = () => {
   // const { data } = usePermitAssignments(permitRefs)
   const { data } = useSwr(user ? `/api/v1/well-permits/${user.sub}` : null, fetcher)
 
-  console.log(data)
-
   useEffect(() => {
     if (!user || !user.app_metadata) return
     setPermitRefs(user.app_metadata.permitRefs)

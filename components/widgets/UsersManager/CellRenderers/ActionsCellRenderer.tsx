@@ -1,6 +1,6 @@
 import { ICellRendererParams } from "ag-grid-community"
 import { MouseEvent, useEffect, useState } from "react"
-import { WellPermitAssignment } from "../../../interfaces/WellPermit"
+import { WellPermitAssignment } from "../../../../interfaces/WellPermit"
 import { ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material'
 import { BsThreeDots } from "react-icons/bs"
 import { MdEdit } from "react-icons/md"

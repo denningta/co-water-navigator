@@ -19,23 +19,28 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 interface Props {
   data: CalendarYearSelectorData[]
+  year: string
+  onYearChanged?: (selectedYear: string) => void
 }
 
-const CalendarYearSelector = ({ data }: Props) => {
-  const router = useRouter()
+const CalendarYearSelector = ({ 
+  data, 
+  year, 
+  onYearChanged = () => {} 
+}: Props) => {
+  // const router = useRouter()
 
   const gridRef = useRef<AgGridReact>(null);
   const [api, setApi] = useState<GridApi | undefined>(undefined)
   const [columnApi, setColumnApi] = useState<ColumnApi | undefined>(undefined)
   const [rowData, setRowData] = useState<CalendarYearSelectorData[] | undefined>(undefined)
-  const [year, setYear] = useState<string | undefined>(undefined)
 
-  useEffect(() => {
-    if (router.isReady) {
-      const y = Array.isArray(router.query.year) ? router.query.year[0] : router.query.year
-      setYear(y)
-    }
-  }, [router.isReady, router.query.year])
+  // useEffect(() => {
+  //   if (router.isReady) {
+  //     const y = Array.isArray(router.query.year) ? router.query.year[0] : router.query.year
+  //     setYear(y)
+  //   }
+  // }, [router.isReady, router.query.year])
 
   useEffect(() => {
     if (!year || !data) return
@@ -58,7 +63,7 @@ const CalendarYearSelector = ({ data }: Props) => {
     if (year) {
       api.getRowNode(year)?.setSelected(true)
     }
-  }, [api, year, router.query.year])
+  }, [api, year])
 
   const [defaultColDef] = useState({
     cellStyle: { cursor: 'pointer' },
@@ -82,12 +87,14 @@ const CalendarYearSelector = ({ data }: Props) => {
   const getRowId = (params: any) => params.data.year 
 
   const handleRowClick = ({ data }: RowClickedEvent) => {
-    router.push(`/well-permits/${router.query.permitNumber}/${data.year}`)
+    // router.push(`/well-permits/${router.query.permitNumber}/${data.year}`)
+    onYearChanged(data.year)
   }
 
   const handleSubmit = (jumpToYear: string) => {
-    router.push(`/well-permits/${router.query.permitNumber}/${jumpToYear}`)
-    setYear(jumpToYear)
+    // router.push(`/well-permits/${router.query.permitNumber}/${jumpToYear}`)
+    // setYear(jumpToYear)
+    onYearChanged(jumpToYear)
   }
 
   return (

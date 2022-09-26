@@ -1,8 +1,8 @@
 import { ColDef, ICellRendererParams, ValueFormatterParams } from "ag-grid-community";
-import ActionsCellRenderer from "./ActionsCellRenderer";
-import NameCellRenderer from "./NameCellRenderer";
-import RolesCellRenderer from "./RolesCellRenderer";
-import WellPermitsCellRenderer from "./WellPermitsCellRenderer";
+import ActionsCellRenderer from "./CellRenderers/ActionsCellRenderer";
+import NameCellRenderer from "./CellRenderers/NameCellRenderer";
+import RolesCellRenderer from "./CellRenderers/RolesCellRenderer";
+import WellPermitsCellRenderer from "./CellRenderers/WellPermitsCellRenderer";
 
 export const userManagementDefaultColDefs: ColDef = {
   resizable: true

@@ -1,7 +1,7 @@
 import { Tooltip } from "@mui/material";
 import { ICellRendererParams } from "ag-grid-community";
 import { Role } from "auth0";
-import RoleTag from "../../common/RoleTag";
+import RoleTag from "../../../common/RoleTag";
 
 const RolesCellRenderer = (params: ICellRendererParams) => {
   return (

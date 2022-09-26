@@ -23,7 +23,7 @@ function handleListWellPemitsByUser(req: NextApiRequest, res: NextApiResponse): 
       .catch(err => reject(err))
     if (!user) throw new Error(`User with userId: ${userId} not found`)
     
-    if (!user.app_metadata?.permitRefs) throw new Error('No permits assigned to this user')
+    if (!user.app_metadata?.permitRefs) return resolve([])
     const permitRefs = user.app_metadata.permitRefs
     const document_ids = permitRefs.map(permitRef => permitRef.document_id)
 

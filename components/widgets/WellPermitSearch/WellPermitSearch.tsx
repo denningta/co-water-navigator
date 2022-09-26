@@ -135,8 +135,6 @@ const WellPermitSearch = () => {
     setUrl(baseUrl + '?' + searchQuery)
   }
 
-  console.log(filterModel)
-
   return (
     <div className="w-full">
       <div className="mb-4 text-xl font-bold">Search for well permits</div>
