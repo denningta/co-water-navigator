@@ -112,10 +112,6 @@ export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(
   const permitQuery = Array.isArray(query.permitNumber) ? query.permitNumber[0] : query.permitNumber
   const permitRefs: PermitRef[] | undefined = session?.user?.app_metadata?.permitRefs
 
-
-  console.log(query)
-  console.log(session?.user.app_metadata.permitRefs)
-
   if (!session) 
     return { 
       redirect: { destination: '/api/auth/login' }, 

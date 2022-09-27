@@ -18,10 +18,21 @@ const BreadcrumbsRouter = () => {
     <div>
       {router && (path.length > 1 && !path.includes('dashboard')) && <Breadcrumbs aria-label='breadcrumb' separator={<BsChevronRight/>}>
           {path.map((el, i) => {
-            // console.log('el', el, 'path:', i === 0 ? '/' : path.slice(0, i+1).join('/'))
-            return <Link key={i} href={i === 0 ? '/' : path.slice(0, i+1).join('/')} underline="hover">
-              { el === '' ? <IoHome /> : toTitleCase(el) }
-            </Link>
+            if (i + 1 === path.length) {
+              return (
+                <div key={i}>{ el === '' ? <IoHome /> : toTitleCase(el) }</div>
+              )
+            } else {
+              return (
+                <Link key={i} 
+                  href={i === 0 ? '/' : path.slice(0, i+1).join('/')} 
+                  underline="hover"
+                >
+                  { el === '' ? <IoHome /> : toTitleCase(el) }
+                </Link>
+              )
+            }
+
           })}
       </Breadcrumbs>}
     </div>

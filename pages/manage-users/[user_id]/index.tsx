@@ -5,7 +5,7 @@ import useSWR from 'swr'
 import AppLayout from '../../../components/AppLayout'
 import MainContent, { Widget } from '../../../components/MainContent'
 import Header from '../../../components/widgets/Header'
-import AdminProfileComponent from '../../../components/widgets/Profile/AdminProfileComponent'
+import AdminProfileComponent from '../../../components/widgets/AdminProfile/AdminProfileComponent'
 import { NextPageWithLayout } from '../../_app'
 
 const fetcher = async (url: string) => {

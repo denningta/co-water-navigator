@@ -4,7 +4,7 @@ import { ReactElement } from 'react'
 import AppLayout from '../../components/AppLayout'
 import MainContent, { Widget } from '../../components/MainContent'
 import Header from '../../components/widgets/Header'
-import ProfileContainer from '../../components/widgets/Profile/UserProfileComponent'
+import ProfileContainer from '../../components/widgets/UserProfile/UserProfileComponent'
 import { NextPageWithLayout } from '../_app'
 
 const Profile: NextPageWithLayout = () => {

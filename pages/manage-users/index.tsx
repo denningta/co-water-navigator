@@ -6,7 +6,7 @@ import useSWR from 'swr'
 import AppLayout from '../../components/AppLayout'
 import MainContent, { Widget } from '../../components/MainContent'
 import Header from '../../components/widgets/Header'
-import ProfileContainer from '../../components/widgets/Profile/UserProfileComponent'
+import ProfileContainer from '../../components/widgets/UserProfile/UserProfileComponent'
 import UserManager from '../../components/widgets/UsersManager/UserManager'
 import { NextPageWithLayout } from '../_app'
 
