@@ -13,6 +13,7 @@ import ModifiedBankingComponent from '../../components/widgets/ModifiedBanking/M
 import { NextPageWithLayout } from '../_app'
 import { PermitRef } from '../../interfaces/WellPermit'
 import Header from '../../components/widgets/Header'
+import Button from '../../components/common/Button'
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
@@ -56,13 +57,11 @@ const GoBack = () => {
 
   return (
     <div className='h-[400px] flex justify-center items-center'>
-      <div className='text-center'>
+      <div className='flex flex-col items-center'>
         <div className='mb-4'>
           You are not authorized to access the well permit number you selected.
         </div>
-        <button onClick={handleClick} className="bg-primary text-white px-3 py-2 rounded-lg">
-          Back to Well Permits
-        </button>
+        <Button title="Back to Well Permits" onClick={handleClick} />
       </div>
     </div>
   )

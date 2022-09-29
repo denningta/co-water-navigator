@@ -16,6 +16,8 @@ const deleteAgentInfo = async (req: NextApiRequest, res: NextApiResponse): Promi
       throw new Error('No roles data was included in the body of this request')
 
 
+    // TODO: Add delete functionality
+
     resolve('test')
   })
 

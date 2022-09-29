@@ -37,10 +37,6 @@ const updateAgentInfo = (req: NextApiRequest, res: NextApiResponse): Promise<any
     )
     .catch(error => reject(error))
 
-    console.log(response)
-  
-  
-
     resolve(response)
   })
 

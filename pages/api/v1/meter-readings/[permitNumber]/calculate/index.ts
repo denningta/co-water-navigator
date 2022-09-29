@@ -120,7 +120,7 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
   const updatedMeterReadings: MeterReading[] = []
   const refMeterReadings: MeterReading[] = [meterReadings[0]]
   // TODO: Dynamically query for pumpingLimitThisYear
-  const pumpingLimitThisYear = 250
+  const pumpingLimitThisYear = undefined
 
   meterReadings.forEach((meterReading, index, meterReadings) => {
     const prevRecord = meterReadings[index - 1];
@@ -135,7 +135,7 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
     refRecord.pumpedThisPeriod = verifyPumpedThisPeriod(refRecord, prevRecord, index)
     refMeterReadings[index] = refRecord
     refRecord.pumpedYearToDate = verifyPumpedYearToDate(refRecord, index, refMeterReadings)
-    refRecord.availableThisYear = verifyAvailableThisYear(refRecord, pumpingLimitThisYear, index)
+    refRecord.availableThisYear = verifyAvailableThisYear(refRecord, pumpingLimitThisYear, prevRecord, index)
 
     if (index > 0) refMeterReadings.push(refRecord)
     

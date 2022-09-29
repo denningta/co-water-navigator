@@ -83,17 +83,6 @@ const WellPermit: NextPageWithLayout = () => {
       />,
       colspan: 3
     }
-    // {
-    //   component: <ModifiedBanking 
-    //     modifiedBankingData={
-    //       !(modifiedBankingData.error) 
-    //         ? modifiedBankingData.data
-    //         : undefined 
-    //     } 
-    //     permitNumber={permitNumber} 
-    //     year={year} />,
-    //   colspan: 3
-    // }
   ]
 
   return (

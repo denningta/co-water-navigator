@@ -1,5 +1,6 @@
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
 import { validateDate } from "../../../validatorFunctions";
+import { getPrecision } from "./helpers";
 
 const verifyPumpedYearToDate = (
   currentRecord: MeterReading,
@@ -13,8 +14,6 @@ const verifyPumpedYearToDate = (
     return n + pumpedThisPeriod.value
   }, 0)
 
-  if (currentIndex === 0) return
-
   const updatedValue: CalculatedValue = {
     ...currentRecord.pumpedYearToDate,
     value: shouldBe
@@ -22,22 +21,25 @@ const verifyPumpedYearToDate = (
 
   if (currentRecord.pumpedYearToDate?.source === 'user') {
     updatedValue.value = currentRecord.pumpedYearToDate.value
-      if (currentRecord.pumpedYearToDate.value !== shouldBe) {
-        updatedValue.shouldBe = shouldBe
-        updatedValue.calculationState = 'warning'
-        updatedValue.calculationMessage = `Expected: ${shouldBe} acre feet.  Provide a comment to resolve this warning.`
-      } else {
-        delete updatedValue.shouldBe
-        delete updatedValue.calculationState
-        delete updatedValue.calculationMessage
-        delete updatedValue.source
-      }
+    if (currentRecord.pumpedYearToDate.value !== shouldBe) {
+      updatedValue.shouldBe = shouldBe
+      updatedValue.calculationState = 'warning'
+      updatedValue.calculationMessage = `Expected: ${shouldBe} acre feet.  Provide a comment to resolve this warning.`
+    } else {
+      delete updatedValue.shouldBe
+      delete updatedValue.calculationState
+      delete updatedValue.calculationMessage
+      delete updatedValue.source
+    }
   }
 
   return updatedValue;
 }
 
-export const getMeterReadingsPerYear = (meterReadings: MeterReading[], currIndex: number) => {
+export const getMeterReadingsPerYear = (
+  meterReadings: MeterReading[], 
+  currIndex: number
+) => {
   if (validateDate(meterReadings[currIndex].date) === 'invalid') {
     throw new Error(`Incorrect date format: ${meterReadings[currIndex].date}.  Expected YYYY-MM`)
   }

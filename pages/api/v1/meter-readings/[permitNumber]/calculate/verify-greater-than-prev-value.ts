@@ -11,8 +11,8 @@ const verifyGreaterThanPrevValue = (
   const prevValue: CalculatedValue | undefined = prevRecord ? prevRecord[property] : undefined
   
   if (index === 0) return calculatedValue
-  if (!calculatedValue || !calculatedValue.value) return
-  if (!prevValue || !prevValue.value) return
+  if (!calculatedValue || calculatedValue.value === undefined) return
+  if (!prevValue || prevValue.value === undefined) return
 
   const updatedValue: CalculatedValue = {
     ...calculatedValue

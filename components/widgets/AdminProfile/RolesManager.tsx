@@ -58,7 +58,7 @@ const RolesManager = ({ user, onRoleChange = () => {} }: Props) => {
 
   return (
     <div className='flex'>
-      { availableRoles && user && user.roles && availableRoles.data.map((role, i) => 
+      { availableRoles?.data && user && user.roles && availableRoles.data.map((role, i) => 
         <Tooltip key={i} title={role.description ?? ''}>
           <div  className="mr-6">
             <Checkbox

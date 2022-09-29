@@ -6,6 +6,7 @@ import { IoMdAdd } from "react-icons/io"
 import { ActionMeta, InputProps } from "react-select"
 import TableFilterSelect from "../../common/TableFilterSelect"
 import searchOptions, { filterOptions, SearchOption } from "./search-data"
+import Button from "../../common/Button"
 
 interface FilterProps {
   title?: string
@@ -161,26 +162,12 @@ const TableFilter = ({
           </>
         }
       </div>
-      <button 
-        className={`
-          bg-primary text-white 
-          px-3 py-2 
-          rounded-lg  
-          flex items-center drop-shadow 
-          transition ease-in-out
-          ${((!location && !searchOption) || isLoading) ? 'bg-gray-400 text-gray-200' : 'bg-primary'}
-        `}
-        onClick={handleSearch}
-        disabled={(!location && !searchOption) || (isLoading)}
-      >
-        { !isLoading && 
-          <IoSearchSharp size={30} />
-        }
-        { isLoading && 
-          <CircularProgress color="inherit" size={30} />
-        }
-        <span className="ml-2">Search</span>
-      </button>
+      <Button 
+        title="Search" 
+        icon={<IoSearchSharp />}
+        isLoading={isLoading} 
+        onClick={handleSearch} 
+      />
     </div>
   )
 }

@@ -88,7 +88,7 @@ const ModifiedBankingForm = forwardRef((props: Props, ref: ForwardedRef<Modified
   }, [containerFocus])
 
   useEffect(() => {
-    if (!containerFocus) return
+    if (!containerFocus.state) return
     arrowDown.event?.preventDefault()
     arrowUp.event?.preventDefault()
     tab.event?.preventDefault()

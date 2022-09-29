@@ -4,8 +4,10 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { AgGridReact } from "ag-grid-react";
 import { useMemo, useRef, useState } from "react";
 import { calculatedValueGetter, calculatedValueSetter, dateFormatter, getCellClassRules, initPlaceholderData } from "./helpers";
-import { CellValueChangedEvent, ColDef, ColumnApi, GetRowIdFunc, GetRowIdParams, GridApi } from "ag-grid-community";
+import { CellValueChangedEvent, ColDef, ColumnApi, GetRowIdFunc, GetRowIdParams, GridApi, ICellRendererParams } from "ag-grid-community";
 import TableLoading from "../../common/TableLoading";
+import CalcValueCellRenderer from "./CalcValueCellRenderer";
+import AbstractCellRenderer from "./CalcValueCellRenderer";
 
 interface Props {
   meterReadings: MeterReading[],
@@ -61,50 +63,50 @@ const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
       editable: false,
       sort: 'asc',
       valueFormatter: dateFormatter,
-      cellClassRules: getCellClassRules('date')
+      cellClassRules: getCellClassRules('date'),
     },
     { 
       field: 'flowMeter',
       minWidth: 120,
       valueGetter: (params) => calculatedValueGetter(params, 'flowMeter'),
       valueSetter: (params) => calculatedValueSetter(params, 'flowMeter'),
-      tooltipField: 'flowMeter.calculationMessage',
-      cellClassRules: getCellClassRules('flowMeter')
+      cellClassRules: getCellClassRules('flowMeter'),
+      cellRenderer: (params: ICellRendererParams) => CalcValueCellRenderer(params, 'flowMeter')
     },
     { 
       field: 'powerMeter',
       valueGetter: (params) => calculatedValueGetter(params, 'powerMeter'),
       valueSetter: (params) => calculatedValueSetter(params, 'powerMeter'),
-      tooltipField: 'powerMeter.calculationMessage',
-      cellClassRules: getCellClassRules('powerMeter')
+      cellClassRules: getCellClassRules('powerMeter'),
+      cellRenderer: (params: ICellRendererParams) => CalcValueCellRenderer(params, 'powerMeter')
     },
     { 
       field: 'powerConsumptionCoef',
       valueGetter: (params) => calculatedValueGetter(params, 'powerConsumptionCoef'),
       valueSetter: (params) => calculatedValueSetter(params, 'powerConsumptionCoef'),
-      tooltipField: 'powerConsumptionCoef.calculationMessage',
-      cellClassRules: getCellClassRules('powerConsumptionCoef')
+      cellClassRules: getCellClassRules('powerConsumptionCoef'),
+      cellRenderer: (params: ICellRendererParams) => CalcValueCellRenderer(params, 'powerConsumptionCoef')
     },
     { 
       field: 'pumpedThisPeriod',
       valueGetter: (params) => calculatedValueGetter(params, 'pumpedThisPeriod'),
       valueSetter: (params) => calculatedValueSetter(params, 'pumpedThisPeriod'),
-      tooltipField: 'pumpedThisPeriod.calculationMessage',
-      cellClassRules: getCellClassRules('pumpedThisPeriod')
+      cellClassRules: getCellClassRules('pumpedThisPeriod'),
+      cellRenderer: (params: ICellRendererParams) => CalcValueCellRenderer(params, 'pumpedThisPeriod')
     },
     { 
       field: 'pumpedYearToDate',
       valueGetter: (params) => calculatedValueGetter(params, 'pumpedYearToDate'),
       valueSetter: (params) => calculatedValueSetter(params, 'pumpedYearToDate'),
-      tooltipField: 'pumpedYearToDate.calculationMessage',
-      cellClassRules: getCellClassRules('pumpedYearToDate')
+      cellClassRules: getCellClassRules('pumpedYearToDate'),
+      cellRenderer: (params: ICellRendererParams) => CalcValueCellRenderer(params, 'pumpedYearToDate')
     },
     {
       field: 'availableThisYear',
       valueGetter: (params) => calculatedValueGetter(params, 'availableThisYear'),
       valueSetter: (params) => calculatedValueSetter(params, 'availableThisYear'),
-      tooltipField: 'availableThisYear.calculationMessage',
-      cellClassRules: getCellClassRules('availableThisYear')
+      cellClassRules: getCellClassRules('availableThisYear'),
+      cellRenderer: (params: ICellRendererParams) => CalcValueCellRenderer(params, 'availableThisYear')
     },
     { field: 'readBy' },
     { field: 'comments' },

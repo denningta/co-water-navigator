@@ -1,4 +1,5 @@
 import { CellClassParams, ValueGetterParams, ValueSetterParams } from "ag-grid-community"
+import { Database } from "faunadb"
 import MeterReading from "../../../interfaces/MeterReading"
 import { CalendarYearSelectorData } from "../CalendarYearSelector/CalendarYearSelector"
 
@@ -10,26 +11,22 @@ export function dateFormatter(params: any): string {
 
 export function initPlaceholderData(permitNumber: string, year: string): MeterReading[] {
   const data: MeterReading[] = []
-  
   for (let month = 1; month <= 12; month++) {
-
     data.push({ 
       permitNumber: permitNumber,
       date: `${year}-${month < 10 ? '0' + month : month}`
     })
   }
-
   data.unshift({
     permitNumber: permitNumber,
     date: `${(+year - 1).toString()}-12`
   })
-
   return data
 }
 
 export function calculatedValueGetter({ data }: ValueGetterParams, field: string) {
   if (data[field] && data[field].value !== undefined) {
-    return data[field].value
+    return data[field].value.toFixed(3)
   } else {
     return data[field]
   }
@@ -58,7 +55,7 @@ export function getCellClassRules(field: string) {
       return !colDef.editable
     },
     // global style in style.scss
-    'bg-green-500 bg-opacity-30': ({ value, data }: CellClassParams) => {
+    'bg-emerald-500 bg-opacity-30': ({ value, data }: CellClassParams) => {
       if (!value) return false;
       return data[field].calculationState === 'warning' && data.comments
     }
