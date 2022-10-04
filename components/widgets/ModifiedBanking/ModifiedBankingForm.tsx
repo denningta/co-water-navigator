@@ -12,10 +12,13 @@ import { BiCommentAdd } from 'react-icons/bi'
 import { Tooltip } from "@mui/material";
 import AddCommentButton from "./AddCommentButton";
 import { CalculatedValue } from "../../../interfaces/MeterReading";
+import useCellNavigation from "../../../hooks/useCellNavigation";
 
 export type CellValueChangedEvent = {
   oldValue: any | undefined
   newValue: any | undefined
+  data?: any
+  formControl?: string
 }
 
 export interface ModifiedBankingFormApi {
@@ -48,14 +51,12 @@ const ModifiedBankingForm = forwardRef((props: Props, ref: ForwardedRef<Modified
   } = props
   const [formMetaData] = useState<FormMetaData[]>(generateFormMetaData(year))
   const containerRef = useRef<HTMLDivElement>(null)
-  const containerFocus = useFocus(containerRef)
-  const [focusIndex, setFocusIndex] = useState<number | null>(null)
-  const [editingIndex, setEditingIndex] = useState<number | null>(null)
-  const arrowDown = useKeyPress('ArrowDown')
-  const arrowUp = useKeyPress('ArrowUp')
-  const tab = useKeyPress('Tab')
-  const shift = useKeyPress('Shift')
-  const enter = useKeyPress('Enter')
+  const { 
+    focusIndex, 
+    setFocusIndex, 
+    editingIndex, 
+    setEditingIndex 
+  } = useCellNavigation(containerRef, formMetaData.length)
 
   const handleFormValidation = (values: any) => {
     const errors = {}
@@ -83,45 +84,6 @@ const ModifiedBankingForm = forwardRef((props: Props, ref: ForwardedRef<Modified
 
   useImperativeHandle(ref, () => formApi)
 
-  useEffect(() => {
-    if (!containerFocus) setFocusIndex(null)
-  }, [containerFocus])
-
-  useEffect(() => {
-    if (!containerFocus.state) return
-    arrowDown.event?.preventDefault()
-    arrowUp.event?.preventDefault()
-    tab.event?.preventDefault()
-    shift.event?.preventDefault()
-    if (!formMetaData) return
-    if (arrowDown.pressed) {
-      let newIndex = focusIndex !== null ? focusIndex + 1 : 0
-      if (newIndex >= (formMetaData.length - 1)) newIndex = (formMetaData.length - 1)
-      setFocusIndex(newIndex)
-    }
-    if (arrowUp.pressed) {
-      let newIndex = focusIndex !== null ? focusIndex - 1 : 0
-      if (newIndex <= 0) newIndex = 0
-      setFocusIndex(newIndex)
-    }
-    if (tab.pressed && !shift.pressed) {
-      let newIndex = focusIndex !== null ? focusIndex + 1 : 0
-      if (newIndex >= (formMetaData.length)) newIndex = 0
-      setFocusIndex(newIndex)
-    }
-    if (tab.pressed && shift.pressed) {
-      let newIndex = focusIndex !== null ? focusIndex - 1 : 0
-      if (newIndex < 0) newIndex = formMetaData.length - 1
-      setFocusIndex(newIndex)
-    }
-  }, [arrowDown, arrowUp, tab])
-
-  useEffect(() => {
-    if (!containerFocus) return
-    enter.event?.preventDefault()
-    if (enter.pressed) setEditingIndex(editingIndex === null ? focusIndex : null)
-  }, [enter])
-
   const handleCellClick = (focusEvent: { state: boolean, detail: number }, index: number) => {
     if (!focusEvent.state) {
       setFocusIndex(null)
@@ -144,14 +106,14 @@ const ModifiedBankingForm = forwardRef((props: Props, ref: ForwardedRef<Modified
   }
 
   const cellValueGetter = (formControl: ModifiedBankingFormControls) => {
-    if (!values || !values[formControl] || !values[formControl]?.value) return ''
-    return values[formControl]?.value.toString() ?? ''
+    if (values[formControl]?.value === undefined) return ''
+    return values[formControl]?.value.toString()
   }
 
   const cellValueSetter = (value: string, formControl: ModifiedBankingFormControls) => {
     return {
       ...values[formControl], 
-      value: value === '' ? '' : +value
+      value: value === '' ? '' : value
     }
   }
 

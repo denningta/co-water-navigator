@@ -143,5 +143,6 @@ export const calculate = (
   })
 
   if (!updateRecord) return
+
   return refRecord
 }

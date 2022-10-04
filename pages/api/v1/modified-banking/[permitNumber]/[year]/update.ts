@@ -27,7 +27,7 @@ function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking | u
     }
 
     const calculationUpdates = await runCalculationsInternal(req.body, permitNumber, year)
-    const updateData = calculationUpdates ? { ...req.body, ...calculationUpdates } : req.body
+    const updateData = calculationUpdates ? { ...calculationUpdates } : req.body
 
     const response: any = await faunaClient.query(
       q.Let(

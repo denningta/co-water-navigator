@@ -1,37 +1,48 @@
-import { useRef } from "react"
+import axios from "axios"
+import { useSnackbar } from "notistack"
+import { useEffect, useRef, useState } from "react"
 import { BsInfoLg } from "react-icons/bs"
+import useModifiedBanking from "../../../hooks/useModifiedBanking"
 import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
-import { ModifiedBankingFormControls } from "./generatre-form-metadata"
+import FormWithCells, { FormElement } from "./FormWithCells"
+import { generateFormElements } from "./generatre-form-elements"
+import { generateFormMetaData, ModifiedBankingFormControls } from "./generatre-form-metadata"
 import ModifiedBankingForm, { CellValueChangedEvent, ModifiedBankingFormApi } from "./ModifiedBankingForm"
 
 interface Props {
   permitNumber: string | undefined
   year: string | undefined
-  modifiedBankingData: ModifiedBanking
 }
 
-const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: Props) => {
-  const formRef = useRef<ModifiedBankingFormApi>(null)
+const ModifiedBankingComponent = ({ year, permitNumber }: Props) => {
+  const { data, mutate } = useModifiedBanking(permitNumber, year)
+  const [formElements, setFormElements] = useState<FormElement[]>([])
+  const [loading, setLoading] = useState(false)
+  const { enqueueSnackbar } = useSnackbar()
+
+  useEffect(() => {
+    if (!year) return
+    setFormElements(generateFormElements(year))
+  }, [year])
 
   const handleCellValueChanged = async (
     event: CellValueChangedEvent, 
-    formControl: ModifiedBankingFormControls,
-    values: ModifiedBanking
   ) => {
-    const body = {
-      ...values,
-      permitNumber: permitNumber,
-      year: year,
-      [formControl]: {
-        ...event.newValue,
-        source: 'user'
-      }
+    try {
+      setLoading(true)
+      await mutate(updateDatabase(event.data), {
+        rollbackOnError: true,
+        revalidate: true
+      })
+      setLoading(false)
+    } catch (error: any) {
+      setLoading(false)
+      enqueueSnackbar('Something went wrong', { variant: 'error' })
     }
-    if (event.newValue && event.newValue.value === '') delete body[formControl]
+  }
 
-    await updateDatabase(body)
-      .then(res => res)
-      .catch(error => error)
+  const handleValueSetterError = (e: CellValueChangedEvent) => {
+    enqueueSnackbar(`Input: "${e.newValue}" is not a number`, { variant: 'warning' })
   }
 
   const handleCommentsChanged = async (
@@ -39,35 +50,13 @@ const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: P
     formControl: ModifiedBankingFormControls,
     values: ModifiedBanking  
   ) => {
-    const body = {
-      ...values,
-      permitNumber: permitNumber,
-      year: year,
-      [formControl]: {
-        ...values[formControl],
-        comments: comments
-      }
-    }
 
-    await updateDatabase(body)
-      .then(res => res)
-      .catch(error => error)
   }
 
   const updateDatabase = async (body: any) => {
     const url = `/api/v1/modified-banking/${permitNumber}/${year}`
-    const res = await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    })
-      .then(res => res.json())
-      .catch(error => error)
-
-    if (!formRef && !res) return
-    formRef.current?.setFormValues(res)
+    const res = await axios.patch(url, body)
+    return res.data
   }
 
   return (
@@ -76,16 +65,24 @@ const ModifiedBankingComponent = ({ year, permitNumber, modifiedBankingData }: P
           <div>Three Year Modified Banking (DBB-013)</div>
           <div className="grow"><span className="ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>
       </div>
-      { permitNumber && year &&
+      { year && 
+        <FormWithCells 
+          formElements={formElements} 
+          data={data}
+          onCellValueChanged={handleCellValueChanged}
+          onValueSetterError={handleValueSetterError}
+        /> 
+      }
+      {/* { permitNumber && year &&
         <ModifiedBankingForm 
           ref={formRef}
           permitNumber={permitNumber} 
           year={year} 
           modifiedBankingData={modifiedBankingData}
-          onCellValueChanged={handleCellValueChanged}
+          // onCellValueChanged={handleCellValueChanged}
           onCommentsChanged={handleCommentsChanged}
         />
-      }
+      } */}
     </div>
   )
 }

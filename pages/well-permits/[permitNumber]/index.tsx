@@ -78,9 +78,7 @@ const WellPermit: NextPageWithLayout = () => {
       colspan: 3
     },
     {
-      component: <ModifiedBankingComponent 
-        permitNumber={permitNumber} year={year} modifiedBankingData={modifiedBankingData.data} 
-      />,
+      component: <ModifiedBankingComponent permitNumber={permitNumber} year={year} />,
       colspan: 3
     }
   ]

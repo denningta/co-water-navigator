@@ -104,9 +104,11 @@ const calculationFns: CalculationFns = {
   },
 
   totalPumpedThisYear: ({ data, totalPumpedThisYear }) => {
-    if (!totalPumpedThisYear) return
-    const shouldBe = totalPumpedThisYear
-    return abstractCalculationFn('totalPumpedThisYear', data, shouldBe)
+    if (!totalPumpedThisYear && !data.totalPumpedThisYear?.value === undefined) return
+    if (totalPumpedThisYear) 
+      return abstractCalculationFn('totalPumpedThisYear', data, totalPumpedThisYear)
+    if (data.totalPumpedThisYear?.value !== undefined) 
+      return abstractCalculationFn('totalPumpedThisYear', data, data.totalPumpedThisYear.value)
   },
 
   changeInBankingReserveThisYear: ({ data }) => {

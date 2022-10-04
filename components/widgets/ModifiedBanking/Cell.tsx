@@ -1,34 +1,65 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from "react"
+import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
 import useFocus from "../../../hooks/useFocus"
 import _ from "lodash"
 import { CellValueChangedEvent } from "./ModifiedBankingForm"
+import { CellRendererParams } from "./FormWithCells"
+
+export interface CellApi {
+  setCellValue: (input: string) => void
+}
 
 interface Props {
   value?: string | undefined
   focus?: boolean
   editing?: boolean
   className?: string
+  label?: string | JSX.Element
+  errorMessage?: string | JSX.Element
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
   onFocusClick?: (focusEvent: { state: boolean, detail: number }) => void
-  onCellValueChanged?: (e: CellValueChangedEvent) => void
+  onCellValueChanged?: (e: Omit<CellValueChangedEvent, 'data' | 'formControl'>) => void
+  cellRendererComponent?: ((params: CellRendererParams) => JSX.Element | void) | undefined
 }
 
-const Cell = ({ 
-  value = '', 
-  focus = false,
-  editing = false,
-  className = '',
-  onChange = () => {},
-  onClick = () => {},
-  onFocusClick = () => {},
-  onCellValueChanged = () => {}
-}: Props) => {
+const Cell = forwardRef((
+  { 
+    value = undefined, 
+    focus = false,
+    editing = false,
+    className = '',
+    label,
+    errorMessage,
+    onChange = () => {},
+    onClick = () => {},
+    onFocusClick = () => {},
+    onCellValueChanged = () => {},
+    cellRendererComponent = () => {}
+  }: Props, 
+  ref: React.ForwardedRef<CellApi>
+) => {
   const cellRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const focusClick = useFocus(cellRef)
-  const [oldValue, setOldValue] = useState<string | null>(null)
+  const [oldValue, setOldValue] = useState<string | undefined>(value)
+  const [newValue, setNewValue] = useState<string | undefined>(value)
+
+  const setCellValue = (value: string) => {
+    setNewValue(value)
+    onCellValueChanged({ oldValue: oldValue, newValue: value })
+  }
+
+  const cellApi = {
+    setCellValue: setCellValue,
+  }
+
+  useImperativeHandle(ref, () => cellApi)
+
+  useEffect(() => {
+    if (value === undefined) return
+    setNewValue(value)
+  }, [value])
 
   useEffect(() => {
     onFocusClick(focusClick)
@@ -36,7 +67,7 @@ const Cell = ({
 
   useEffect(() => {
     if (editing) {
-      setOldValue(value)
+      setOldValue(newValue)
       setTimeout(() => {
         inputRef.current?.focus()
         inputRef.current?.select()
@@ -44,13 +75,14 @@ const Cell = ({
     }
     if (!editing) {
       if (oldValue === null) return
-      if (!_.isEqual(oldValue, value)) {
-        onCellValueChanged({ oldValue: oldValue, newValue: value })
+      if (!_.isEqual(oldValue, newValue)) {
+        onCellValueChanged({ oldValue: oldValue, newValue: newValue })
       }
     }
   }, [editing])
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewValue(event.target.value)
     onChange(event)
   }
 
@@ -59,26 +91,41 @@ const Cell = ({
   }
 
   return (
-    <div
-      ref={cellRef} 
-      onClick={handleClick} 
-      className={`h-[38px] w-full bg-white hover:bg-primary hover:bg-opacity-10 ${focus ? 'outline outline-primary' : 'outline-none'} ${editing ? 'drop-shadow-lg' : 'drop-shadow-none'}`}>
-      { !editing && 
-        <div className={`w-full h-full px-3 flex items-center select-none ${className}`}>
-          {value}
-        </div> 
+    <div>
+      {label && 
+        <div>
+          { label }
+        </div>
       }
-      { editing && 
-        <input
-          ref={inputRef}
-          value={value}
-          className="bg-white h-[38px] w-full px-3 outline-none"
-          onChange={handleChange}
-          autoComplete="off"
-        /> 
+      <div
+        ref={cellRef}
+        onClick={handleClick}
+        className={`h-[38px] w-full bg-white hover:bg-primary hover:bg-opacity-10 ${focus ? 'outline outline-primary' : 'outline-none'} ${editing ? 'drop-shadow-lg' : 'drop-shadow-none'}`}>
+        { !editing &&
+          <div className={`w-full h-full px-3 flex items-center select-none ${className}`}>
+            { cellRendererComponent({ value: newValue }) ?? newValue }
+          </div>
+        }
+        { editing &&
+          <input
+            ref={inputRef}
+            value={newValue ?? ''}
+            className="bg-white h-[38px] w-full px-3 outline-none"
+            onChange={handleChange}
+            autoComplete="off"
+          />
+        }
+      </div>
+      {errorMessage && 
+        <div>
+          {errorMessage}
+        </div>
       }
     </div>
   )
-}
+})
+
+Cell.displayName = 'Cell'
+
 
 export default Cell
