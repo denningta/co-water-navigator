@@ -49,13 +49,6 @@ const WellPermit: NextPageWithLayout = () => {
     fetcher
   )
 
-  const modifiedBankingData = useSWR(
-    (permitNumber && year)
-    ? `/api/v1/modified-banking/${permitNumber}/${year}`
-    : null,
-    fetcher
-  )
-
   const handleYearChanged = (year: string) => {
     setYear(year)
     router.push(`/well-permits/${permitNumber}/${year}`)
@@ -75,8 +68,7 @@ const WellPermit: NextPageWithLayout = () => {
       colspan: 3
     },
     {
-      component: <MeterReadingsComponent 
-        meterReadings={meterReadings.data} permitNumber={permitNumber} year={year}   
+      component: <MeterReadingsComponent permitNumber={permitNumber} year={year}   
       />,
       colspan: 3
     },

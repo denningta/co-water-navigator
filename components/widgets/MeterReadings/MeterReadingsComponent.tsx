@@ -10,14 +10,15 @@ import TableLoading from "../../common/TableLoading"
 import { BsInfoLg } from 'react-icons/bs'
 import { Dialog, DialogTitle, List } from "@mui/material"
 import MeterReadingsInfoDialog from "./MeterReadingsInfoDialog"
+import useMeterReadings from "../../../hooks/useMeterReadings"
 
 interface Props {
-  meterReadings: MeterReading[]
   permitNumber: string | undefined
   year: string | undefined
 }
 
-const MeterReadingsComponent = ({meterReadings, permitNumber, year}: Props) => {
+const MeterReadingsComponent = ({permitNumber, year}: Props) => {
+  const { data, mutate } = useMeterReadings(permitNumber, year)
   const [openDialog, setOpenDialog] = useState(false)
 
   const handleClick = () => {
@@ -43,17 +44,14 @@ const MeterReadingsComponent = ({meterReadings, permitNumber, year}: Props) => {
       </div>
 
       <div className="col-span-3">
-        { !meterReadings && 
+        { !data && 
           <TableLoading height={600} numberOfRows={11} />
         }
-        { (meterReadings && permitNumber && year) && 
-          <ReadingsGrid meterReadings={meterReadings} permitNumber={permitNumber} year={year} /> 
+        { (data && permitNumber && year) && 
+          <ReadingsGrid meterReadings={data} permitNumber={permitNumber} year={year} /> 
         }
       </div>
-
       <MeterReadingsInfoDialog open={openDialog} onClose={handleClose} />
-
-
     </div>
   )
 

@@ -26,10 +26,15 @@ function listMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
         : permitNumber.map(el => q.Match(q.Index('meter-readings-by-permit-number'), el))
     )
 
+    const yearSubQuery = (year: string) => q.Union(
+      q.Match(q.Index('meter-readings-by-year'), [year]),
+      q.Match(q.Index('meter-readings-by-date'), [`${((+year - 1).toString())}-12`])
+    )
+
     let yearQuery = year && q.Union(
       !Array.isArray(year) 
-        ? q.Match(q.Index('meter-readings-by-year'), year) 
-        : year.map(el => q.Match(q.Index('meter-readings-by-year'), el))
+        ? yearSubQuery(year) 
+        : year.map(el => yearSubQuery(el))
     )
       
     let dateQuery = date && q.Union(
