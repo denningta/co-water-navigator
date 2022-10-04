@@ -5,9 +5,9 @@ module.exports = (phase, { defaultConfig }) => {
     reactStrictMode: true,
     images: {
       domains: ['lh3.googleusercontent.com']
-    }
+    }, 
   }
-
+  
   return nextConfig;
 }
 
