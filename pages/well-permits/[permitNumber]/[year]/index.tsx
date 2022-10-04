@@ -1,17 +1,16 @@
 import { getServerSidePropsWrapper, getSession, withPageAuthRequired } from '@auth0/nextjs-auth0'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import useSWR from 'swr'
-import AppLayout from '../../../components/AppLayout'
-import MainContent, { Widget } from '../../../components/MainContent'
-import CalendarYearSelector from '../../../components/widgets/CalendarYearSelector/CalendarYearSelector'
-import MeterReadingsComponent from '../../../components/widgets/MeterReadings/MeterReadingsComponent'
-import MeterReadingsHeader from '../../../components/widgets/MeterReadings/MeterReadingsHeader'
-import ModifiedBanking from '../../../components/widgets/ModifiedBanking/ModifiedBankingForm'
-import ModifiedBankingComponent from '../../../components/widgets/ModifiedBanking/ModifiedBankingComponent'
-import { NextPageWithLayout } from '../../_app'
-import { PermitRef } from '../../../interfaces/WellPermit'
+import AppLayout from '../../../../components/AppLayout'
+import MainContent, { Widget } from '../../../../components/MainContent'
+import CalendarYearSelector from '../../../../components/widgets/CalendarYearSelector/CalendarYearSelector'
+import MeterReadingsComponent from '../../../../components/widgets/MeterReadings/MeterReadingsComponent'
+import MeterReadingsHeader from '../../../../components/widgets/MeterReadings/MeterReadingsHeader'
+import ModifiedBankingComponent from '../../../../components/widgets/ModifiedBanking/ModifiedBankingComponent'
+import { NextPageWithLayout } from '../../../_app'
+import { PermitRef } from '../../../../interfaces/WellPermit'
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
@@ -26,12 +25,15 @@ const fetcher = async (url: string) => {
 const WellPermit: NextPageWithLayout = () => {
   const router = useRouter()
   const { query } = router
-  let permitNumber: string | undefined = undefined
   const [year, setYear] = useState(new Date().getFullYear().toString())
+  const [permitNumber, setPermitNumber] = useState<string | undefined>(undefined)
 
-  if (router.isReady) {
-    permitNumber = Array.isArray(query.permitNumber) ? query.permitNumber[0] : query.permitNumber
-  }
+  useEffect(() => {    
+    if (router.isReady) {
+      setPermitNumber(Array.isArray(query.permitNumber) ? query.permitNumber[0] : query.permitNumber)
+      setYear(Array.isArray(query.year) ? query.year[0] : query.year ?? new Date().getFullYear().toString())
+    }
+  }, [router, query])
 
   const meterReadings = useSWR(
     (permitNumber && year) 
@@ -56,6 +58,7 @@ const WellPermit: NextPageWithLayout = () => {
 
   const handleYearChanged = (year: string) => {
     setYear(year)
+    router.push(`/well-permits/${permitNumber}/${year}`)
   }
 
   const widgets: Widget[] = [

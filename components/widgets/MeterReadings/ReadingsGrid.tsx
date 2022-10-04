@@ -117,10 +117,7 @@ const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
     },
   ])
 
-  console.log(rowData)
-
   const handleCellValueChange = ({ data }: CellValueChangedEvent) => {
-    console.log('cellValueChange')
     const url = `/api/v1/meter-readings/${data.permitNumber}/${data.date}`
     fetch(url, {
       method: 'PATCH',

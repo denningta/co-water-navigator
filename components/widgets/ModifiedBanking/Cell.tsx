@@ -2,8 +2,7 @@
 import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
 import useFocus from "../../../hooks/useFocus"
 import _ from "lodash"
-import { CellValueChangedEvent } from "./ModifiedBankingForm"
-import { CellRendererParams } from "./FormWithCells"
+import { CellRendererParams, CellValueChangedEvent } from "./FormWithCells"
 
 export interface CellApi {
   setCellValue: (input: string) => void

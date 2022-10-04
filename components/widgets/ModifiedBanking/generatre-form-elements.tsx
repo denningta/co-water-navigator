@@ -111,7 +111,7 @@ export function generateFormElements(calendarYear: number | string): FormElement
     cellLabel: el.shortTitle,
     valueGetter: ({ data, formControl }: ValueGetterParams) => {
       if (!data[formControl]) return ''
-      return data[formControl].value
+      return (+data[formControl].value).toFixed(3)
     },
     valueSetter: ({ data, formControl, newValue, oldValue }: ValueSetterParams) => {
       if (newValue === '') {

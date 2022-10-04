@@ -4,10 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import { BsInfoLg } from "react-icons/bs"
 import useModifiedBanking from "../../../hooks/useModifiedBanking"
 import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
-import FormWithCells, { FormElement } from "./FormWithCells"
-import { generateFormElements } from "./generatre-form-elements"
-import { generateFormMetaData, ModifiedBankingFormControls } from "./generatre-form-metadata"
-import ModifiedBankingForm, { CellValueChangedEvent, ModifiedBankingFormApi } from "./ModifiedBankingForm"
+import FormWithCells, { CellValueChangedEvent, FormElement } from "./FormWithCells"
+import { generateFormElements, ModifiedBankingFormControls } from "./generatre-form-elements"
 
 interface Props {
   permitNumber: string | undefined
