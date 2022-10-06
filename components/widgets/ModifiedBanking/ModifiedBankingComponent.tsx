@@ -10,9 +10,14 @@ import { generateFormElements, ModifiedBankingFormControls } from "./generatre-f
 interface Props {
   permitNumber: string | undefined
   year: string | undefined
+  onCalculating?: (calculating: boolean | undefined) => void
 }
 
-const ModifiedBankingComponent = ({ year, permitNumber }: Props) => {
+const ModifiedBankingComponent = ({ 
+  year, 
+  permitNumber,
+  onCalculating = () => {}
+}: Props) => {
   const { data, mutate } = useModifiedBanking(permitNumber, year)
   const [formElements, setFormElements] = useState<FormElement[]>([])
   const [loading, setLoading] = useState(false)
@@ -27,14 +32,17 @@ const ModifiedBankingComponent = ({ year, permitNumber }: Props) => {
     event: CellValueChangedEvent, 
   ) => {
     try {
+      onCalculating(true)
       setLoading(true)
       await mutate(updateDatabase(event.data), {
         rollbackOnError: true,
         revalidate: true
       })
       setLoading(false)
+      onCalculating(false)
     } catch (error: any) {
       setLoading(false)
+      onCalculating(undefined)
       enqueueSnackbar('Something went wrong', { variant: 'error' })
     }
   }

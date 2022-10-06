@@ -43,7 +43,7 @@ export const queryDependencies = (
     const totalPumpedThisYearQuery = 
       q.Let(      
         {
-          flowMeterArray: q.Map(
+          pumpedYearToDateArray: q.Map(
           q.Filter(
             q.Map(
               q.Paginate(
@@ -59,22 +59,19 @@ export const queryDependencies = (
             ),
             q.Lambda(
               'ref',
-              q.ContainsPath(['flowMeter', 'value'], q.Var('ref'))
+              q.ContainsPath(['pumpedYearToDate', 'value'], q.Var('ref'))
             )
           ),
           q.Lambda(
             'ref',
-            q.Select(['flowMeter', 'value'], q.Var('ref'))
+            q.Select(['pumpedYearToDate', 'value'], q.Var('ref'))
           )
         )
         },
         q.If(
-          q.IsEmpty(q.Select(['data'], q.Var('flowMeterArray'))),
+          q.IsEmpty(q.Select(['data'], q.Var('pumpedYearToDateArray'))),
           null,
-          q.Subtract(
-            q.Select(0, q.Max(q.Var('flowMeterArray'))), 
-            q.Select(0, q.Min(q.Var('flowMeterArray')))
-          ),
+          q.Select(0, q.Max(q.Var('pumpedYearToDateArray'))), 
         )
       )
 

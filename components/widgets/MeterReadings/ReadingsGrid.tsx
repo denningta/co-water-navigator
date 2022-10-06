@@ -2,7 +2,7 @@ import MeterReading from "../../../interfaces/MeterReading"
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { AgGridReact } from "ag-grid-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { calculatedValueGetter, calculatedValueSetter, dateFormatter, getCellClassRules, initPlaceholderData } from "./helpers";
 import { CellValueChangedEvent, ColDef, ColumnApi, GetRowIdFunc, GetRowIdParams, GridApi, ICellRendererParams } from "ag-grid-community";
 import TableLoading from "../../common/TableLoading";
@@ -13,12 +13,17 @@ interface Props {
   meterReadings: MeterReading[],
   permitNumber: string
   year: string
+  onCalculating?: (calculating: boolean | undefined) => void
 }
 
-const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
+const ReadingsGrid = ({ meterReadings, permitNumber, year, onCalculating = () => {} }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
   const [gridApi, setGridApi] = useState<GridApi | null>(null)
   const [columnApi, setColumnApi] = useState<ColumnApi | null>(null)
+
+  useEffect(() => {
+    onCalculating(undefined)
+  }, [])
 
   const rowData = initPlaceholderData(permitNumber, year).map(record => {
     return meterReadings.find(el => {
@@ -117,18 +122,25 @@ const ReadingsGrid = ({ meterReadings, permitNumber, year }: Props) => {
     },
   ])
 
-  const handleCellValueChange = ({ data }: CellValueChangedEvent) => {
+  const handleCellValueChange = async ({ data }: CellValueChangedEvent) => {
+    onCalculating(true)
     const url = `/api/v1/meter-readings/${data.permitNumber}/${data.date}`
-    fetch(url, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-      .then(res => res.json())
-      .catch(error => error)
-      .then(data => updateGridRows(data))
+    try {
+      await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+        .then(res => res.json())
+        .then(data => updateGridRows(data))
+      onCalculating(false)
+    } catch (error: any) {
+      onCalculating(false)
+    }
+    
+
   }
 
   return (

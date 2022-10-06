@@ -10,7 +10,7 @@ const Main: NextPageWithLayout = () => {
 }
 
 export const getServerSideProps: GetServerSideProps = 
-  getServerSidePropsWrapper(async ({ req, res, query }) => {
+  getServerSidePropsWrapper(async ({ query }) => {
     const { permitNumber } = query
     return { 
       redirect: { 

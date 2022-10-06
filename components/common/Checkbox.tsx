@@ -5,6 +5,7 @@ interface Props {
   title?: string | JSX.Element | undefined
   checked?: boolean
   value: string | undefined
+  className?: string
   onChange?: ([value, checked]: [string, boolean]) => void
 }
 
@@ -12,6 +13,7 @@ const Checkbox = ({
   title,
   checked = false,
   value = 'undefined',
+  className = '',
   onChange
 }: Props) => {
   const [hover , setHover] = useState(false)
@@ -40,7 +42,7 @@ const Checkbox = ({
       onClick={handleClick} 
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="flex items-center cursor-pointer select-none w-fit">
+      className={`flex items-center cursor-pointer select-none w-fit ${className}`}>
       <div 
         className={`w-[20px] h-[20px] border border-gray-300 rounded overflow-clip transition ease-in-out ${hover && 'bg-gray-100'}`
         }

@@ -8,6 +8,7 @@ interface Props {
   isLoading?: boolean
   size?: number
   type?: 'button' | 'submit' | 'reset'
+  color?: 'primary' | 'secondary'
   onClick?: (e: MouseEvent) => void
 }
 
@@ -17,9 +18,10 @@ const Button = ({
   isLoading = false,
   size = 20,
   type = 'button',
+  color = 'primary',
   onClick = () => {}
 }: Props) => {
-  const [Icon, setIcon] = useState<JSX.Element>(<div></div>)
+  const [Icon, setIcon] = useState<JSX.Element>()
 
   const handleClick = (event: MouseEvent) => {
     onClick(event)
@@ -33,25 +35,30 @@ const Button = ({
   return (
     <button 
       className={`
-        bg-primary text-white 
-        hover:bg-sky-600
+        ${color === 'primary' && 'bg-primary text-white hover:bg-sky-600' }
+        ${color === 'secondary' && 'bg-gray-400 text-white hover:bg-gray-500'}
         px-3 py-2 
         rounded
-        flex items-center drop-shadow 
+        flex items-center
+        drop-shadow 
         transition ease-in-out
-        ${isLoading ? 'bg-gray-400 text-gray-200' : 'bg-primary'}
+        ${isLoading && 'bg-gray-400 text-gray-200'}
       `}
       onClick={handleClick}
       disabled={isLoading}
       type={type}
     >
-      { !isLoading && 
-        Icon
+      { !isLoading && Icon &&
+        <span className="mr-2">
+          {Icon}
+        </span>
       }
       { isLoading && 
-        <CircularProgress color="inherit" size={size} />
+        <span className="mr-2">
+          <CircularProgress color="inherit" size={size} />
+        </span>
       }
-      <span className="ml-2">{ title }</span>
+      <span>{ title }</span>
     </button>
   )
 }

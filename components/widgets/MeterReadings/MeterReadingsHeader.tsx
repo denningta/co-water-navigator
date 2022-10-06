@@ -4,56 +4,41 @@ import { TiExport } from 'react-icons/ti'
 import { IoHome } from 'react-icons/io5'
 import { BsChevronRight } from 'react-icons/bs'
 import BreadcrumbsRouter from '../../common/BreadcrumbsRouter'
+import Button from '../../common/Button'
+import ExportDialog from '../Export Dialog/ExportDialog'
+import { useState } from 'react'
 
 interface Props {
   permitNumber?: string
-  owner?: string,
+  year?: string
+  owner?: string
   location?: string
 }
 
-const MeterReadingsHeader = ({ permitNumber, owner, location }: Props) => {
+const MeterReadingsHeader = ({ permitNumber, year, owner, location }: Props) => {
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+  const handleClick = () => {
+    setDialogOpen(true)
+  }
+
+  const handleClose = () => {
+    setDialogOpen(false)
+  }
+
   return (
-    <div>
-      <div className="flex items-center">
-        <div>
-          <div className="font-thin">WELL PERMIT</div>
-          { permitNumber && <div className="font-extrabold text-3xl">{ permitNumber }</div>}
-        </div>
-        {owner &&
-          <div>
-            <div className="font-thin">OWNER</div>
-            <div className="font-bold">{ owner }</div>
-          </div>
-        }
-        { location &&
-          <div>
-            <div className="font-thin">LOCATION</div>
-            <div className="font-bold">{ location }</div>
-          </div>
-        }
-        <div className="grow"></div>
-        <div>
-          <button type="button" className='mr-10 flex items-center bg-primary rounded-lg hover:drop-shadow-lg px-4 py-2 text-white'>
-            <span className='text-2xl'>
-              <TiExport />
-            </span>
-            <span className='ml-2'>Export</span>
-          </button>
+    <div className="flex items-center">
+      <div>
+        <div className="font-thin">WELL PERMIT</div>
+        { permitNumber && <div className="font-extrabold text-3xl">{ permitNumber }</div>}
+        <div className="mt-2">
+          <BreadcrumbsRouter />
         </div>
       </div>
-      <div className="mt-2">
-        <BreadcrumbsRouter />
-        {/* <Breadcrumbs aria-label='breadcrumb' separator={<BsChevronRight/>}>
-          <Link underline="hover" href="/">
-            <IoHome/>
-          </Link>
-          <Link underline="hover" href="/well-permits">
-            Well Permits
-          </Link>
-          <Link underline="hover" href={`/well-permits/${permitNumber}`}>
-            { permitNumber }
-          </Link>
-        </Breadcrumbs> */}
+      <div className="grow"></div>
+      <div className="flex items-center h-full mr-8">
+        <Button title="Export" icon={<TiExport />} type="button" onClick={handleClick} />
+        <ExportDialog open={dialogOpen} onClose={handleClose} permitNumber={permitNumber} year={year} />
       </div>
     </div>
   )

@@ -9,6 +9,12 @@ module.exports = {
       colors: {
         'primary': '#30BCED'
       },
+      width: {
+        'primary-col': '1440px'
+      },
+      maxWidth: {
+        'primary-col': '1440px'
+      }
     },
   },
   plugins: [],

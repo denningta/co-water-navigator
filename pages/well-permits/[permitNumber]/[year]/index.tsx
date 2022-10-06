@@ -11,6 +11,8 @@ import MeterReadingsHeader from '../../../../components/widgets/MeterReadings/Me
 import ModifiedBankingComponent from '../../../../components/widgets/ModifiedBanking/ModifiedBankingComponent'
 import { NextPageWithLayout } from '../../../_app'
 import { PermitRef } from '../../../../interfaces/WellPermit'
+import Footer from '../../../../components/common/Footer'
+import { columnDefs } from '../../../../components/widgets/CalendarYearSelector/calendar-year-selector-coldefs'
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
@@ -27,6 +29,7 @@ const WellPermit: NextPageWithLayout = () => {
   const { query } = router
   const [year, setYear] = useState(new Date().getFullYear().toString())
   const [permitNumber, setPermitNumber] = useState<string | undefined>(undefined)
+  const [calculating, setCalculating] = useState<boolean | undefined>(undefined)
 
   useEffect(() => {    
     if (router.isReady) {
@@ -35,19 +38,13 @@ const WellPermit: NextPageWithLayout = () => {
     }
   }, [router, query])
 
-  const meterReadings = useSWR(
-    (permitNumber && year) 
-    ? `/api/v1/meter-readings?permitNumber=${permitNumber}&year=${year}` 
-    : null, 
-    fetcher
-  )
-
   const calendarYearSelector = useSWR(
     (permitNumber) 
     ? `/api/v1/data-summary?permitNumber=${permitNumber}` 
     : null, 
     fetcher
   )
+
 
   const handleYearChanged = (year: string) => {
     setYear(year)
@@ -56,30 +53,46 @@ const WellPermit: NextPageWithLayout = () => {
 
   const widgets: Widget[] = [
     { 
-      component: <MeterReadingsHeader permitNumber={permitNumber}/>, 
+      component: <MeterReadingsHeader 
+        permitNumber={permitNumber}
+        year={year}
+      />, 
       colspan: 3
     },
     {
       component: 
         <CalendarYearSelector 
-        data={calendarYearSelector.data} 
-        year={year} 
-        onYearChanged={handleYearChanged} />,
+          permitNumber={permitNumber}
+          year={year} 
+          onYearChanged={handleYearChanged} 
+        />,
       colspan: 3
     },
     {
-      component: <MeterReadingsComponent permitNumber={permitNumber} year={year}   
+      component: <MeterReadingsComponent 
+        permitNumber={permitNumber} 
+        year={year}   
+        onCalculating={setCalculating}
       />,
       colspan: 3
     },
     {
-      component: <ModifiedBankingComponent permitNumber={permitNumber} year={year} />,
+      component: <ModifiedBankingComponent 
+        permitNumber={permitNumber} 
+        year={year} 
+        onCalculating={setCalculating}
+      />,
       colspan: 3
     }
   ]
 
   return (
-    <MainContent widgets={widgets} columns={3} />
+    <>
+      <div className='mb-6'>
+        <MainContent widgets={widgets} columns={3} />
+      </div>
+      <Footer loading={calculating} />
+    </>
   )
 }
 

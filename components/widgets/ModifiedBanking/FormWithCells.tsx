@@ -70,7 +70,7 @@ const FormWithCells = ({
   formElements = [],
   data = {},
   onCellValueChanged = () => {},
-  onValueSetterError = () => {}
+  onValueSetterError = () => {},
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const { 

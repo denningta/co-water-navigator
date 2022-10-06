@@ -15,9 +15,10 @@ import useMeterReadings from "../../../hooks/useMeterReadings"
 interface Props {
   permitNumber: string | undefined
   year: string | undefined
+  onCalculating?: (calculating: boolean | undefined) => void
 }
 
-const MeterReadingsComponent = ({permitNumber, year}: Props) => {
+const MeterReadingsComponent = ({permitNumber, year, onCalculating = () => {} }: Props) => {
   const { data, mutate } = useMeterReadings(permitNumber, year)
   const [openDialog, setOpenDialog] = useState(false)
 
@@ -48,7 +49,12 @@ const MeterReadingsComponent = ({permitNumber, year}: Props) => {
           <TableLoading height={600} numberOfRows={11} />
         }
         { (data && permitNumber && year) && 
-          <ReadingsGrid meterReadings={data} permitNumber={permitNumber} year={year} /> 
+          <ReadingsGrid 
+            meterReadings={data} 
+            permitNumber={permitNumber} 
+            year={year} 
+            onCalculating={onCalculating} 
+          /> 
         }
       </div>
       <MeterReadingsInfoDialog open={openDialog} onClose={handleClose} />

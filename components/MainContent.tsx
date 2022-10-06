@@ -18,7 +18,7 @@ interface Props {
 const MainContent = ({ columns, widgets }: Props) => {
 
   return (
-    <div className='grid gap-6' style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
+    <div className='grid gap-6 max-w-primary-col mx-auto' style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
       {widgets.map((widget, i) => {
         return (
           <div 

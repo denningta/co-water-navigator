@@ -14,7 +14,7 @@ const AppLayout = ({ children }: Props) => {
             <Toolbar></Toolbar>
           </div>
         </div>
-        <main className="ml-[80px] w-full px-8 py-6">
+        <main className="ml-[75px] w-full px-8 py-6">
           { children }
         </main>
       </div>
