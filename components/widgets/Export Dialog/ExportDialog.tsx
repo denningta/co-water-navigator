@@ -5,10 +5,11 @@ import Button from "../../common/Button"
 import { TiExport } from "react-icons/ti"
 import CustomRadio from "../../common/CustomRadio"
 import { customColDefs, customDefaultColDefs } from "./custom-col-defs"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import FileType from "./FileType"
 import DocumentSelection, { DocumentSelectionObj } from "./DocumentSelection"
 import { SelectionChangedEvent } from "ag-grid-community"
+import axios from "axios"
 
 
 interface Props {
@@ -31,6 +32,9 @@ const ExportDialog = ({
   })
   const [fileType, setFileType] = useState('pdf')
   const [fileName, setFileName] = useState('')
+  const [pdf, setPdf] = useState<Uint8Array | undefined>(undefined)
+  const iframeRef = useRef<HTMLIFrameElement | null>(null)
+  const [blobUrl, setBlobUrl] = useState<string | undefined>(undefined)
 
   const handleClose = () => {
     onClose()
@@ -65,9 +69,28 @@ const ExportDialog = ({
     )
   }, [documents, fileType, permitNumber, dataSelection])
 
-  const handleExport = () => {
-    console.log(fileType, documents, fileName, dataSelection)
+  const handleExport = async () => {
+    try {
+      const res = await axios.post(
+        '/api/v1/export',
+        {
+          fileType: fileType,
+          documents: documents,
+          fileName: fileName,
+          dataSelection: dataSelection
+        }
+      )
+      renderInIframe(new Uint8Array(JSON.parse(res.data)))
+    } catch (error: any) {
+
+    }
   }
+
+  const renderInIframe = (pdfBytes: Uint8Array) => {
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const blobUrl = URL.createObjectURL(blob);
+    setBlobUrl(blobUrl)
+  };
 
   return (
     <Dialog 
@@ -75,6 +98,7 @@ const ExportDialog = ({
       onClose={handleClose} 
       fullWidth={true}
       maxWidth={'lg'}
+      fullScreen={true}
     >
       <button className="absolute top-3 right-3" onClick={handleClose} type="button">
         <IoClose size={30} className="text-gray-400 hover:text-gray-600 transition ease-in-out" />
@@ -119,7 +143,11 @@ const ExportDialog = ({
             </span>
           </div>
         </div>
-
+        <iframe 
+          src={blobUrl}
+          itemType="application/pdf"
+          className="w-full h-full my-10"
+        ></iframe>
       </div>
     </Dialog>
   )

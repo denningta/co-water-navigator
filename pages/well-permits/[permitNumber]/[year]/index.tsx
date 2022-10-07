@@ -12,7 +12,7 @@ import ModifiedBankingComponent from '../../../../components/widgets/ModifiedBan
 import { NextPageWithLayout } from '../../../_app'
 import { PermitRef } from '../../../../interfaces/WellPermit'
 import Footer from '../../../../components/common/Footer'
-import { columnDefs } from '../../../../components/widgets/CalendarYearSelector/calendar-year-selector-coldefs'
+
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
