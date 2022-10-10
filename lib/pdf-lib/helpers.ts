@@ -1,30 +1,6 @@
 import { layoutMultilineText, layoutSinglelineText, PDFFont, PDFPage, rgb } from "pdf-lib"
+import { BoundingBox, TextObj, TextOptions } from "./interfaces"
 
-export interface TextObj {
-  text: string
-  options: {
-    x: number,
-    y: number
-  }
-}
-
-export interface BoundingBox {
-  width: number,
-  height: number,
-  x: number,
-  y: number
-}
-
-export interface TextOptions {
-  size: number 
-  font: PDFFont
-  margin?: {
-    top?: number
-    bottom?: number
-    left?: number
-    right?: number
-  }
-}
 
 
 export const getTextObj = (
@@ -154,11 +130,8 @@ export const drawTable = (
       }
       page.drawRectangle(cellBox)
 
-
       const cellValue = (data && data[rowIndex] && data[rowIndex][column.field]) && 
         (data[rowIndex][column.field]?.toString() ?? data[rowIndex][column.field])
-
-      
 
       if (cellValue) {
         const { line } = layoutSinglelineText(cellValue, {
@@ -173,13 +146,15 @@ export const drawTable = (
           y: line.y,
           size: 10
         })
-
       }
-
-  
     }
-
-
-
   })
+}
+
+export const centerInBox = (boundingBox: BoundingBox, width: number): number => {
+  return ((2 * boundingBox.x + boundingBox.width) / 2) - (width / 2)
+}
+
+export const alignVertical = (boundingBox: BoundingBox, height: number): number => {
+  return ((2 * boundingBox.y + boundingBox.height) / 2) - (height / 2)
 }
