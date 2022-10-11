@@ -29,9 +29,9 @@ function handler(
       res.status(200).json(response);
       return response;
     })
-    .catch((errors) => {
-      res.status(errors[0].status || 500).json({errors: errors})
-      return errors;
+    .catch((error) => {
+      res.status(error.status || 500).json({error: error})
+      return error;
     });
 
 }

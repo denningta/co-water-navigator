@@ -8,9 +8,11 @@ import useSWR from "swr"
 import MeterReading from "../../../interfaces/MeterReading"
 import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
 import DataSummaryCellRenderer from "./DataSummaryCellRenderer"
-import useDataSummary from "../../../hooks/useDataSummary"
+import useDataSummary from "../../../hooks/useDataSummaryByPermit"
 import ShowExistingData from "./ShowExistingData"
 import { yearSelectorColDefs, yearSelectorDefaultColDef } from "./calendar-year-selector-coldefs"
+import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
+import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 
 export interface CalendarYearSelectorData {
   year: string

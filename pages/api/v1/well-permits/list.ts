@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { WellPermitAssignment } from "../../../../interfaces/WellPermit";
 import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
-import { getWellPermits } from "../../../../lib/fauna/ts-queries/wellPermits";
+import { getWellPermits } from "../../../../lib/fauna/ts-queries/getWellPermits";
 import { getUser } from "../../auth/[user_id]/get-user";
 import { HttpError } from "../interfaces/HttpError";
 import validateQuery from "../validatorFunctions";

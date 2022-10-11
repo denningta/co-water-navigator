@@ -1,2 +1,0 @@
-import { q } from "../faunaClient"
-

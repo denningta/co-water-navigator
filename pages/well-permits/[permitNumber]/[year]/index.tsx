@@ -12,6 +12,7 @@ import ModifiedBankingComponent from '../../../../components/widgets/ModifiedBan
 import { NextPageWithLayout } from '../../../_app'
 import { PermitRef } from '../../../../interfaces/WellPermit'
 import Footer from '../../../../components/common/Footer'
+import useDataSummaryByPermit from '../../../../hooks/useDataSummaryByPermit'
 
 
 const fetcher = async (url: string) => {
@@ -38,12 +39,7 @@ const WellPermit: NextPageWithLayout = () => {
     }
   }, [router, query])
 
-  const calendarYearSelector = useSWR(
-    (permitNumber) 
-    ? `/api/v1/data-summary?permitNumber=${permitNumber}` 
-    : null, 
-    fetcher
-  )
+  const { data, mutate } = useDataSummaryByPermit(permitNumber)
 
 
   const handleYearChanged = (year: string) => {
@@ -65,6 +61,7 @@ const WellPermit: NextPageWithLayout = () => {
           permitNumber={permitNumber}
           year={year} 
           onYearChanged={handleYearChanged} 
+          data={data}
         />,
       colspan: 3
     },

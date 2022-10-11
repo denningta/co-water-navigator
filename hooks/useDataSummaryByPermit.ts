@@ -11,7 +11,7 @@ const fetcher = async (url: string) => {
 }
 
 
-const useDataSummary = (permitNumber: string | undefined) => {
+const useDataSummaryByPermit = (permitNumber: string | undefined) => {
   const { data, mutate } = useSWR(
     (permitNumber) 
     ? `/api/v1/data-summary?permitNumber=${permitNumber}` 
@@ -24,4 +24,16 @@ const useDataSummary = (permitNumber: string | undefined) => {
   }
 }
 
-export default useDataSummary
+export const useDataSummaryTotal = () => {
+  const { data, mutate } = useSWR(
+    '/api/v1/data-summary',
+    fetcher
+  )
+
+  return {
+    data: data,
+    mutate: mutate
+  }
+}
+
+export default useDataSummaryByPermit

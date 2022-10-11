@@ -4,7 +4,7 @@ import faunaClient, { q } from "../../../../../lib/fauna/faunaClient";
 import { getUser } from "../../../auth/[user_id]/get-user";
 import { HttpError } from "../../interfaces/HttpError";
 import validateQuery from "../../validatorFunctions";
-import { getWellPermits } from '../../../../../lib/fauna/ts-queries/wellPermits' 
+import { getWellPermits } from '../../../../../lib/fauna/ts-queries/getWellPermits' 
 
 function handleListWellPemitsByUser(req: NextApiRequest, res: NextApiResponse): Promise<any> {
   return new Promise(async (resolve, reject) => {

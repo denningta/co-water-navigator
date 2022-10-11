@@ -12,6 +12,7 @@ import useSWR from 'swr'
 import { Auth0AppMetadata } from '../../interfaces/Auth0UserProfile'
 import { AppMetadata } from '../../interfaces/User'
 import useSwr from 'swr'
+import Export from '../../components/widgets/Export/ExportComponent'
 
 
 const fetcher = async (url: string, user_id: string) => {
@@ -44,7 +45,7 @@ const WellPermits: NextPageWithLayout = () => {
       colspan: 3
     },
     { component: <WellPermitsAssignment rowData={data} />, colspan: 3 },
-    { component: <WellPermitSearch />, colspan: 3 }
+    { component: <WellPermitSearch />, colspan: 3 },
   ]
 
   return (

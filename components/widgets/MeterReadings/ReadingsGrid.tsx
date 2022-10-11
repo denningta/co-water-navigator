@@ -23,6 +23,7 @@ const ReadingsGrid = ({ meterReadings, permitNumber, year, onCalculating = () =>
 
   useEffect(() => {
     onCalculating(undefined)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const rowData = initPlaceholderData(permitNumber, year).map(record => {

@@ -1,29 +1,21 @@
-import { Dialog, RadioGroup, FormControlLabel, FormGroup, Checkbox, Radio } from "@mui/material"
-import CalendarYearSelector from "../CalendarYearSelector/CalendarYearSelector"
-import { IoClose } from "react-icons/io5"
 import Button from "../../common/Button"
 import { TiExport } from "react-icons/ti"
-import CustomRadio from "../../common/CustomRadio"
-import { customColDefs, customDefaultColDefs } from "./custom-col-defs"
+import { exportColDefs, exportDefaultColDefs } from "./exportColDefs"
 import React, { useEffect, useRef, useState } from "react"
 import FileType from "./FileType"
 import DocumentSelection, { DocumentSelectionObj } from "./DocumentSelection"
-import { SelectionChangedEvent } from "ag-grid-community"
+import { GridReadyEvent, SelectionChangedEvent } from "ag-grid-community"
 import axios from "axios"
+import { useDataSummaryTotal } from "../../../hooks/useDataSummaryByPermit"
+import { AgGridReact } from "ag-grid-react"
+import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
+import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 
 
 interface Props {
-  open: boolean
-  permitNumber: string | undefined
-  year: string | undefined
-  onClose?: () => void
 }
 
-const ExportDialog = ({ 
-  open,
-  permitNumber, 
-  year,
-  onClose = () => {}
+const ExportComponent = ({ 
 }: Props) => {
   const [dataSelection, setDataSelection] = useState<any[]>()
   const [documents, setDocuments] = useState({
@@ -32,13 +24,14 @@ const ExportDialog = ({
   })
   const [fileType, setFileType] = useState('pdf')
   const [fileName, setFileName] = useState('')
-  const [pdf, setPdf] = useState<Uint8Array | undefined>(undefined)
-  const iframeRef = useRef<HTMLIFrameElement | null>(null)
   const [blobUrl, setBlobUrl] = useState<string | undefined>(undefined)
+  const { data, mutate } = useDataSummaryTotal()
+  const gridRef = useRef(null)
 
-  const handleClose = () => {
-    onClose()
+  const handleGridReady = ({ api, columnApi }: GridReadyEvent) => {
+    api.sizeColumnsToFit()
   }
+
 
   const handleSelectionChanged = ({ api }: SelectionChangedEvent) => {
     setDataSelection(api.getSelectedRows())
@@ -59,15 +52,21 @@ const ExportDialog = ({
   }
 
   useEffect(() => {
-    const years = dataSelection?.map(el => el.year).slice(0, 5)
+    const permitNumbers = (dataSelection && dataSelection.length > 0) 
+      ? dataSelection.map(el => 
+        el.permitNumber
+      ).filter((item, i, array) => 
+        array.indexOf(item) === i
+      )
+      : ''
+
     setFileName(
-      `${permitNumber}` +
+      `${permitNumbers}` +
       `${documents.dbb004 ? '_DBB-004' : ''}` +
       `${documents.dbb013 ? '_DBB-013' : ''}` +
-      `_${years}` +
       `.${fileType}`
     )
-  }, [documents, fileType, permitNumber, dataSelection])
+  }, [documents, fileType, dataSelection])
 
   const handleExport = async () => {
     try {
@@ -93,29 +92,22 @@ const ExportDialog = ({
   };
 
   return (
-    <Dialog 
-      open={open} 
-      onClose={handleClose} 
-      fullWidth={true}
-      maxWidth={'lg'}
-      fullScreen={true}
-    >
-      <button className="absolute top-3 right-3" onClick={handleClose} type="button">
-        <IoClose size={30} className="text-gray-400 hover:text-gray-600 transition ease-in-out" />
-      </button>
       <div className="p-6">
-        <div className="text-2xl font-bold mb-4 text-center">Export to PDF or CSV</div>
         <div className="mb-6">
-          <div className="text-xl font-bold mb-2">Select years</div>
-          <CalendarYearSelector 
-            permitNumber={permitNumber} 
-            year={year} 
-            columnDefs={customColDefs}
-            defaultColDef={customDefaultColDefs}
-            rowSelection="multiple"
-            onlyDataFilterDefault={true}
-            onSelectionChanged={handleSelectionChanged}
-          />
+          <div className="text-xl font-bold mb-2">Select data to export</div>
+          <div className="ag-theme-alpine" style={{ height: 300 }}>
+            <AgGridReact
+              ref={gridRef}
+              columnDefs={exportColDefs}
+              defaultColDef={exportDefaultColDefs}
+              rowData={data}
+              suppressCellFocus={true}
+              pagination={true}
+              onGridReady={handleGridReady}
+              rowSelection="multiple"
+              onSelectionChanged={handleSelectionChanged}
+            />
+          </div>
         </div>
         <div className="flex">
           <div className="flex justify-center w-full">
@@ -135,9 +127,6 @@ const ExportDialog = ({
             </div>
           </div>
           <div className="flex grow justify-end items-end">
-            <span className="mr-6">
-              <Button title="Cancel" color="secondary" onClick={handleClose} />
-            </span>
             <span>
               <Button title="Export..." icon={<TiExport />} onClick={handleExport} />
             </span>
@@ -146,11 +135,10 @@ const ExportDialog = ({
         <iframe 
           src={blobUrl}
           itemType="application/pdf"
-          className="w-full h-full my-10"
+          className="w-full my-10 h-[1000px]"
         ></iframe>
       </div>
-    </Dialog>
   )
 }
 
-export default ExportDialog
+export default ExportComponent

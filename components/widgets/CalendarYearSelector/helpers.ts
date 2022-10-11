@@ -1,6 +1,7 @@
 import { CalendarYearSelectorData } from "./CalendarYearSelector"
 
-export function initCalendarYearPlaceholderData(year: string, numberOfRecords: number): CalendarYearSelectorData[] {
+export function initCalendarYearPlaceholderData(year: string | undefined, numberOfRecords: number): CalendarYearSelectorData[] {
+  if (!year) return []
   const data: CalendarYearSelectorData[] = []
   let y = Math.round(+year - numberOfRecords/2)
 

@@ -5,7 +5,7 @@ import { IoHome } from 'react-icons/io5'
 import { BsChevronRight } from 'react-icons/bs'
 import BreadcrumbsRouter from '../../common/BreadcrumbsRouter'
 import Button from '../../common/Button'
-import ExportDialog from '../Export Dialog/ExportDialog'
+import ExportDialog from '../Export/ExportComponent'
 import { useState } from 'react'
 
 interface Props {
@@ -38,7 +38,6 @@ const MeterReadingsHeader = ({ permitNumber, year, owner, location }: Props) => 
       <div className="grow"></div>
       <div className="flex items-center h-full mr-8">
         <Button title="Export" icon={<TiExport />} type="button" onClick={handleClick} />
-        <ExportDialog open={dialogOpen} onClose={handleClose} permitNumber={permitNumber} year={year} />
       </div>
     </div>
   )
