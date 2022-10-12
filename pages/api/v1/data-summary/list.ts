@@ -20,20 +20,10 @@ async function listDataSummary(req: NextApiRequest): Promise<any[]> {
     if (!permitNumbers) throw new Error('No meter readings or modified banking data found')
     if (!Array.isArray(permitNumbers)) permitNumbers = [permitNumbers]
 
-    const test: any = await faunaClient.query(
-      q.Let({
-        permitNumber: '12124-RFP',
-        year: '2018'
-      }, getLastMeterReadingPrevYear(q.Var('permitNumber'), q.Var('year')))
-    )
-    console.log(test)
-
     const response: any = await faunaClient.query(getDataSummary(permitNumbers))
-    // console.log(response)
     return response;
 
   } catch (error: any) {
-    console.log(error)
     return error
   }
 

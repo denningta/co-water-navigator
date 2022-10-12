@@ -3,8 +3,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import MeterReading from "../../../../interfaces/MeterReading";
 import { ModifiedBanking } from "../../../../interfaces/ModifiedBanking";
-import addDbb004 from "./dbb004";
-import addDbb013 from "./dbb013";
+import addDbb004 from "./dbb004/dbb004";
+import addDbb013 from "./dbb013/dbb013";
 
 export interface ExportData {
   fileType: 'pdf' | 'csv'
@@ -42,12 +42,12 @@ const createPdf = async ({ documents, dataSelection }: ExportData) => {
   await Promise.all(
     dataSelection.map(async (el) => {
       if (documents.dbb004) {
-        const dbb004 = await addDbb004(el.dbb004Summary, true)
+        const dbb004 = await addDbb004(el.dbb004Summary)
         await mergeDocuments(pdfDoc, dbb004)
       }
     
       if (documents.dbb013) {
-        const dbb013 = await addDbb013(true)
+        const dbb013 = await addDbb013(el.dbb013Summary)
         await mergeDocuments(pdfDoc, dbb013)
       }
     })
@@ -55,6 +55,18 @@ const createPdf = async ({ documents, dataSelection }: ExportData) => {
 
   const pdfBytes = await pdfDoc.save()
   return pdfBytes
+}
+
+export const convertToTableData = (data: any[]) => {
+  return data.map(el => {
+    const keys = Object.keys(el) as (keyof typeof el)[]
+    const obj: any = {}
+     keys.forEach(key => {
+      if (el[key].value !== undefined) obj[key] = el[key].value
+      else obj[key] = el[key]
+    })
+    return obj
+  })
 }
 
 
