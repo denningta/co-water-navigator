@@ -2,13 +2,13 @@ import _ from "lodash"
 import path from "path"
 import { PDFCheckBox, PDFDocument, PDFTextField, rgb, StandardFonts } from "pdf-lib"
 import { convertToTableData, getForm } from ".."
+import { AgentInfo } from "../../../../../interfaces/AgentInfo"
 import MeterReading from "../../../../../interfaces/MeterReading"
-import { drawTable, PDFColDef } from "../../../../../lib/pdf-lib/helpers"
-import { BoundingBox } from "../../../../../lib/pdf-lib/interfaces"
+import { drawTable } from "../../../../../lib/pdf-lib/helpers"
 import colDefs from "./col-defs"
 import fields from "./dbb004-fields"
 
-const addDbb004 = async (data?: MeterReading[], debug: boolean = false) => {
+const addDbb004 = async (data: MeterReading[], agentInfo: AgentInfo, debug: boolean = false) => {
   const pdfBytes = getForm(
     path.resolve('./public'),
     'dbb004.pdf'
@@ -22,6 +22,13 @@ const addDbb004 = async (data?: MeterReading[], debug: boolean = false) => {
   const page = document.getPage(0)
   document.removePage(1)
 
+  const formData: any = {
+    ...agentInfo,
+    name: agentInfo.firstName + ' ' + agentInfo.lastName,
+    district: agentInfo.agentFor,
+    signature: `Digitally Signed by cowaterexport.com; User ID: ${agentInfo.user_id}`,
+  }
+
   fields(debug).forEach(field => page.drawRectangle(field.box))
   
   const formFields = fields(false).map(field => {
@@ -32,7 +39,9 @@ const addDbb004 = async (data?: MeterReading[], debug: boolean = false) => {
   formFields.forEach((formField, i) => {
     const { name, type, box } = fields()[i]
     if (formField instanceof PDFTextField) {
-      formField.setText(name)
+      const fieldValue = formData[name] ? formData[name].toString() : undefined
+
+      fieldValue && formField.setText(fieldValue)
       formField.addToPage(page, {
         ...box,
         x: box.x + 3,
@@ -49,16 +58,6 @@ const addDbb004 = async (data?: MeterReading[], debug: boolean = false) => {
       })
     }
   })
-
-  // const expandedAcres = form.createCheckBox('expandedAcres')
-  // expandedAcres.addToPage(page, 
-  //   { 
-  //     x: 335, 
-  //     y: 503,
-  //     width: 10,
-  //     height: 10
-  //   }
-  // )
 
   const tableData = data && convertToTableData(data)
 

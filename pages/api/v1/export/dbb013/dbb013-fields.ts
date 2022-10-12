@@ -336,7 +336,7 @@ const fields = (debug: boolean = false): Field[] => {
       }
     },
     {
-      name: 'phoneNumber',
+      name: 'phone',
       type: 'textField',
       box: {
         x: 110,

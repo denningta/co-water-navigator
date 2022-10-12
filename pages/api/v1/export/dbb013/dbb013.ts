@@ -1,10 +1,11 @@
 import path from "path"
 import { PDFCheckBox, PDFDocument, PDFTextField, rgb, StandardFonts } from "pdf-lib"
 import { convertToTableData, getForm } from ".."
+import { AgentInfo } from "../../../../../interfaces/AgentInfo"
 import { ModifiedBanking } from "../../../../../interfaces/ModifiedBanking"
 import fields from "./dbb013-fields"
 
-const addDbb013 = async (data: ModifiedBanking[], debug: boolean = false,) => {
+const addDbb013 = async (data: ModifiedBanking[], agentInfo: AgentInfo, debug: boolean = false,) => {
   const pdfBytes = getForm(
     path.resolve('./public'),
     'dbb013.pdf'
@@ -17,11 +18,16 @@ const addDbb013 = async (data: ModifiedBanking[], debug: boolean = false,) => {
   const fontSize = 11
   const page = document.getPage(0)
 
-  const tableData = data && data.length ? convertToTableData(data)[0] : {}
-
-  tableData.signatureDay = new Date().toLocaleDateString('en-us', { day: 'numeric' })
-  tableData.signatureMonth = new Date().toLocaleDateString('en-us', { month: 'long' })
-  tableData.signatureYear = new Date().toLocaleDateString('en-us', { year: 'numeric' })
+  const tableData = {
+    ...data && data.length ? convertToTableData(data)[0] : {},
+    ...agentInfo,
+    name: agentInfo.firstName + ' ' + agentInfo.lastName,
+    district: agentInfo.agentFor,
+    signature: `Digitally Signed by cowaterexport.com; User ID: ${agentInfo.user_id}`,
+    signatureDay: new Date().toLocaleDateString('en-us', { day: 'numeric' }),
+    signatureMonth: new Date().toLocaleDateString('en-us', { month: 'long' }),
+    signatureYear: new Date().toLocaleDateString('en-us', { year: 'numeric' }),
+  }
 
   fields(debug).forEach(field => page.drawRectangle(field.box))
 

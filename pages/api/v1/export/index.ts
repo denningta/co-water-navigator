@@ -1,8 +1,12 @@
+import { getSession } from "@auth0/nextjs-auth0";
 import { readdirSync, readFile, readFileSync } from "fs";
 import { NextApiRequest, NextApiResponse } from "next";
 import { PDFDocument, StandardFonts } from "pdf-lib";
+import { AgentInfo } from "../../../../interfaces/AgentInfo";
 import MeterReading from "../../../../interfaces/MeterReading";
 import { ModifiedBanking } from "../../../../interfaces/ModifiedBanking";
+import faunaClient from "../../../../lib/fauna/faunaClient";
+import getAgentInfo from "../../../../lib/fauna/ts-queries/getAgentInfo";
 import addDbb004 from "./dbb004/dbb004";
 import addDbb013 from "./dbb013/dbb013";
 
@@ -18,10 +22,19 @@ export interface ExportData {
     dbb004Summary: MeterReading[]
     dbb013Summary: ModifiedBanking[]
   }[]
+  agentInfo: AgentInfo
 }
 
 const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const pdfBytes = await createPdf(req.body)
+  const session = getSession(req, res)
+  const user_id = session?.user?.sub
+
+  const agentInfo =  await faunaClient.query(getAgentInfo(user_id))
+
+  const pdfBytes = await createPdf({
+    ...req.body,
+    agentInfo: agentInfo
+  })
   const pdfBytesString = `[${pdfBytes.toString()}]`
   res.status(200).json(pdfBytesString)
 }
@@ -36,18 +49,17 @@ const mergeDocuments = async (main: PDFDocument, merge: PDFDocument) => {
 }
 
 
-const createPdf = async ({ documents, dataSelection }: ExportData) => {
+const createPdf = async ({ documents, dataSelection, agentInfo }: ExportData) => {
   const pdfDoc = await PDFDocument.create()
 
   await Promise.all(
     dataSelection.map(async (el) => {
       if (documents.dbb004) {
-        const dbb004 = await addDbb004(el.dbb004Summary)
+        const dbb004 = await addDbb004(el.dbb004Summary, agentInfo)
         await mergeDocuments(pdfDoc, dbb004)
       }
-    
       if (documents.dbb013) {
-        const dbb013 = await addDbb013(el.dbb013Summary)
+        const dbb013 = await addDbb013(el.dbb013Summary, agentInfo)
         await mergeDocuments(pdfDoc, dbb013)
       }
     })

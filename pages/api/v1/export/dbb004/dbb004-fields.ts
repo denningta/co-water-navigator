@@ -115,7 +115,7 @@ const fields = (debug: boolean = false): Field[] => {
       box: {
         x: 437,
         y: 73,
-        width: 261,
+        width: 320,
         height: 15,
         color: color
       }
