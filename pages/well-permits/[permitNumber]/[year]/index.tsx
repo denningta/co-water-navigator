@@ -39,9 +39,6 @@ const WellPermit: NextPageWithLayout = () => {
     }
   }, [router, query])
 
-  const { data, mutate } = useDataSummaryByPermit(permitNumber)
-
-
   const handleYearChanged = (year: string) => {
     setYear(year)
     router.push(`/well-permits/${permitNumber}/${year}`)
@@ -61,7 +58,6 @@ const WellPermit: NextPageWithLayout = () => {
           permitNumber={permitNumber}
           year={year} 
           onYearChanged={handleYearChanged} 
-          data={data}
         />,
       colspan: 3
     },

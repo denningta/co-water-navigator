@@ -30,7 +30,14 @@ const NavButton = ({ title = '', route = '/', size = 'normal', children }: Props
             { children || <IoHome /> }
           </div>
           { size === 'normal' &&
-            <div className={`mt-2 text-center text-sm ${hover ? 'text-white' : 'text-gray-400'}`}>{ title }</div>
+            <div className={`
+              mt-2 
+              text-center text-sm 
+              min-w-fit
+              ${hover ? 'text-white' : 'text-gray-400'}
+            `}>
+              { title }
+            </div>
           }
         </div>
     </Link>

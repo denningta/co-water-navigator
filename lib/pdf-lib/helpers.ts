@@ -66,6 +66,8 @@ export interface DrawTableOptions {
   data?: {
     [field: string]: number | string
   }[],
+  showHeaders?: boolean
+  showBorders?: boolean
   headerStyles: HeaderStyles
   numberOfRows?: number,
   rowHeight?: number,
@@ -79,15 +81,17 @@ export const drawTable = (
     data,
     numberOfRows = 1,
     rowHeight = 20,
+    showHeaders = true,
+    showBorders = true,
     headerStyles,
   }: DrawTableOptions
 ): void => {
-  page.drawRectangle(boundingBox)
+  showBorders && page.drawRectangle(boundingBox)
 
   const definedWidths = colDefs.map(col => col.width).filter(width => !!width)
   const totalDefinedWidth = definedWidths.reduce((prev, curr) => (prev ?? 0) + (curr ?? 0), 0)
   const autoSizeWidth = boundingBox.width - (totalDefinedWidth ?? 0)
-  const headerHeight = headerStyles?.height ?? 30
+  const headerHeight = showHeaders ? (headerStyles?.height ?? 30) : 0
 
   colDefs.forEach((column, colIndex, array) => {
     const colWidth = column.width ?? (autoSizeWidth / (colDefs.length - definedWidths.length))
@@ -104,7 +108,7 @@ export const drawTable = (
       borderColor: rgb(0, 0, 0)
     }
     
-    page.drawRectangle(headerBox)
+    showHeaders && showBorders && page.drawRectangle(headerBox)
     
     const { lines } = layoutMultilineText(column.title ?? column.field, {
       alignment: 1,
@@ -114,7 +118,7 @@ export const drawTable = (
     })
 
     // Draw Header Text
-    lines.forEach((el, i) => 
+    showHeaders && lines.forEach((el, i) => 
       page.drawText(el.text, { 
         ...headerStyles.textOptions,
         x: el.x,
@@ -128,7 +132,7 @@ export const drawTable = (
         height: rowHeight,
         y: headerBox.y - (rowHeight * (rowIndex + 1)),
       }
-      page.drawRectangle(cellBox)
+      showBorders && page.drawRectangle(cellBox)
 
       const cellValue = (data && data[rowIndex] && data[rowIndex][column.field]) && 
         (data[rowIndex][column.field]?.toString() ?? data[rowIndex][column.field])

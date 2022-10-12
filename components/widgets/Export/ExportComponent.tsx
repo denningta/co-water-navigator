@@ -10,6 +10,7 @@ import { useDataSummaryTotal } from "../../../hooks/useDataSummaryByPermit"
 import { AgGridReact } from "ag-grid-react"
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
+import { useSnackbar } from "notistack"
 
 
 interface Props {
@@ -23,15 +24,16 @@ const ExportComponent = ({
     dbb013: false
   })
   const [fileType, setFileType] = useState('pdf')
-  const [fileName, setFileName] = useState('')
   const [blobUrl, setBlobUrl] = useState<string | undefined>(undefined)
   const { data, mutate } = useDataSummaryTotal()
   const gridRef = useRef(null)
+  const { enqueueSnackbar } = useSnackbar()
+
+  console.log(data)
 
   const handleGridReady = ({ api, columnApi }: GridReadyEvent) => {
     api.sizeColumnsToFit()
   }
-
 
   const handleSelectionChanged = ({ api }: SelectionChangedEvent) => {
     setDataSelection(api.getSelectedRows())
@@ -41,32 +43,9 @@ const ExportComponent = ({
     setFileType(input)
   }
 
-  
-
   const handleDocumentsChange = (documents: DocumentSelectionObj) => {
     setDocuments(documents)
   }
-
-  const handleFileNameChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-    setFileName(target.value)
-  }
-
-  useEffect(() => {
-    const permitNumbers = (dataSelection && dataSelection.length > 0) 
-      ? dataSelection.map(el => 
-        el.permitNumber
-      ).filter((item, i, array) => 
-        array.indexOf(item) === i
-      )
-      : ''
-
-    setFileName(
-      `${permitNumbers}` +
-      `${documents.dbb004 ? '_DBB-004' : ''}` +
-      `${documents.dbb013 ? '_DBB-013' : ''}` +
-      `.${fileType}`
-    )
-  }, [documents, fileType, dataSelection])
 
   const handleExport = async () => {
     try {
@@ -75,13 +54,12 @@ const ExportComponent = ({
         {
           fileType: fileType,
           documents: documents,
-          fileName: fileName,
           dataSelection: dataSelection
         }
       )
       renderInIframe(new Uint8Array(JSON.parse(res.data)))
     } catch (error: any) {
-
+      enqueueSnackbar('Something went wrong, please try again.', { variant: 'error' })
     }
   }
 
@@ -116,14 +94,6 @@ const ExportComponent = ({
             </div>
             <div className="mb-6 mr-16 min-w-fit">
               <DocumentSelection documents={documents} onChange={handleDocumentsChange} />
-            </div>
-            <div className="mb-6 flex flex-col w-full mr-16">
-              <label className="mb-1 text-xl font-bold">File name</label>
-              <input
-                value={fileName}
-                onChange={handleFileNameChange}
-                className="bg-gray-100 outline-primary border border-gray-300 py-2 px-3 rounded"
-              />
             </div>
           </div>
           <div className="flex grow justify-end items-end">

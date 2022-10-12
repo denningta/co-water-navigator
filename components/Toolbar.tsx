@@ -1,14 +1,13 @@
-import { IoHome, IoUmbrellaSharp } from "react-icons/io5"
+import { IoHome } from "react-icons/io5"
 import { FaUserCircle, FaListAlt, FaUserShield } from "react-icons/fa"
 import { GiWaterSplash } from "react-icons/gi"
-import { MdAdminPanelSettings, MdLogout } from "react-icons/md"
 import Image from 'next/image'
 import NavButton from "./NavButton"
 import { useUser } from "@auth0/nextjs-auth0"
 import Link from "next/link"
 import { useState } from "react"
 import LogoutButton from "./common/LogoutButton"
-import { useRouter } from "next/router"
+import { TiExport } from "react-icons/ti"
 
 const Toolbar = () => {
   const { user, error, isLoading } = useUser()
@@ -38,6 +37,9 @@ const Toolbar = () => {
       </NavButton>
       <NavButton title="Well Permits" route="/well-permits" size={collapsed ? 'small' : 'normal'}>
         <FaListAlt/>
+      </NavButton>
+      <NavButton title="Export" route="/export" size={collapsed ? 'small' : 'normal'}>
+        <TiExport />
       </NavButton>
       <NavButton title="Profile" route="/profile" size={collapsed ? 'small' : 'normal'}>
         <FaUserCircle/>
