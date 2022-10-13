@@ -31,6 +31,8 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const agentInfo =  await faunaClient.query(getAgentInfo(user_id))
 
+  console.log(req.body)
+
   const pdfBytes = await createPdf({
     ...req.body,
     agentInfo: agentInfo
@@ -55,7 +57,7 @@ const createPdf = async ({ documents, dataSelection, agentInfo }: ExportData) =>
   await Promise.all(
     dataSelection.map(async (el) => {
       if (documents.dbb004) {
-        const dbb004 = await addDbb004(el.dbb004Summary, agentInfo)
+        const dbb004 = await addDbb004(el.dbb004Summary, agentInfo, el.permitNumber, el.year)
         await mergeDocuments(pdfDoc, dbb004)
       }
       if (documents.dbb013) {

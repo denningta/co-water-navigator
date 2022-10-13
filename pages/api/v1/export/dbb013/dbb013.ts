@@ -3,6 +3,9 @@ import { PDFCheckBox, PDFDocument, PDFTextField, rgb, StandardFonts } from "pdf-
 import { convertToTableData, getForm } from ".."
 import { AgentInfo } from "../../../../../interfaces/AgentInfo"
 import { ModifiedBanking } from "../../../../../interfaces/ModifiedBanking"
+import { WellPermit } from "../../../../../interfaces/WellPermit"
+import faunaClient, { q } from "../../../../../lib/fauna/faunaClient"
+import getWellPermitRecord from "../../../../../lib/fauna/ts-queries/getWellPermitRecord"
 import fields from "./dbb013-fields"
 
 const addDbb013 = async (data: ModifiedBanking[], agentInfo: AgentInfo, debug: boolean = false,) => {
@@ -18,9 +21,23 @@ const addDbb013 = async (data: ModifiedBanking[], agentInfo: AgentInfo, debug: b
   const fontSize = 11
   const page = document.getPage(0)
 
+  const permitNumber = data[0].permitNumber
+  const { 
+    q40, 
+    q160, 
+    section, 
+    township, 
+    range, 
+    contactName 
+  }: WellPermit = await faunaClient.query(getWellPermitRecord(permitNumber))
+
+
   const tableData = {
     ...data && data.length ? convertToTableData(data)[0] : {},
     ...agentInfo,
+    permitNumber: permitNumber,
+    location: `${q40} 1/4 ${q160} 1/4 Sec ${section}, T ${township}, R ${range}`,
+    owner: contactName,
     name: agentInfo.firstName + ' ' + agentInfo.lastName,
     district: agentInfo.agentFor,
     signature: `Digitally Signed by cowaterexport.com; User ID: ${agentInfo.user_id}`,

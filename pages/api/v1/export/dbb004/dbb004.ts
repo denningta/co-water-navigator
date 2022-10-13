@@ -4,11 +4,20 @@ import { PDFCheckBox, PDFDocument, PDFTextField, rgb, StandardFonts } from "pdf-
 import { convertToTableData, getForm } from ".."
 import { AgentInfo } from "../../../../../interfaces/AgentInfo"
 import MeterReading from "../../../../../interfaces/MeterReading"
+import { WellPermit } from "../../../../../interfaces/WellPermit"
+import faunaClient from "../../../../../lib/fauna/faunaClient"
+import getWellPermitRecord from "../../../../../lib/fauna/ts-queries/getWellPermitRecord"
 import { drawTable } from "../../../../../lib/pdf-lib/helpers"
 import colDefs from "./col-defs"
 import fields from "./dbb004-fields"
 
-const addDbb004 = async (data: MeterReading[], agentInfo: AgentInfo, debug: boolean = false) => {
+const addDbb004 = async (
+  data: MeterReading[], 
+  agentInfo: AgentInfo, 
+  permitNumber: string, 
+  year: string, 
+  debug: boolean = false
+) => {
   const pdfBytes = getForm(
     path.resolve('./public'),
     'dbb004.pdf'
@@ -22,8 +31,21 @@ const addDbb004 = async (data: MeterReading[], agentInfo: AgentInfo, debug: bool
   const page = document.getPage(0)
   document.removePage(1)
 
+  const { 
+    q40, 
+    q160, 
+    section, 
+    township, 
+    range, 
+    contactName 
+  }: WellPermit = await faunaClient.query(getWellPermitRecord(permitNumber ?? ''))
+
   const formData: any = {
     ...agentInfo,
+    permitNumber: permitNumber,
+    location: `${q40} 1/4 ${q160} 1/4 Sec ${section}, T ${township}, R ${range}`,
+    owner: contactName,
+    calendarYear: year,
     name: agentInfo.firstName + ' ' + agentInfo.lastName,
     district: agentInfo.agentFor,
     signature: `Digitally Signed by cowaterexport.com; User ID: ${agentInfo.user_id}`,
