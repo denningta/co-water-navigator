@@ -5,7 +5,7 @@ import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
 import { runCalculationsInternal } from "../../calculate";
 
-function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking | undefined> {
+function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'bodyExists',
@@ -18,12 +18,10 @@ function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking | u
 
     const { permitNumber, year } = req.query;
     if (!permitNumber || Array.isArray(permitNumber)) {
-      reject('permitNumber does not exist or is an array')
-      return
+      return reject('permitNumber does not exist or is an array')
     }
     if (!year || Array.isArray(year)) {
-      reject('year does not exist or is an array')
-      return
+      return reject('year does not exist or is an array')
     }
 
     const calculationUpdates = await runCalculationsInternal(req.body, permitNumber, year)

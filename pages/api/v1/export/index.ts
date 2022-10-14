@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import { AgentInfo } from "../../../../interfaces/AgentInfo";
 import MeterReading from "../../../../interfaces/MeterReading";
-import { ModifiedBanking } from "../../../../interfaces/ModifiedBanking";
+import { ModifiedBanking, WellUsage } from "../../../../interfaces/ModifiedBanking";
 import faunaClient from "../../../../lib/fauna/faunaClient";
 import getAgentInfo from "../../../../lib/fauna/ts-queries/getAgentInfo";
 import addDbb004 from "./dbb004/dbb004";
@@ -21,6 +21,7 @@ export interface ExportData {
     permitNumber: string
     dbb004Summary: MeterReading[]
     dbb013Summary: ModifiedBanking[]
+    wellUsage: WellUsage
   }[]
   agentInfo: AgentInfo
 }
@@ -30,8 +31,6 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const user_id = session?.user?.sub
 
   const agentInfo =  await faunaClient.query(getAgentInfo(user_id))
-
-  console.log(req.body)
 
   const pdfBytes = await createPdf({
     ...req.body,
@@ -57,11 +56,11 @@ const createPdf = async ({ documents, dataSelection, agentInfo }: ExportData) =>
   await Promise.all(
     dataSelection.map(async (el) => {
       if (documents.dbb004) {
-        const dbb004 = await addDbb004(el.dbb004Summary, agentInfo, el.permitNumber, el.year)
+        const dbb004 = await addDbb004(el.dbb004Summary, agentInfo, el.wellUsage, el.permitNumber, el.year)
         await mergeDocuments(pdfDoc, dbb004)
       }
       if (documents.dbb013) {
-        const dbb013 = await addDbb013(el.dbb013Summary, agentInfo)
+        const dbb013 = await addDbb013(el.dbb013Summary, agentInfo, el.wellUsage)
         await mergeDocuments(pdfDoc, dbb013)
       }
     })

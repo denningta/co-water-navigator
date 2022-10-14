@@ -1,5 +1,6 @@
 import { NextApiRequest } from "next";
 import MeterReading from "../../../../interfaces/MeterReading";
+import { WellUsage } from "../../../../interfaces/ModifiedBanking";
 import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
 import getDataSummary from "../../../../lib/fauna/ts-queries/getDataSummary";
 import getLastMeterReadingPrevYear from "../../../../lib/fauna/ts-queries/getLastMeterReadingPrevYear";

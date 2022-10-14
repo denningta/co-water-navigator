@@ -2,13 +2,18 @@ import path from "path"
 import { PDFCheckBox, PDFDocument, PDFTextField, rgb, StandardFonts } from "pdf-lib"
 import { convertToTableData, getForm } from ".."
 import { AgentInfo } from "../../../../../interfaces/AgentInfo"
-import { ModifiedBanking } from "../../../../../interfaces/ModifiedBanking"
+import { ModifiedBanking, WellUsage } from "../../../../../interfaces/ModifiedBanking"
 import { WellPermit } from "../../../../../interfaces/WellPermit"
 import faunaClient, { q } from "../../../../../lib/fauna/faunaClient"
 import getWellPermitRecord from "../../../../../lib/fauna/ts-queries/getWellPermitRecord"
 import fields from "./dbb013-fields"
 
-const addDbb013 = async (data: ModifiedBanking[], agentInfo: AgentInfo, debug: boolean = false,) => {
+const addDbb013 = async (
+  data: ModifiedBanking[], 
+  agentInfo: AgentInfo, 
+  wellUsage: WellUsage,
+  debug: boolean = false
+) => {
   const pdfBytes = getForm(
     path.resolve('./public'),
     'dbb013.pdf'
@@ -74,6 +79,13 @@ const addDbb013 = async (data: ModifiedBanking[], agentInfo: AgentInfo, debug: b
         borderColor: rgb(0,0,0)
       })
     }
+  })
+
+  const wellUsageKeys = Object.keys(wellUsage) as (keyof typeof wellUsage)[]
+  wellUsageKeys.forEach(key => {
+    const formField = formFields.find(el => el.getName() === key && el instanceof PDFCheckBox)
+    if (!formField || !(formField instanceof PDFCheckBox)) return
+    wellUsage[key] === true && formField.check()
   })
 
   return document

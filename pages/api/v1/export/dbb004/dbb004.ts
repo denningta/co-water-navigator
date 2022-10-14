@@ -4,6 +4,7 @@ import { PDFCheckBox, PDFDocument, PDFTextField, rgb, StandardFonts } from "pdf-
 import { convertToTableData, getForm } from ".."
 import { AgentInfo } from "../../../../../interfaces/AgentInfo"
 import MeterReading from "../../../../../interfaces/MeterReading"
+import { WellUsage } from "../../../../../interfaces/ModifiedBanking"
 import { WellPermit } from "../../../../../interfaces/WellPermit"
 import faunaClient from "../../../../../lib/fauna/faunaClient"
 import getWellPermitRecord from "../../../../../lib/fauna/ts-queries/getWellPermitRecord"
@@ -14,6 +15,7 @@ import fields from "./dbb004-fields"
 const addDbb004 = async (
   data: MeterReading[], 
   agentInfo: AgentInfo, 
+  wellUsage: WellUsage,
   permitNumber: string, 
   year: string, 
   debug: boolean = false
@@ -58,6 +60,8 @@ const addDbb004 = async (
     return form.createTextField(field.name)
   })
 
+  console.log(wellUsage)
+
   formFields.forEach((formField, i) => {
     const { name, type, box } = fields()[i]
     if (formField instanceof PDFTextField) {
@@ -79,6 +83,13 @@ const addDbb004 = async (
         borderColor: rgb(0,0,0)
       })
     }
+  })
+
+  const wellUsageKeys = Object.keys(wellUsage) as (keyof typeof wellUsage)[]
+  wellUsageKeys.forEach(key => {
+    const formField = formFields.find(el => el.getName() === key && el instanceof PDFCheckBox)
+    if (!formField || !(formField instanceof PDFCheckBox)) return
+    wellUsage[key] === true && formField.check()
   })
 
   const tableData = data && convertToTableData(data)

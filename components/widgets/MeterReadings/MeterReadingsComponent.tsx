@@ -3,7 +3,7 @@ import ReadingsGrid from "./ReadingsGrid"
 import useSWR from 'swr'
 import { useRouter } from "next/router"
 import CalendarYearSelector from "../CalendarYearSelector/CalendarYearSelector"
-import WellUsage from "./WellUsage"
+import WellUsageComponent from "./WellUsageComponent"
 import ModifiedBankingSummary from "./ModifiedBankingSummary"
 import MeterReading from "../../../interfaces/MeterReading"
 import TableLoading from "../../common/TableLoading"
@@ -11,6 +11,7 @@ import { BsInfoLg } from 'react-icons/bs'
 import { Dialog, DialogTitle, List } from "@mui/material"
 import MeterReadingsInfoDialog from "./MeterReadingsInfoDialog"
 import useMeterReadings from "../../../hooks/useMeterReadings"
+import { WellUsage } from "../../../interfaces/ModifiedBanking"
 
 interface Props {
   permitNumber: string | undefined
@@ -38,7 +39,7 @@ const MeterReadingsComponent = ({permitNumber, year, onCalculating = () => {} }:
         <div><button className="btn-round" onClick={handleClick}><BsInfoLg /></button></div>
       </div>
       <div className="col-span-1">
-        <WellUsage />
+        <WellUsageComponent permitNumber={permitNumber} year={year} />
       </div>
       <div className="col-span-2">
         <ModifiedBankingSummary />

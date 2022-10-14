@@ -16,14 +16,18 @@ export interface ModifiedBanking {
   pumpingLimitNextYear?: CalculatedValue
   pumpingLimitThisYear?: CalculatedValue
   totalPumpedThisYear?: CalculatedValue
-  wellUsageData?: {
-    changeOfUse?: boolean
-    comingledWells?: boolean
-    comment?: string
-    dateTimeUpdated?: string
-    expandedAcres?: boolean,
-    other?: boolean
-  }
+  wellUsageData?: WellUsage
+}
+
+export interface WellUsage {
+  permitNumber?: string
+  year?: string
+  changeOfUse?: boolean
+  commingledWells?: boolean
+  comments?: string
+  dateTimeUpdated?: string
+  expandedAcres?: boolean,
+  other?: boolean
 }
 
 export type ModifiedBankingCalculatedFields = 'allowedAppropriation' | 'bankingReserveLastYear' | 'bankingReserveThisYear' | 'changeInBankingReserveThisYear' | 'line10' | 'line3' | 'maxBankingReserve' | 'originalAppropriation' | 'pumpingLimitNextYear' | 'pumpingLimitThisYear' | 'totalPumpedThisYear' 
