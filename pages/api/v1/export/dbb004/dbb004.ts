@@ -60,8 +60,6 @@ const addDbb004 = async (
     return form.createTextField(field.name)
   })
 
-  console.log(wellUsage)
-
   formFields.forEach((formField, i) => {
     const { name, type, box } = fields()[i]
     if (formField instanceof PDFTextField) {

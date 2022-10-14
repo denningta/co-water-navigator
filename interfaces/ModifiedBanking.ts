@@ -30,4 +30,10 @@ export interface WellUsage {
   other?: boolean
 }
 
+export interface ModifiedBankingSummary {
+  allowedAppropriation?: number
+  pumpingLimitThisYear?: number
+  flowMeterLimit?: number
+}
+
 export type ModifiedBankingCalculatedFields = 'allowedAppropriation' | 'bankingReserveLastYear' | 'bankingReserveThisYear' | 'changeInBankingReserveThisYear' | 'line10' | 'line3' | 'maxBankingReserve' | 'originalAppropriation' | 'pumpingLimitNextYear' | 'pumpingLimitThisYear' | 'totalPumpedThisYear' 

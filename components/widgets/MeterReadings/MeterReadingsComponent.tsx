@@ -42,7 +42,7 @@ const MeterReadingsComponent = ({permitNumber, year, onCalculating = () => {} }:
         <WellUsageComponent permitNumber={permitNumber} year={year} />
       </div>
       <div className="col-span-2">
-        <ModifiedBankingSummary />
+        <ModifiedBankingSummary permitNumber={permitNumber} year={year} />
       </div>
 
       <div className="col-span-3">

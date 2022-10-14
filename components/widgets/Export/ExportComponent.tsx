@@ -29,8 +29,6 @@ const ExportComponent = ({
   const gridRef = useRef(null)
   const { enqueueSnackbar } = useSnackbar()
 
-  console.log(data)
-
   const handleGridReady = ({ api, columnApi }: GridReadyEvent) => {
     api.sizeColumnsToFit()
   }

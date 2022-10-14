@@ -1,48 +1,29 @@
 import { NextApiRequest } from "next";
 import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
+import getModifiedBankingQuery from "../../../../../../lib/fauna/ts-queries/getModifiedBankingQuery";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
 
-function listModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
-  return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'queryExists',
-      'permitNumberRequired',
-      'yearRequired',
-    ]);
-
-    if (errors.length) reject(errors);
-
+async function listModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
+  try {
     const {permitNumber, year} = req.query;
-    const response = await faunaClient.query(
-      q.Map(
-        q.Paginate(q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])),
-        (adminReport) => {
-          return q.Get(adminReport)
-        }
-      )
-    )
-      .then(res => res)
-      .catch(err => {
-        errors.push(err);
-        reject(errors);
-        return err;
-      });
 
-    if (!response.data) {
-      errors.push(
-        new HttpError(
-          'No Data',
-          `An error occured retreiving the data`,
-          404
-        )
-      );
-      reject(errors);
-    }
+    if (!permitNumber || ! year)
+      throw new Error('permitNumber and year must be defined')
+
+    if (permitNumber && Array.isArray(permitNumber)) 
+      throw new Error('Only a single permitNumber may be defined.')
+
+    if (year && Array.isArray(year)) 
+      throw new Error('Only a single year may be defined.')
+
+    const response: ModifiedBanking = await faunaClient.query(getModifiedBankingQuery(permitNumber, year))
+    return response
     
-    resolve(response.data.map((record: any) => record.data)[0]);
-  });
+  } catch (error: any) {
+    return error
+  }    
 }
 
 export default listModifiedBanking;
