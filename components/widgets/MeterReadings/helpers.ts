@@ -1,4 +1,4 @@
-import { CellClassParams, ValueGetterParams, ValueSetterParams } from "ag-grid-community"
+import { CellClassParams, ValueFormatterFunc, ValueFormatterParams, ValueGetterParams, ValueSetterParams } from "ag-grid-community"
 import { Database } from "faunadb"
 import MeterReading from "../../../interfaces/MeterReading"
 import { CalendarYearSelectorData } from "../CalendarYearSelector/CalendarYearSelector"
@@ -26,7 +26,7 @@ export function initPlaceholderData(permitNumber: string, year: string): MeterRe
 
 export function calculatedValueGetter({ data }: ValueGetterParams, field: string) {
   if (data[field] && data[field].value !== undefined) {
-    return data[field].value.toFixed(3)
+    return data[field].value.toString()
   } else {
     return data[field]
   }

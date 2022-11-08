@@ -20,7 +20,6 @@ interface Props {
 }
 
 const MeterReadingsComponent = ({permitNumber, year, onCalculating = () => {} }: Props) => {
-  const { data, mutate } = useMeterReadings(permitNumber, year)
   const [openDialog, setOpenDialog] = useState(false)
 
   const handleClick = () => {
@@ -46,12 +45,8 @@ const MeterReadingsComponent = ({permitNumber, year, onCalculating = () => {} }:
       </div>
 
       <div className="col-span-3">
-        { !data && 
-          <TableLoading height={600} numberOfRows={11} />
-        }
-        { (data && permitNumber && year) && 
+        { (permitNumber && year) && 
           <ReadingsGrid 
-            meterReadings={data} 
             permitNumber={permitNumber} 
             year={year} 
             onCalculating={onCalculating} 

@@ -56,8 +56,6 @@ async function handler(
       )
     )
 
-    console.log(response)
-
     res.status(200).json(response)
 
   } catch (error: any) {

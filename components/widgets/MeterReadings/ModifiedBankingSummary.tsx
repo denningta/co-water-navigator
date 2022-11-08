@@ -17,11 +17,11 @@ const ModifiedBankingSummary = ({ permitNumber, year }: Props) => {
         </span>
       </div>
       <div className="grid grid-cols-6 gap-4 mt-2">
-        <div className="col-span-2 font-bold text-right">{ data.allowedAppropriation } acre-feet</div>
+        <div className="col-span-2 font-bold text-right">{ data?.allowedAppropriation ?? '' } acre-feet</div>
         <div className="col-span-4 font-thin">ALLOWED ANNUAL APPROPRIATION PER APPROVED CHANGE</div>
-        <div className="col-span-2 font-bold text-right">{ data.pumpingLimitThisYear } acre-feet</div>
+        <div className="col-span-2 font-bold text-right">{ data?.pumpingLimitThisYear ?? '' } acre-feet</div>
         <div className="col-span-4 font-thin">ALLOWED PUMPING THIS YEAR WITH 3-YEAR BANKING</div>
-        <div className="col-span-2 font-bold text-right">{ data.flowMeterLimit } acre-feet</div>
+        <div className="col-span-2 font-bold text-right">{ data?.flowMeterLimit ?? '' } acre-feet</div>
         <div className="col-span-4 font-thin">FLOW METER LIMIT</div>
       </div>
       
