@@ -32,7 +32,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
   useEffect(() => {
     if (!data) return
     setRowData(
-      rowData.map(record => 
+      initPlaceholderData(permitNumber, year).map(record => 
         data.find(el => 
           el.date === record.date) ?? record
         )

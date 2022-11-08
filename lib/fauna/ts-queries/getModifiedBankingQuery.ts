@@ -11,11 +11,12 @@ const getModifiedBankingQuery = (permitNumber: string | Expr, year: string | Exp
             return q.Get(adminReport)
           }
         ),
-      modifiedBanking: q.If(
-        q.ContainsPath(['data', 0], q.Var('modifiedBankingArray')),
-        q.Select(['data', 0], q.Var('modifiedBankingArray')),
-        {}
-      )
+      modifiedBanking: 
+        q.If(
+          q.ContainsPath(['data', 0], q.Var('modifiedBankingArray')),
+          q.Select(['data', 0], q.Var('modifiedBankingArray')),
+          {}
+        )
     },
     q.Select(['data'], q.Var('modifiedBanking'))
   )
