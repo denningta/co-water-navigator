@@ -18,7 +18,11 @@ const getModifiedBankingQuery = (permitNumber: string | Expr, year: string | Exp
           {}
         )
     },
-    q.Select(['data'], q.Var('modifiedBanking'))
+    q.If(
+      q.ContainsPath(['data'], q.Var('modifiedBanking')),
+      q.Select(['data'], q.Var('modifiedBanking')),
+      null
+    ) 
   )
 
 export default getModifiedBankingQuery

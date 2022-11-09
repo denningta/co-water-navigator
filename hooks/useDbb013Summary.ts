@@ -24,6 +24,8 @@ const useDbb013Summary = (
     fetcher
   )
 
+  console.log(data)
+
   return {
     data: data,
     mutate: mutate

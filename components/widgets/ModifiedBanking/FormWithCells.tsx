@@ -132,7 +132,7 @@ const FormWithCells = ({
                 ref={(el: CellApi) => cellRefs.current[i] = el}
                 value={valueGetter ? valueGetter({ data, formControl }) : data[formControl]}
                 label={<CellLabel label={cellLabel ?? ''} />}
-                errorMessage={<ErrorMessage message={data[formControl]?.calculationMessage ?? ''} />}
+                errorMessage={<ErrorMessage message={(data && data[formControl]?.calculationMessage) ?? ''} />}
                 className={cellClass ? cellClass({ data, formControl }) : ''}
                 focus={focusIndex === i}
                 editing={editingIndex === i}

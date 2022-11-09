@@ -110,7 +110,7 @@ export function generateFormElements(calendarYear: number | string): FormElement
     formComponent: CustomFormComponent(el),
     cellLabel: el.shortTitle,
     valueGetter: ({ data, formControl }: ValueGetterParams) => {
-      if (!data[formControl]) return ''
+      if (!data || !data[formControl]) return ''
       return (+data[formControl].value).toFixed(3)
     },
     valueSetter: ({ data, formControl, newValue, oldValue }: ValueSetterParams) => {
@@ -130,7 +130,7 @@ export function generateFormElements(calendarYear: number | string): FormElement
       return true
     },
     cellClass({ data, formControl}) {
-      if (data[formControl]?.calculationState === 'warning') return 'bg-orange-500 bg-opacity-25'
+      if (data && data[formControl]?.calculationState === 'warning') return 'bg-orange-500 bg-opacity-25'
       return ''
     },
     cellRendererComponent: CellRendererComponent

@@ -51,7 +51,12 @@ async function handler(
         {
           allowedAppropriation: q.Var('allowedAppropriation'),
           pumpingLimitThisYear: q.Var('pumpingLimitThisYear'),
-          flowMeterLimit: q.Add(q.Var('lastFlowMeterPrevYear'), q.Var('pumpingLimitThisYear'))
+          flowMeterLimit: 
+            q.If(
+              q.And(q.IsNumber(q.Var('lastFlowMeterPrevYear')), q.IsNumber(q.Var('pumpingLimitThisYear'))),
+              q.Add(q.Var('lastFlowMeterPrevYear'), q.Var('pumpingLimitThisYear')),
+              null
+            )
         }
       )
     )
