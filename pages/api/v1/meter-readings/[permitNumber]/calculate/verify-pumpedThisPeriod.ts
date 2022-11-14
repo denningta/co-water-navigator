@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { update } from "lodash";
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
 import { getPrecision } from "./helpers";
@@ -18,7 +19,7 @@ const verifyPumpedThisPeriod = (
       return
   }
 
-  const shouldBe = meterReading.flowMeter.value - prevRecord.flowMeter.value
+  const shouldBe = parseFloat((meterReading.flowMeter.value - prevRecord.flowMeter.value).toFixed(2))
 
   const updatedValue: CalculatedValue = { 
     ...meterReading.pumpedThisPeriod, 

@@ -134,8 +134,10 @@ export const drawTable = (
       }
       showBorders && page.drawRectangle(cellBox)
 
-      const cellValue = (data && data[rowIndex] && data[rowIndex][column.field]) && 
-        (data[rowIndex][column.field]?.toString() ?? data[rowIndex][column.field])
+
+
+      const cellValue = (data && data[rowIndex] && data[rowIndex][column.field] !== undefined) 
+        ? data[rowIndex][column.field].toString() : ''
 
       if (cellValue) {
         const { line } = layoutSinglelineText(cellValue, {

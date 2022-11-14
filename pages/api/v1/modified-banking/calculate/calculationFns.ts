@@ -22,7 +22,7 @@ const abstractCalculationFn = (
 ): CalculatedValue | undefined => {
   const updatedValue = {
     ...data[field],
-    value: shouldBe
+    value: +shouldBe.toFixed(2)
   }
   if (data[field]?.source === 'user') {
     const userVal = data[field]

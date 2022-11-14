@@ -63,8 +63,8 @@ const addDbb004 = async (
   formFields.forEach((formField, i) => {
     const { name, type, box } = fields()[i]
     if (formField instanceof PDFTextField) {
-      const fieldValue = formData[name] ? formData[name].toString() : undefined
-
+      const fieldValue = formData[name] !== undefined ? formData[name].toString() : undefined
+      
       fieldValue && formField.setText(fieldValue)
       formField.addToPage(page, {
         ...box,

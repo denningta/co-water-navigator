@@ -116,6 +116,10 @@ const calculatedFields = [
   'availableThisYear'
 ]
 
+const calcValue: any = {
+  value: 0
+}
+
 export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
   const updatedMeterReadings: MeterReading[] = []
   const refMeterReadings: MeterReading[] = [meterReadings[0]]

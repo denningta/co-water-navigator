@@ -10,8 +10,8 @@ const verifyPumpedYearToDate = (
   const readingsThisYear = getMeterReadingsPerYear(meterReadings, currentIndex)
 
   const shouldBe = readingsThisYear.reduce((n, {pumpedThisPeriod}) => {
-    if (!pumpedThisPeriod) return n
-    return n + pumpedThisPeriod.value
+    if (!pumpedThisPeriod) return +n.toFixed(2)
+    return +(n + pumpedThisPeriod.value).toFixed(2)
   }, 0)
 
   const updatedValue: CalculatedValue = {

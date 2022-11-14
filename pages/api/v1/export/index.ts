@@ -74,7 +74,7 @@ export const convertToTableData = (data: any[]) => {
   return data.map(el => {
     const keys = Object.keys(el) as (keyof typeof el)[]
     const obj: any = {}
-     keys.forEach(key => {
+    keys.forEach(key => {
       if (el[key].value !== undefined) obj[key] = el[key].value
       else obj[key] = el[key]
     })

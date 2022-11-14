@@ -22,8 +22,10 @@ const verifyAvailableThisYear = (
 
   const shouldBe = 
     pumpingLimitThisYear 
-    ? +(pumpingLimitThisYear - meterReading.pumpedYearToDate.value).toFixed(4)
-    : +(prevRecord.availableThisYear.value - (meterReading.pumpedThisPeriod?.value ?? 0)).toFixed(4)
+    ? parseFloat((pumpingLimitThisYear - meterReading.pumpedYearToDate.value).toFixed(2))
+    : parseFloat(
+      (prevRecord.availableThisYear.value - (meterReading.pumpedThisPeriod?.value ?? 0)).toFixed(2)
+    )
   
   const updatedValue: CalculatedValue = {
     ...meterReading.availableThisYear,
