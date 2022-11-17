@@ -18,6 +18,7 @@ interface Props {
   rowSelection?: 'single' | 'multiple'
   suppressRowClickSelection?: boolean
   quickFilter?: string | undefined
+  paginationPageSize?: number
   onRowSelectionChanged?: (rowNodes: RowNode[], api: GridApi) => void | null
 }
 
@@ -30,6 +31,7 @@ const DataTable = ({
   rowSelection = 'multiple',
   suppressRowClickSelection = false,
   quickFilter,
+  paginationPageSize = 10,
   onRowSelectionChanged = () => null 
 }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
@@ -92,6 +94,7 @@ const DataTable = ({
           defaultColDef={defaultColDef}
           columnDefs={columnDefs}
           pagination={true}
+          paginationPageSize={paginationPageSize}
           onGridReady={onGridReady}
           rowSelection={rowSelection}
           onSelectionChanged={handleRowSelectionChange}

@@ -18,16 +18,7 @@ const CalcValueHeaderRenderer = ({ displayName, api, column }: IHeaderParams) =>
 
   return (
     <div className="flex flex-col items-center">
-      <div className="mb-6 mt-2">{ displayName }</div>
-      <div className="absolute bottom-1">
-        <Tooltip title="decimal places">
-          <div className="flex w-full justify-center items-center text-gray-500 mt-2">
-            <BsChevronLeft onClick={handleSubtract} className="cursor-pointer" />
-            <span className="mx-3">{decimals}</span>
-            <BsChevronRight onClick={handleAdd} className="cursor-pointer"/>
-          </div>
-        </Tooltip>
-      </div>
+      <div className="my-2">{ displayName }</div>
     </div>
   )
 }

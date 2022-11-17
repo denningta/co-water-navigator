@@ -1,6 +1,8 @@
 import { ColDef, ICellRendererParams } from "ag-grid-community"
 import AccessCellRenderer from "./AccessCellRenderer"
 import ActionsCellRenderer from "./ActionsCellRenderer"
+import HeatmapCellRenderer from "./HeatmapCellRenderer"
+import HeatmapHeaderRenderer from "./HeatmapHeaderRenderer"
 import PermitCellRenderer from "./PermitCellRenderer"
 
 export const defaultColDef: ColDef = {
@@ -22,20 +24,27 @@ const wellPermitColumnDefs: ColDef[] = [
   {
     field: 'permit',
     hide: false,
-    initialWidth: 150,
+    initialWidth: 120,
     cellRenderer: PermitCellRenderer
   },
   {
     field: 'status',
     headerName: 'Access',
     hide: false,
-    initialWidth: 150,
+    initialWidth: 120,
     cellRenderer: AccessCellRenderer
+  },
+  {
+    field: 'Meter Reading Summary',
+    hide: false,
+    initialWidth: 300,
+    cellRenderer: HeatmapCellRenderer,
+    headerComponent: HeatmapHeaderRenderer
   },
   {
     field: 'latestMeterReading',
     hide: false,
-    initialWidth: 150
+    initialWidth: 150,
   },
   {
     field: 'receipt',
@@ -43,7 +52,7 @@ const wellPermitColumnDefs: ColDef[] = [
   },
   {
     field: 'contactName',
-    hide: false
+    hide: true
   },
   {
     field: 'permitCurrentStatusDescr',
