@@ -6,10 +6,14 @@ import { Bins } from "@visx/mock-data/lib/generators/genBins"
 import { Group } from "@visx/group"
 import { RectCell } from "@visx/heatmap/lib/heatmaps/HeatmapRect"
 import { styled, Tooltip, tooltipClasses, TooltipProps } from "@mui/material"
-import React from "react"
+import React, { forwardRef } from "react"
 import CircularProgressWithLabel from "../../common/CircularProgressWithLabel"
+import useHeatmapSummary from "../../../hooks/useHeatmapSummary"
+import Link from "next/link"
 
 const HeatmapCellRenderer = (params: ICellRendererParams) => {
+  const { data, mutate } = useHeatmapSummary(params.data.permit)
+
   const width = 400
   const height = 41
 
@@ -20,14 +24,14 @@ const HeatmapCellRenderer = (params: ICellRendererParams) => {
 
   let binData = []
 
-  for (let i = currYear - 10; i <= currYear; i++) {
+  for (let year = currYear - 10; year <= currYear; year++) {
     binData.push(
       {
-        bin: i,
+        bin: year,
         bins: [
           {
             bin: 0,
-            count: 0
+            count: (data && data.find(el => el.year === year.toString())?.percentComplete) ?? 0
           },
         ],
       },
@@ -73,7 +77,7 @@ const HeatmapCellRenderer = (params: ICellRendererParams) => {
           {(heatmap) =>
             heatmap.map((heatmapBins) =>
               heatmapBins.map((bin, i) => (
-                <Rectangle key={i} bin={bin} />
+                <Rectangle key={i} bin={bin} permit={params.data.permit} />
               )),
             )
           }
@@ -86,11 +90,13 @@ const HeatmapCellRenderer = (params: ICellRendererParams) => {
 
 interface RectangleProps {
   bin: RectCell<Bins, unknown>
+  permit: string
 }
 
-const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
+// eslint-disable-next-line react/display-name
+const HtmlTooltip = styled(forwardRef(({ className, ...props }: TooltipProps, ref) => (
+  <Tooltip {...props} classes={{ popper: className }} ref={ref} />
+)))(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: '#f5f5f9',
     color: 'rgba(0, 0, 0, 0.87)',
@@ -100,40 +106,35 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }));
 
-const Rectangle = ({ bin }: RectangleProps) => {
-  const percentComplete = 
-    Math.round(
-      ((bin.datum.bins.reduce((prev, curr) => prev + curr.count, 0) / 24) * 100)
-    )
+HtmlTooltip.displayName = 'HtmlTooltip'
 
-  const maxWidth = 130
-  const statusWidth = (percentComplete / 100) * maxWidth
+const Rectangle = ({ bin, permit }: RectangleProps) => {
 
   return (
-    <HtmlTooltip
-      title={
-        <React.Fragment>
-          <div className="flex flex-col items-center">
-            <div className="font-bold text-lg">
-              {bin.datum.bin}
+    <Link href={`/well-permits/${permit}/${bin.datum.bin}`}>
+      <HtmlTooltip
+        title={
+            <div className="flex flex-col items-center">
+              <div className="font-bold text-lg">
+                {bin.datum.bin}
+              </div>
+              <CircularProgressWithLabel value={bin.count ?? 0}></CircularProgressWithLabel>
             </div>
-            <CircularProgressWithLabel value={percentComplete}></CircularProgressWithLabel>
-          </div>
-        </React.Fragment>
-      }
-      placement="top"
-    >
-      <rect
-        key={`heatmap-rect-${bin.row}-${bin.column}`}
-        className="hover:stroke-2 hover:stroke-primary drop-shadow"
-        width={bin.width}
-        height={bin.height}
-        x={bin.x}
-        y={bin.y + 4}
-        fill={bin.color}
-        fillOpacity={bin.opacity}
-        />
-    </HtmlTooltip>
+        }
+        placement="top"
+      >
+        <rect
+          key={`heatmap-rect-${bin.row}-${bin.column}`}
+          className="hover:stroke-2 hover:stroke-primary drop-shadow cursor-pointer"
+          width={bin.width}
+          height={bin.height}
+          x={bin.x}
+          y={bin.y + 4}
+          fill={bin.color}
+          fillOpacity={bin.opacity}
+          />
+        </HtmlTooltip>
+      </Link>
 
   )
 }

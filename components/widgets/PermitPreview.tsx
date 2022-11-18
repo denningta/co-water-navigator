@@ -170,20 +170,6 @@ const PermitPreview = () => {
         <text x={-80} y={margin + 15} transform="rotate(-90)" fontSize={10}>
             Acre Feet
         </text>
-        {/* {voronoiLayout
-          .polygons()
-          .map((polygon, i) => (
-            <VoronoiPolygon
-              key={`polygon-${i}`}
-              polygon={polygon}
-              fill="white"
-              stroke="black"
-              strokeWidth={1}
-              strokeOpacity={0.2}
-              fillOpacity={0.5}
-            />))
-          } */}
-
           {permitData.map((record, index) => 
             <LinePath
               key={`linePath-${record.permit}`}
