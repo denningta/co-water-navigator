@@ -5,12 +5,16 @@ import DataTable from "../DataTable/DataTable"
 import { useRouter } from "next/router"
 import Heatmap from "../../common/Heatmap"
 import QuickSearch from "../../common/QuickSearch"
+import useWellPermitsByUser from "../../../hooks/useWellPermitsByUser"
+import { useUser } from "@auth0/nextjs-auth0"
 
 interface Props {
   rowData?: any[] | undefined
 }
 
 const WellPermitsAssignment = ({ rowData }: Props) => {
+  const { user }: any = useUser()
+  const { data } = useWellPermitsByUser(user?.sub)
   const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined)
 
   const handleChange = (value: string) => {
@@ -30,7 +34,7 @@ const WellPermitsAssignment = ({ rowData }: Props) => {
           <DataTable 
             defaultColDef={defaultColDef}
             columnDefs={wellPermitColumnDefs} 
-            rowData={rowData} 
+            rowData={data} 
             suppressRowClickSelection={true}
             height={520}
             quickFilter={quickFilter}

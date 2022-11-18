@@ -11,6 +11,7 @@ import PermitPreview from '../../components/widgets/PermitPreview'
 import AgentDetails from '../../components/widgets/AgentDetails'
 import { GetServerSideProps, NextApiRequest, NextApiResponse } from 'next'
 import { AppContext } from 'next/app'
+import WellPermitsAssignment from '../../components/widgets/WellPermitsAssignment/WellPermitsAssignment'
 
 const Dashboard: NextPageWithLayout = () => {
   const { user } = useUser()
@@ -24,7 +25,8 @@ const Dashboard: NextPageWithLayout = () => {
       colspan: 3
     },
     { component: <PermitPreview />, colspan: 2 },
-    { component: <AgentDetails />, colspan: 1 }
+    { component: <AgentDetails />, colspan: 1 },
+    { component: <WellPermitsAssignment />, colspan: 3 }
   ]
 
   return (

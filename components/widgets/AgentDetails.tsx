@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import EditButton from '../common/EditButton'
 
 const AgentDetails = () => {
@@ -18,7 +19,13 @@ const AgentDetails = () => {
         <div>6583 Cartgate Court</div>
         <div>Las Vegas, Nv 80918</div>
       </div>
-      <EditButton />
+      <div className="absolute top-5 right-5">
+        <Link href="/profile">
+          <a>
+            <EditButton />
+          </a>
+        </Link>
+      </div>
     </div>
   )
 }
