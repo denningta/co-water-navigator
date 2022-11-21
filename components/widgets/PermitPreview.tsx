@@ -21,60 +21,6 @@ interface PumpedThisPeriod {
   pumpedThisPeriod: number
 }
 
-const permitData = [
-  {
-    permit: '31643-FP',
-    pumpData: [
-      { date: '2021-09', pumpedThisPeriod: 15 },
-      { date: '2021-10', pumpedThisPeriod: 5 },
-      { date: '2021-11', pumpedThisPeriod: 0 },
-      { date: '2021-12', pumpedThisPeriod: 0 },
-      { date: '2022-1', pumpedThisPeriod: 0 },
-      { date: '2022-2', pumpedThisPeriod: 3 },
-      { date: '2022-3', pumpedThisPeriod: 0 },
-      { date: '2022-4', pumpedThisPeriod: 1 },
-      { date: '2022-5', pumpedThisPeriod: 25 },
-      { date: '2022-6', pumpedThisPeriod: 28 },
-      { date: '2022-7', pumpedThisPeriod: 27 },
-      { date: '2022-8', pumpedThisPeriod: 31 },
-    ]
-  },
-  { 
-    permit: '45829-GT',
-    pumpData: [
-      { date: '2021-9', pumpedThisPeriod: 18 },
-      { date: '2021-10', pumpedThisPeriod: 19 },
-      { date: '2021-11', pumpedThisPeriod: 21 },
-      { date: '2021-12', pumpedThisPeriod: 20 },
-      { date: '2022-1', pumpedThisPeriod: 20 },
-      { date: '2022-2', pumpedThisPeriod: 25 },
-      { date: '2022-3', pumpedThisPeriod: 22 },
-      { date: '2022-4', pumpedThisPeriod: 15 },
-      { date: '2022-5', pumpedThisPeriod: 18 },
-      { date: '2022-6', pumpedThisPeriod: 19 },
-      { date: '2022-7', pumpedThisPeriod: 18 },
-      { date: '2022-8', pumpedThisPeriod: 22 },
-    ]
-  },
-  { 
-    permit: '25812-FR',
-    pumpData: [
-      { date: '2021-9', pumpedThisPeriod: 20 },
-      { date: '2021-10', pumpedThisPeriod: 8 },
-      { date: '2021-11', pumpedThisPeriod: 1 },
-      { date: '2021-12', pumpedThisPeriod: 0 },
-      { date: '2022-1', pumpedThisPeriod: 0 },
-      { date: '2022-2', pumpedThisPeriod: 0 },
-      { date: '2022-3', pumpedThisPeriod: 0 },
-      { date: '2022-4', pumpedThisPeriod: 8 },
-      { date: '2022-5', pumpedThisPeriod: 13 },
-      { date: '2022-6', pumpedThisPeriod: 18 },
-      { date: '2022-7', pumpedThisPeriod: 25 },
-      { date: '2022-8', pumpedThisPeriod: 32 },
-    ]
-  }
-]
-
 const PermitPreview = () => {
   const { data } = usePermitPreview()
   const [range, setRange] = useState(1)

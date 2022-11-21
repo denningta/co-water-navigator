@@ -4,12 +4,12 @@ import { extent } from 'd3-array';
 import { MarkerCircle } from '@visx/marker';
 import { curveMonotoneX } from '@visx/curve';
 import { Group } from '@visx/group';
-import { withTooltip } from '@visx/tooltip'
+import { useTooltip, useTooltipInPortal, withTooltip } from '@visx/tooltip'
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { Circle, line, LinePath } from '@visx/shape';
 import { localPoint } from '@visx/event';
 import cityTemperature from '@visx/mock-data/lib/mocks/cityTemperature'
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { voronoi, VoronoiPolygon } from '@visx/voronoi';
 import genRandomNormalPoints, { PointsRange } from '@visx/mock-data/lib/generators/genRandomNormalPoints';
 
@@ -32,6 +32,18 @@ const LineChart = ({
   const [pointActive, setPointActive] = useState<undefined | number>(undefined)
   const [lineActive, setLineActive] = useState<undefined | number>(undefined)
   const svgRef = useRef<SVGSVGElement>(null);
+  const {
+    tooltipData,
+    tooltipLeft,
+    tooltipTop,
+    tooltipOpen,
+    showTooltip,
+    hideTooltip,
+  } = useTooltip<any>()
+  const { containerRef, TooltipInPortal } = useTooltipInPortal({
+    detectBounds: true,
+    scroll: true
+  })
 
   const width = 700
   const height = 350
@@ -59,31 +71,30 @@ const LineChart = ({
   const y = (d: PointsRange) => d[1];
 
   const rawData = data.map((record, index) => 
-    record.pumpData.map((el: any) => ({...el, lineId: index}))
+    record.pumpData.map((el: any) => ({ ...el, lineId: index, permit: record.permit }))
   ).flat(1)
 
   const points: PointsRange[] = rawData.map((d, index) => {
     return [
-      xScale(date(d) ?? 0),
-      yScale(pumpedThisPeriod(d) ?? 0),
-      d.lineId
-    ]
+        xScale(date(d) ?? 0),
+        yScale(pumpedThisPeriod(d) ?? 0),
+        d.lineId,
+      ]
   }, [])
 
-
-  const voronoiLayout = useMemo(
-    () =>
-      voronoi<PointsRange>({
-        width: width,
-        height: height,
-        x: (d) => x(d),
-        y: (d) => y(d),
-      })(points),
-      [width, height, points],
+  const voronoiLayout = useMemo(() =>
+    voronoi<PointsRange>({
+      width: width,
+      height: height,
+      x: (d) => x(d),
+      y: (d) => y(d),
+    })(points),   
+    [width, height, points],
   )
 
   const handleMouseMove = useCallback(
     (event: React.MouseEvent | React.TouchEvent) => {
+
       if (!svgRef.current) return
       const point = localPoint(svgRef.current, event)
       if (!point) return;
@@ -91,7 +102,11 @@ const LineChart = ({
       const closest = voronoiLayout.find(point.x, point.y, neighborRadius)
       if (closest) {
         setPointActive(closest.index)
-        
+        showTooltip({
+          tooltipLeft: x(closest.data),
+          tooltipTop: y(closest.data),
+          tooltipData: rawData[closest.index]
+        })
       } else {
         setPointActive(undefined)
       }
@@ -102,12 +117,13 @@ const LineChart = ({
         setLineActive(undefined)
       }
     },
-    [voronoiLayout]
+    [showTooltip, voronoiLayout, rawData]
   )
 
   const handleMouseLeave = () => {
     setPointActive(undefined)
     setLineActive(undefined)
+    hideTooltip()
   }
 
   const colors = [
@@ -119,7 +135,7 @@ const LineChart = ({
   ]
 
   return (
-    <div className="">
+    <div className="relative" ref={containerRef}>
       <svg width={width} height={height} ref={svgRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -154,6 +170,22 @@ const LineChart = ({
             />
           )}
       </svg>
+      {tooltipOpen && 
+        <TooltipInPortal
+          key={Math.random()}
+          top={tooltipTop}
+          left={tooltipLeft}
+        >
+          <div className='grid grid-cols-2 gap-x-4 gap-y-1'>
+            <div>Permit</div>
+            <div className='font-bold'>{tooltipData && tooltipData.permit}</div>
+            <div>Date</div>
+            <div>{tooltipData && tooltipData.date}</div>
+            <div>Acre-feet Pumped</div>
+            <div>{tooltipData && tooltipData.pumpedThisPeriod}</div>
+          </div>
+        </TooltipInPortal>
+      }
     </div>
   )
 }
