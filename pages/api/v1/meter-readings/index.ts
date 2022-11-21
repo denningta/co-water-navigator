@@ -32,7 +32,7 @@ function handler(
       return response;
     })
     .catch((errors) => {
-      res.status(errors[0].status || 500).json({errors: errors})
+      res.status(errors || 500).json({errors: errors})
       return errors;
     });
 

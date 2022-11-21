@@ -29,7 +29,6 @@ const WellPermits: NextPageWithLayout = () => {
   const { user }: any = useUser()
   const [permitRefs, setPermitRefs] = useState<AppMetadata['permitRefs']>()
   // const { data } = usePermitAssignments(permitRefs)
-  const { data } = useSwr(user ? `/api/v1/well-permits/${user.sub}` : null, fetcher)
 
   useEffect(() => {
     if (!user || !user.app_metadata) return
@@ -44,7 +43,7 @@ const WellPermits: NextPageWithLayout = () => {
       />, 
       colspan: 3
     },
-    { component: <WellPermitsAssignment rowData={data} />, colspan: 3 },
+    { component: <WellPermitsAssignment />, colspan: 3 },
     { component: <WellPermitSearch />, colspan: 3 },
   ]
 

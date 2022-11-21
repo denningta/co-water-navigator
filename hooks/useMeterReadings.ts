@@ -14,7 +14,8 @@ const fetcher = async (url: string) => {
 
 const useMeterReadings = (
   permitNumber: string | undefined, 
-  year: string | undefined): { data: MeterReading[], mutate: KeyedMutator<any> } => {
+  year: string | undefined
+): { data: MeterReading[], mutate: KeyedMutator<any> } => {
   const { data, mutate } = useSWR(
     (permitNumber && year) 
     ? `/api/v1/meter-readings?permitNumber=${permitNumber}&year=${year}` 

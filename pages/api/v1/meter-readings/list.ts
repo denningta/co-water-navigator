@@ -1,67 +1,37 @@
-import { Expr } from "faunadb";
+import { isString } from "lodash";
 import { NextApiRequest } from "next";
 import MeterReading from "../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
+import getMeterReadings from "../../../../lib/fauna/ts-queries/getMeterReadings";
 import validateQuery from "../validatorFunctions";
 
-function listMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
-  return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'queryExists',
-      'optionalYearValid',
-      'permitNumberRequired'
-    ]);
-
-    if (errors.length) return reject(errors);
-
+async function listMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
+  try {
     const { 
       permitNumber, 
       year, 
       date,
     } = req.query;
 
-    let permitNumberQuery = permitNumber && q.Union(
-      !Array.isArray(permitNumber)
-        ? q.Match(q.Index('meter-readings-by-permit-number'), permitNumber)
-        : permitNumber.map(el => q.Match(q.Index('meter-readings-by-permit-number'), el))
+    const dates: string[] | undefined = isString(date) ? [date] : date
+    const years: string[] | undefined = isString(year) ? [year] : year
+    const permitNumbers: string[] | undefined = isString(permitNumber) ? [permitNumber] : permitNumber
+
+    const response: any = await faunaClient.query(
+      getMeterReadings({
+        dates: dates,
+        years: years,
+        permitNumbers: permitNumbers
+      })
     )
 
-    const yearSubQuery = (year: string) => q.Union(
-      q.Match(q.Index('meter-readings-by-year'), [year]),
-      q.Match(q.Index('meter-readings-by-date'), [`${((+year - 1).toString())}-12`])
-    )
+    return response
+    
+  } catch (error: any) {
+    return error
+  }
 
-    let yearQuery = year && q.Union(
-      !Array.isArray(year) 
-        ? yearSubQuery(year) 
-        : year.map(el => yearSubQuery(el))
-    )
-      
-    let dateQuery = date && q.Union(
-      !Array.isArray(date)
-        ? q.Match(q.Index('meter-readings-by-date'), date)
-        : date.map(el => q.Match(q.Index('meter-readings-by-date'), el))
-    )
 
-    const query = q.Map(
-      q.Paginate(
-        q.Intersection(
-          [
-            permitNumberQuery,
-            yearQuery,
-            dateQuery
-          ].filter(el => el)
-        )
-      ),
-      (record) => q.Get(record)
-    )
-
-    const response: any = await faunaClient.query(query)
-      .catch(err => reject(err));
-
-    return resolve(response.data.map((el: any) => el.data));
-
-  });
 }
 
 export default listMeterReadings;
