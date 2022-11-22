@@ -1,5 +1,5 @@
 import generateDateValue, { DateValue } from '@visx/mock-data/lib/generators/genDateValue';
-import { scaleTime, scaleLinear, scaleUtc } from '@visx/scale';
+import { scaleTime, scaleLinear, scaleUtc, scaleOrdinal } from '@visx/scale';
 import { extent } from 'd3-array';
 import { MarkerCircle } from '@visx/marker';
 import { curveMonotoneX } from '@visx/curve';
@@ -12,6 +12,8 @@ import cityTemperature from '@visx/mock-data/lib/mocks/cityTemperature'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { voronoi, VoronoiPolygon } from '@visx/voronoi';
 import genRandomNormalPoints, { PointsRange } from '@visx/mock-data/lib/generators/genRandomNormalPoints';
+import _, { divide } from 'lodash';
+import { LegendOrdinal } from '@visx/legend';
 
 interface PumpedThisPeriod {
   date: string
@@ -109,6 +111,7 @@ const LineChart = ({
         })
       } else {
         setPointActive(undefined)
+        hideTooltip()
       }
       const closestLine = voronoiLayout.find(point.x, point.y)
       if (closestLine) {
@@ -117,7 +120,7 @@ const LineChart = ({
         setLineActive(undefined)
       }
     },
-    [showTooltip, voronoiLayout, rawData]
+    [voronoiLayout, showTooltip, rawData, hideTooltip]
   )
 
   const handleMouseLeave = () => {
@@ -126,13 +129,23 @@ const LineChart = ({
     hideTooltip()
   }
 
+  const ordinalDomain = _.uniq(rawData.map(el => el.permit))
   const colors = [
-    '3A86FF',
-    'FFBE0B',
-    'FB5607',
-    'FF006E',
-    '8338EC',
+    '#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4', '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9',
   ]
+
+  const ordinalColorScale = scaleOrdinal({
+    domain: ordinalDomain,
+    range: colors,
+  });
+
+  const handleLegendEnter = (lineIndex: number) => {
+    setLineActive(lineIndex)
+  }
+  const handleLegendLeave = () => {
+    setLineActive(undefined)
+  }
+
 
   return (
     <div className="relative" ref={containerRef}>
@@ -153,7 +166,7 @@ const LineChart = ({
               x={(d) => xScale(date(d) ?? 0)}
               y={(d: any) => yScale(pumpedThisPeriod(d) ?? 0)}
               opacity={lineActive === index ? 1 : 0.4}
-              stroke={`#${colors[index] ?? '#3A86FF'}`}
+              stroke={ordinalColorScale(record.permit) ?? '#3A86FF'}
               strokeWidth={3}
               strokeDasharray="1,2"
             />
@@ -165,11 +178,37 @@ const LineChart = ({
               cx={x(point)}
               cy={y(point)}
               r={4}
-              fill={`#${colors[point[2]] ?? '#3A86FF'}`}
+              fill={colors[point[2]] ?? '#3A86FF'}
               opacity={pointActive === i ? 1 : 0.4}
             />
           )}
       </svg>
+      <LegendOrdinal
+        scale={ordinalColorScale}
+      >
+        {(labels) => (
+          <div className="border w-fit py-2 px-4 rounded-lg absolute top-0 right-0 select-none">
+            <div className='font-bold mb-1'>Well Permits</div>
+            <div className='grid grid-cols-1 gap-x-4'>
+              {labels.map((label, i) => (
+                <div key={i} 
+                  className="flex items-center"
+                  style={{ opacity: lineActive === label.index ? 1 : 0.5 }}
+                  onMouseEnter={() => handleLegendEnter(label.index)}
+                  onMouseLeave={handleLegendLeave}
+                >
+                  <div
+                    className='w-[8px] h-[8px] rounded-full bg-black'
+                    style={{ backgroundColor: label.value }}
+                  />
+                  <div className='ml-3'>{label.datum}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </LegendOrdinal>
+
       {tooltipOpen && 
         <TooltipInPortal
           key={Math.random()}
