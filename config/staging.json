@@ -1,0 +1,16 @@
+{
+  "AUTH0_DOMAIN": "co-water-export-staging.us.auth0.com",
+  "AUTH0_CLIENT_ID": "RHGUsFqq6i7GgozV3HSGULx88Bbfa0bx",
+  "AUTH0_ALLOW_DELETE": true,
+  "AUTH0_KEYWORD_REPLACE_MAPPINGS": {
+    "APP_CALLBACKS": [
+      "https://www.co-water-navigator-git-staging-denningta.vercel.app/api/auth/callback", 
+      "https://co-water-navigator-git-staging-denningta.vercel.app/api/auth/callback"
+    ],
+    "API_IDENTIFIER": "https://co-water-navigator-git-staging-denningta.vercel.app/"
+  },
+  "EXCLUDED_PROPS": {
+    "clients": ["client_secret"],
+    "connections": ["options.client_secret"]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "AUTH0_DOMAIN": "dev-2nnla3mj.us.auth0.com",
+  "AUTH0_CLIENT_ID": "NQVpzGRV5a5iDEnAIFnpkoQ6oXQmJdTO",
+  "AUTH0_CLIENT_SECRET": "syooVsf6lS8FbqguCL-q0YJIkPd_udhGXDaaFidos4r-qzuvnryrYKgG9KzlKwT7",
+  "EXCLUDED_PROPS": {
+    "clients": ["client_secret"],
+    "connections": ["options.client_secret"]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "AUTH0_DOMAIN": "co-water-export-dev.us.auth0.com",
+  "AUTH0_CLIENT_ID": "CUOqhgttRCxno2uJfsfqpGvqcERRiSCA",
+  "AUTH0_CLIENT_SECRET": "PDFKrV76gm3uQsmypFAM84I65dpecwXqqYlomHlDqDIbJf8ITz8urgB0kL9CkJDk",
+  "AUTH0_ALLOW_DELETE": true,
+  "AUTH0_KEYWORD_REPLACE_MAPPINGS": {
+    "APP_CALLBACKS": [
+      "http://localhost:3000/api/auth/callback",
+      "https://www.co-water-navigator.vercel.app/api/auth/callback", 
+      "https://co-water-navigator.vercel.app/api/auth/callback"
+    ],
+    "ALLOWED_LOGOUTS": [
+      "http://localhost:3000/", 
+      "https://www.co-water-navigator.vercel.app/"
+    ],
+    "API_IDENTIFIER": "https://co-water-export-dev.us.auth0.com/api/v2/"
+  },
+  "EXCLUDED_PROPS": {
+    "clients": ["client_secret"],
+    "connections": ["options.client_secret"]
+  }
+}
