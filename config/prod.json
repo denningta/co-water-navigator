@@ -7,7 +7,11 @@
       "https://www.co-water-navigator.vercel.app/api/auth/callback", 
       "https://co-water-navigator.vercel.app/api/auth/callback"
     ],
-    "API_IDENTIFIER": "https://co-water-navigator.vercel.app/"
+    "ALLOWED_LOGOUTS": [
+      "https://co-water-navigator.vercel.app/",
+      "https://www.co-water-navigator.vercel.app/"
+    ],
+    "API_IDENTIFIER": "https://co-water-export-prod.us.auth0.com/api/v2/"
   },
   "EXCLUDED_PROPS": {
     "clients": ["client_secret"],

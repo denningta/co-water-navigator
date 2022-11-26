@@ -7,7 +7,10 @@
       "https://www.co-water-navigator-git-staging-denningta.vercel.app/api/auth/callback", 
       "https://co-water-navigator-git-staging-denningta.vercel.app/api/auth/callback"
     ],
-    "API_IDENTIFIER": "https://co-water-navigator-git-staging-denningta.vercel.app/"
+    "ALLOWED_LOGOUTS": [
+      "https://co-water-navigator-git-staging-denningta.vercel.app/"
+    ],
+    "API_IDENTIFIER": "https://co-water-export-staging.us.auth0.com/api/v2/"
   },
   "EXCLUDED_PROPS": {
     "clients": ["client_secret"],
