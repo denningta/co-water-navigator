@@ -19,6 +19,7 @@ interface Props {
   suppressRowClickSelection?: boolean
   quickFilter?: string | undefined
   paginationPageSize?: number
+  noRowsComponent?: () => JSX.Element
   onRowSelectionChanged?: (rowNodes: RowNode[], api: GridApi) => void | null
 }
 
@@ -32,6 +33,7 @@ const DataTable = ({
   suppressRowClickSelection = false,
   quickFilter,
   paginationPageSize = 10,
+  noRowsComponent,
   onRowSelectionChanged = () => null 
 }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
@@ -101,6 +103,7 @@ const DataTable = ({
           suppressCellFocus={true}
           suppressRowClickSelection={suppressRowClickSelection}
           loadingOverlayComponent={LoadingOverlay}
+          noRowsOverlayComponent={noRowsComponent}
         >
         </AgGridReact>
       </div>

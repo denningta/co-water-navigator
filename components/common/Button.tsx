@@ -44,6 +44,7 @@ const Button = ({
         transition ease-in-out
         ${isLoading && 'bg-gray-400 text-gray-200'}
       `}
+      style={{ pointerEvents: 'all' }}
       onClick={handleClick}
       disabled={isLoading}
       type={type}
