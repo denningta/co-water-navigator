@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "export:dev": "a0deploy export --strip --format yaml --output_folder . --config_file ./config/dev.json --secret $DEV_AUTH0_CLIENT_SECRET",
+    "import:staging": "a0deploy import --input_file tenant.yaml --config_file ./config/staging.json",
+    "import:prod": "a0deploy import --input_file tenant.yaml --config_file ./config/prod.json"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^1.9.1",
