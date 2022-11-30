@@ -15,6 +15,10 @@ import genRandomNormalPoints, { PointsRange } from '@visx/mock-data/lib/generato
 import LineChart from '../common/LineChart';
 import { CircularProgress, Select, Tab, Tabs } from '@mui/material';
 import usePermitPreview from '../../hooks/usePermitPreview';
+import { divide } from 'lodash';
+import Button from '../common/Button';
+import { BiPlus } from 'react-icons/bi';
+import { useRouter } from 'next/router';
 
 interface PumpedThisPeriod {
   date: string
@@ -23,6 +27,7 @@ interface PumpedThisPeriod {
 
 const PermitPreview = () => {
   const { data } = usePermitPreview()
+  const router = useRouter()
   const [range, setRange] = useState(1)
   const [startDate, setStartDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() - 1)))
   const [endDate, setEndDate] = useState(new Date())
@@ -30,6 +35,10 @@ const PermitPreview = () => {
   const handleChange = (e: any, newValue: number) => {
     setRange(newValue)
     setStartDate(new Date(new Date().setFullYear(new Date().getFullYear() - newValue)))
+  }
+
+  const handleClick = () => {
+    router.push('/well-permits')
   }
 
   return (
@@ -42,10 +51,20 @@ const PermitPreview = () => {
         <Tab label="10Y" value={10} disableRipple />
       </Tabs>
       { !data &&
-        <CircularProgress />
+        <div>
+          <CircularProgress />
+        </div>
       }
       { data &&
-        <LineChart data={data} startDate={startDate} endDate={endDate} />
+        <div>
+          <LineChart data={data} startDate={startDate} endDate={endDate} />
+          {!data.length &&
+            <div className="absolute top-0 left-0 h-full w-full flex flex-col items-center justify-center bg-black bg-opacity-5 backdrop-blur-sm">
+              <div className='text-sm mb-3'>You have not requested access to any well permits</div>
+              <Button title="Add well permits" icon={<BiPlus />} onClick={handleClick} />
+            </div>
+          }
+        </div>
       }
     </div>
   )

@@ -18,7 +18,9 @@ async function handler(
     const session = getSession(req, res)
     const { permitRefs } = session?.user.app_metadata
 
-    const document_ids = permitRefs.filter((el: any) => el.status === 'approved').map((el: any) => el.document_id)
+    const document_ids = permitRefs 
+      ? permitRefs.filter((el: any) => el.status === 'approved').map((el: any) => el.document_id)
+      : []
 
     const response = await faunaClient.query(
       getPermitPreview(document_ids)
