@@ -13,8 +13,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true
+    "incremental": true,
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/widgets/MeterReadings/ReadingsGridtsx", "pages/manage-users/[user_id]"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "esm": true
+  }
 }

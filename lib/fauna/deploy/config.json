@@ -1,0 +1,785 @@
+{
+  "collections": [
+    {
+      "ref": {
+        "@ref": {
+          "id": "meterReadings",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "ts": 1657181684000000,
+      "history_days": 30,
+      "name": "meterReadings",
+      "data": { "permitNumber": "XX-00006", "date": "2022-02" }
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "administrativeReports",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "ts": 1654763848820000,
+      "history_days": 30,
+      "name": "administrativeReports"
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "wellPermits",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "ts": 1654763741570000,
+      "history_days": 30,
+      "name": "wellPermits"
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "users",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "ts": 1663077326650000,
+      "history_days": 30,
+      "name": "users"
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "wellPermitRecords",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "ts": 1663582356630000,
+      "history_days": 30,
+      "name": "wellPermitRecords"
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "agentInfo",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "ts": 1664275622190000,
+      "history_days": 30,
+      "name": "agentInfo"
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "wellUsage",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "ts": 1665664569590000,
+      "history_days": 30,
+      "name": "wellUsage"
+    }
+  ],
+  "indexes": [
+    {
+      "ref": {
+        "@ref": {
+          "id": "meter-readings-by-permit-number",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1655225239255300,
+      "active": true,
+      "serialized": true,
+      "name": "meter-readings-by-permit-number",
+      "unique": false,
+      "source": {
+        "@ref": {
+          "id": "meterReadings",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [{ "field": ["data", "permitNumber"] }],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "meter-readings-by-date",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1655123949605000,
+      "active": true,
+      "serialized": true,
+      "name": "meter-readings-by-date",
+      "unique": false,
+      "source": {
+        "@ref": {
+          "id": "meterReadings",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [{ "field": ["data", "date"] }],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "meter-readings-by-permitnumber-date",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1655371840075000,
+      "active": true,
+      "serialized": true,
+      "name": "meter-readings-by-permitnumber-date",
+      "unique": true,
+      "source": {
+        "@ref": {
+          "id": "meterReadings",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [
+        { "field": ["data", "permitNumber"] },
+        { "field": ["data", "date"] }
+      ],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "meter-readings-by-year",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1657108218200000,
+      "active": true,
+      "serialized": true,
+      "name": "meter-readings-by-year",
+      "source": {
+        "collection": {
+          "@ref": {
+            "id": "meterReadings",
+            "collection": { "@ref": { "id": "collections" } }
+          }
+        },
+        "fields": {
+          "year": {
+            "@query": {
+              "api_version": "4",
+              "lambda": "doc",
+              "expr": {
+                "select": ["data"],
+                "from": {
+                  "select": 0,
+                  "from": {
+                    "findstrregex": {
+                      "select": ["data", "date"],
+                      "from": { "var": "doc" }
+                    },
+                    "pattern": "[^-]+"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "terms": [{ "binding": "year" }],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "meter-readings-sort-by-date-asc",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1660643831825000,
+      "active": true,
+      "serialized": true,
+      "name": "meter-readings-sort-by-date-asc",
+      "source": {
+        "@ref": {
+          "id": "meterReadings",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [{ "field": ["ref"] }],
+      "values": [{ "field": ["data", "date"] }, { "field": ["ref"] }],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "admin-reports-by-permitnumber",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1660904958816000,
+      "active": true,
+      "serialized": true,
+      "name": "admin-reports-by-permitnumber",
+      "unique": false,
+      "source": {
+        "@ref": {
+          "id": "administrativeReports",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [{ "field": ["data", "permitNumber"] }],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "admin-reports-by-year",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1660904118230000,
+      "active": true,
+      "serialized": true,
+      "name": "admin-reports-by-year",
+      "unique": false,
+      "source": {
+        "@ref": {
+          "id": "administrativeReports",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [{ "field": ["data", "year"] }],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "admin-reports-by-permitnumber-year",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1660904970226000,
+      "active": true,
+      "serialized": true,
+      "name": "admin-reports-by-permitnumber-year",
+      "unique": true,
+      "source": {
+        "@ref": {
+          "id": "administrativeReports",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [
+        { "field": ["data", "permitNumber"] },
+        { "field": ["data", "year"] }
+      ],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "meter-readings-by-permitNumber-year",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1661502630091000,
+      "active": true,
+      "serialized": true,
+      "name": "meter-readings-by-permitNumber-year",
+      "source": {
+        "collection": {
+          "@ref": {
+            "id": "meterReadings",
+            "collection": { "@ref": { "id": "collections" } }
+          }
+        },
+        "fields": {
+          "year": {
+            "@query": {
+              "api_version": "4",
+              "lambda": "doc",
+              "expr": {
+                "select": ["data"],
+                "from": {
+                  "select": 0,
+                  "from": {
+                    "findstrregex": {
+                      "select": ["data", "date"],
+                      "from": { "var": "doc" }
+                    },
+                    "pattern": "[^-]+"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "terms": [{ "field": ["data", "permitNumber"] }, { "binding": "year" }],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "admin-reports-sort-by-year-asc",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1662985971630000,
+      "active": true,
+      "serialized": true,
+      "name": "admin-reports-sort-by-year-asc",
+      "source": {
+        "@ref": {
+          "id": "administrativeReports",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [{ "field": ["ref"] }],
+      "values": [{ "field": ["data", "year"] }, { "field": ["ref"] }],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "well-permit-records-by-receipt",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1663582706780000,
+      "active": true,
+      "serialized": true,
+      "name": "well-permit-records-by-receipt",
+      "unique": true,
+      "source": {
+        "@ref": {
+          "id": "wellPermitRecords",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [{ "field": ["data", "receipt"] }],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "well-permits-by-permit",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1663585370540000,
+      "active": true,
+      "serialized": true,
+      "name": "well-permits-by-permit",
+      "unique": true,
+      "source": {
+        "@ref": {
+          "id": "wellPermits",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [{ "field": ["data", "permit"] }],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "agent-info-by-user_id",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1664275830110000,
+      "active": true,
+      "serialized": true,
+      "name": "agent-info-by-user_id",
+      "unique": true,
+      "source": {
+        "@ref": {
+          "id": "agentInfo",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [{ "field": ["data", "user_id"] }],
+      "partitions": 1
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "wellUsage-by-permitnumber-year",
+          "collection": { "@ref": { "id": "indexes" } }
+        }
+      },
+      "ts": 1665665699622000,
+      "active": true,
+      "serialized": true,
+      "name": "wellUsage-by-permitnumber-year",
+      "unique": true,
+      "source": {
+        "@ref": {
+          "id": "wellUsage",
+          "collection": { "@ref": { "id": "collections" } }
+        }
+      },
+      "terms": [
+        { "field": ["data", "permitNumber"] },
+        { "field": ["data", "year"] }
+      ],
+      "partitions": 1
+    }
+  ],
+  "functions": [
+    {
+      "ref": {
+        "@ref": {
+          "id": "SplitString",
+          "collection": { "@ref": { "id": "functions" } }
+        }
+      },
+      "ts": 1661495725770000,
+      "name": "SplitString",
+      "body": {
+        "@query": {
+          "api_version": "4",
+          "lambda": ["string", "delimiter"],
+          "expr": {
+            "if": { "not": { "is_string": { "var": "string" } } },
+            "then": { "abort": "SplitString only accepts strings" },
+            "else": {
+              "map": {
+                "lambda": "res",
+                "expr": { "select": ["data"], "from": { "var": "res" } }
+              },
+              "collection": {
+                "findstrregex": { "var": "string" },
+                "pattern": { "concat": ["[^\\", { "var": "delimiter" }, "]+"] }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "SplitDate",
+          "collection": { "@ref": { "id": "functions" } }
+        }
+      },
+      "ts": 1661496191453000,
+      "name": "SplitDate",
+      "body": {
+        "@query": {
+          "api_version": "4",
+          "lambda": ["dateString"],
+          "expr": {
+            "if": { "not": { "is_string": { "var": "dateString" } } },
+            "then": { "abort": "SplitDate function only accepts a string" },
+            "else": {
+              "if": {
+                "containsstrregex": { "var": "dateString" },
+                "pattern": "^[0-9]{4}-[0-9]{2}$"
+              },
+              "then": {
+                "let": {
+                  "dateArray": {
+                    "map": {
+                      "lambda": "res",
+                      "expr": { "select": ["data"], "from": { "var": "res" } }
+                    },
+                    "collection": {
+                      "findstrregex": { "var": "dateString" },
+                      "pattern": "[^-]+"
+                    }
+                  }
+                },
+                "in": {
+                  "to_object": [
+                    ["year", { "select": 0, "from": { "var": "dateArray" } }],
+                    ["month", { "select": 1, "from": { "var": "dateArray" } }]
+                  ]
+                }
+              },
+              "else": {
+                "abort": "Invalid date format for SplitDate.  Must be YYYY-MM"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "@ref": {
+          "id": "upsert",
+          "collection": { "@ref": { "id": "functions" } }
+        }
+      },
+      "ts": 1661417883060000,
+      "name": "upsert",
+      "body": {
+        "@query": {
+          "api_version": "4",
+          "lambda": ["ref", "data"],
+          "expr": {
+            "if": { "exists": { "var": "ref" } },
+            "then": { "update": { "var": "ref" }, "params": { "var": "data" } },
+            "else": { "create": { "var": "ref" }, "params": { "var": "data" } }
+          }
+        }
+      }
+    }
+  ],
+  "roles": [
+    {
+      "ref": {
+        "@ref": {
+          "id": "read-write-all-collections",
+          "collection": { "@ref": { "id": "roles" } }
+        }
+      },
+      "ts": 1665666716790000,
+      "name": "read-write-all-collections",
+      "privileges": [
+        {
+          "resource": {
+            "@ref": {
+              "id": "meterReadings",
+              "collection": { "@ref": { "id": "collections" } }
+            }
+          },
+          "actions": {
+            "read": true,
+            "write": true,
+            "create": true,
+            "delete": true,
+            "history_read": true,
+            "history_write": false,
+            "unrestricted_read": false
+          }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "administrativeReports",
+              "collection": { "@ref": { "id": "collections" } }
+            }
+          },
+          "actions": {
+            "read": true,
+            "write": true,
+            "create": true,
+            "delete": true,
+            "history_read": true,
+            "history_write": false,
+            "unrestricted_read": false
+          }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "wellPermits",
+              "collection": { "@ref": { "id": "collections" } }
+            }
+          },
+          "actions": {
+            "read": true,
+            "write": true,
+            "create": true,
+            "delete": true,
+            "history_read": true,
+            "history_write": false,
+            "unrestricted_read": false
+          }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "meter-readings-by-permit-number",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "meter-readings-by-date",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "meter-readings-by-permitnumber-date",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "meter-readings-by-year",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "meter-readings-sort-by-date-asc",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "admin-reports-by-permitnumber",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "admin-reports-by-year",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "admin-reports-by-permitnumber-year",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "SplitDate",
+              "collection": { "@ref": { "id": "functions" } }
+            }
+          },
+          "actions": { "call": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "meter-readings-by-permitNumber-year",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "admin-reports-sort-by-year-asc",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "wellPermitRecords",
+              "collection": { "@ref": { "id": "collections" } }
+            }
+          },
+          "actions": {
+            "read": true,
+            "write": true,
+            "create": true,
+            "delete": true,
+            "history_read": true,
+            "history_write": false,
+            "unrestricted_read": false
+          }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "well-permits-by-permit",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "well-permit-records-by-receipt",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "agentInfo",
+              "collection": { "@ref": { "id": "collections" } }
+            }
+          },
+          "actions": {
+            "read": true,
+            "write": true,
+            "create": true,
+            "delete": true,
+            "history_read": true,
+            "history_write": false,
+            "unrestricted_read": false
+          }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "agent-info-by-user_id",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "wellUsage",
+              "collection": { "@ref": { "id": "collections" } }
+            }
+          },
+          "actions": {
+            "read": true,
+            "write": true,
+            "create": true,
+            "delete": true,
+            "history_read": true,
+            "history_write": false,
+            "unrestricted_read": false
+          }
+        },
+        {
+          "resource": {
+            "@ref": {
+              "id": "wellUsage-by-permitnumber-year",
+              "collection": { "@ref": { "id": "indexes" } }
+            }
+          },
+          "actions": { "unrestricted_read": false, "read": true }
+        }
+      ],
+      "membership": []
+    }
+  ]
+}
