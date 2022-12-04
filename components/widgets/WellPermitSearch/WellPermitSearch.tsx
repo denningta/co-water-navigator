@@ -106,7 +106,7 @@ const WellPermitSearch = () => {
         body: JSON.stringify({ permitRefs: permitRefs })
       }).then(res => res.json())
 
-      enqueueSnackbar(appMetaDataRes, { variant: 'success' })
+      enqueueSnackbar('Permit(s) successfully added', { variant: 'success' })
       setAddPermitsLoading(false)
     } catch (error: any) {
       setAddPermitsLoading(false)

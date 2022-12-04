@@ -60,7 +60,7 @@ export const updatePermitRefs = async (user_id: string, newPermitRefs: PermitRef
       })
     }
 
-    const response = await auth0.updateAppMetadata({ id: user_id }, { permitRefs: oldPermitRefs })
+    const response = await auth0.updateAppMetadata({ id: user_id }, { permitRefs: oldPermitRefs ?? newPermitRefs })
     return response
 
   } catch (error: any) {

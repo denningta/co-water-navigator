@@ -1,4 +1,5 @@
 import { CircularProgress } from "@mui/material"
+import { useRouter } from "next/router"
 import React, { cloneElement, MouseEvent, useEffect, useState } from "react"
 import { IoSearchSharp } from "react-icons/io5"
 
@@ -9,6 +10,7 @@ interface Props {
   size?: number
   type?: 'button' | 'submit' | 'reset'
   color?: 'primary' | 'secondary'
+  href?: string | undefined
   onClick?: (e: MouseEvent) => void
 }
 
@@ -19,12 +21,15 @@ const Button = ({
   size = 20,
   type = 'button',
   color = 'primary',
+  href,
   onClick = () => {}
 }: Props) => {
   const [Icon, setIcon] = useState<JSX.Element>()
+  const router = useRouter()
 
   const handleClick = (event: MouseEvent) => {
     onClick(event)
+    if (href) router.push(href)
   }
 
   useEffect(() => {

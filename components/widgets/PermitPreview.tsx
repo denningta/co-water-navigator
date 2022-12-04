@@ -19,6 +19,7 @@ import { divide } from 'lodash';
 import Button from '../common/Button';
 import { BiPlus } from 'react-icons/bi';
 import { useRouter } from 'next/router';
+import { UserProfile, useUser } from '@auth0/nextjs-auth0';
 
 interface PumpedThisPeriod {
   date: string
@@ -50,22 +51,20 @@ const PermitPreview = () => {
         <Tab label="5Y" value={5} disableRipple />
         <Tab label="10Y" value={10} disableRipple />
       </Tabs>
-      { !data &&
         <div>
-          <CircularProgress />
-        </div>
-      }
-      { data &&
-        <div>
-          <LineChart data={data} startDate={startDate} endDate={endDate} />
-          {!data.length &&
-            <div className="absolute top-0 left-0 h-full w-full flex flex-col items-center justify-center bg-black bg-opacity-5 backdrop-blur-sm">
-              <div className='text-sm mb-3'>You have not requested access to any well permits</div>
-              <Button title="Add well permits" icon={<BiPlus />} onClick={handleClick} />
+          <LineChart data={data ?? []} startDate={startDate} endDate={endDate} />
+          { !data &&
+            <div className='absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center'>
+              <CircularProgress />
+            </div>
+          }
+          { data && !data.length &&
+              <div className="absolute top-0 left-0 h-full w-full flex flex-col items-center justify-center bg-black bg-opacity-5 backdrop-blur-sm">
+                <div className='text-sm mb-3'>You have not requested access to any well permits</div>
+                <Button title="Add well permits" icon={<BiPlus />} onClick={handleClick} />
             </div>
           }
         </div>
-      }
     </div>
   )
 }
