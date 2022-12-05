@@ -22,4 +22,4 @@ jobs:
       - name: Import Fauna DB config to Production
         env:
           FAUNA_CLI_SECRET: ${{ secrets.PROD_FAUNA_CLI_SECRET }}
-        run: npm run importfauna:prod
+        run: npm run importfauna:staging

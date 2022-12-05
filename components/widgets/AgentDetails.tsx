@@ -7,7 +7,6 @@ import EditButton from '../common/EditButton'
 const AgentDetails = () => {
   const { user } = useUser()
   const { data } = useAgentInfo(user?.sub) 
-  console.log(data)
 
   return (
     <div>
