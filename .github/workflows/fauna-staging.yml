@@ -1,0 +1,23 @@
+name: Deploy to Fauna staging account
+on:
+  push:
+    branches: [staging]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download files from the current repository
+        uses: actions/checkout@v2
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+      - name: NPM Install
+        run: npm install
+      - name: Import changes to the Fauna staging account
+        env:
+          DEV_FAUNA_CLI_SECRET: ${{ secrets.DEV_FAUNA_CLI_SECRET }}
+          FAUNA_CLI_SECRET: ${{ secrets.STAGING_FAUNA_CLI_SECRET }}
+        run: exportfauna:dev
+        run: importfauna:staging

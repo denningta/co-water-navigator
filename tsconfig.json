@@ -15,7 +15,7 @@
     "jsx": "preserve",
     "incremental": true,
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/widgets/MeterReadings/ReadingsGridtsx", "pages/manage-users/[user_id]", "lib/fauna/deploy/import-db-config.js", "lib/fauna/deploy/export-db-config.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/widgets/MeterReadings/ReadingsGridtsx", "pages/manage-users/[user_id]", "lib/fauna/deploy/import-db-config.ts", "lib/fauna/deploy/export-db-config.ts"],
   "exclude": ["node_modules"],
   "ts-node": {
     "esm": true
