@@ -15,9 +15,11 @@ jobs:
           node-version: "14.x"
       - name: NPM Install
         run: npm install
-      - name: Import changes to the Fauna staging account
+      - name: Export Fauna Dev DB config
         env:
           DEV_FAUNA_CLI_SECRET: ${{ secrets.DEV_FAUNA_CLI_SECRET }}
-          FAUNA_CLI_SECRET: ${{ secrets.STAGING_FAUNA_CLI_SECRET }}
         run: exportfauna:dev
+      -name: Import Fauna DB config to Staging
+        env: 
+          FAUNA_CLI_SECRET: ${{ secrets.STAGING_FAUNA_CLI_SECRET }}
         run: importfauna:staging
