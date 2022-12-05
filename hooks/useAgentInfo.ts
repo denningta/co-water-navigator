@@ -12,7 +12,7 @@ const fetcher = async (url: string) => {
   return res.json()
 }
 
-const useAgentInfo = (user_id: string | null): { data: any, mutate: KeyedMutator<any> } => {
+const useAgentInfo = (user_id: string | null | undefined): { data: any, mutate: KeyedMutator<any> } => {
   const { data, mutate } = useSWR(
     user_id ? `/api/auth/${user_id}/agent-info` : null,
     fetcher

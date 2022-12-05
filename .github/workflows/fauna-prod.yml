@@ -1,0 +1,25 @@
+name: Deploy to Fauna production account
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download files from the current repository
+        uses: actions/checkout@v2
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+      - name: NPM Install
+        run: npm install
+      - name: Export Fauna Dev DB config
+        env:
+          DEV_FAUNA_CLI_SECRET: ${{ secrets.DEV_FAUNA_CLI_SECRET }}
+        run: npm run exportfauna:dev
+      - name: Import Fauna DB config to Production
+        env:
+          FAUNA_CLI_SECRET: ${{ secrets.PROD_FAUNA_CLI_SECRET }}
+        run: npm run importfauna:prod
