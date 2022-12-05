@@ -19,7 +19,7 @@ jobs:
         env:
           DEV_FAUNA_CLI_SECRET: ${{ secrets.DEV_FAUNA_CLI_SECRET }}
         run: exportfauna:dev
-      -name: Import Fauna DB config to Staging
-        env: 
+      - name: Import Fauna DB config to Staging
+        env:
           FAUNA_CLI_SECRET: ${{ secrets.STAGING_FAUNA_CLI_SECRET }}
         run: importfauna:staging
