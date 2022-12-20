@@ -5,15 +5,22 @@ import { getPrecision } from "./helpers";
 const verifyAvailableThisYear = (
   meterReading: MeterReading, 
   pumpingLimitThisYear: number | undefined,
-  prevRecord: MeterReading,
+  meterReadings: MeterReading[],
   index: number,
 ): CalculatedValue | undefined => {
 
-  if (
-    !prevRecord 
-    || prevRecord.availableThisYear?.value === undefined
-    || meterReading.pumpedYearToDate?.value === undefined
-  ) {
+  let prevValue: CalculatedValue | undefined = undefined
+
+  for (let i = index - 1; i >= 0; i--) {
+    if (meterReadings[i].availableThisYear) {
+      prevValue = meterReadings[i].availableThisYear
+      break
+    }
+  }
+
+  if (!prevValue && meterReading.availableThisYear?.value !== undefined) prevValue = { value: meterReading.availableThisYear.value  }
+
+  if (meterReading.pumpedYearToDate?.value === undefined) {
     if (meterReading.availableThisYear?.source === 'user')
       return meterReading.availableThisYear
     else
@@ -24,7 +31,7 @@ const verifyAvailableThisYear = (
     pumpingLimitThisYear 
     ? parseFloat((pumpingLimitThisYear - meterReading.pumpedYearToDate.value).toFixed(2))
     : parseFloat(
-      (prevRecord.availableThisYear.value - (meterReading.pumpedThisPeriod?.value ?? 0)).toFixed(2)
+      ((prevValue?.value ?? 0) - (meterReading.pumpedThisPeriod?.value ?? 0)).toFixed(2)
     )
   
   const updatedValue: CalculatedValue = {

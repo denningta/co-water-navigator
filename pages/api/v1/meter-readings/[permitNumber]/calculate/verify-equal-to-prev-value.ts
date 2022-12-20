@@ -2,17 +2,24 @@ import MeterReading, { CalculatedValue } from "../../../../../../interfaces/Mete
 
 const verifyEqualToPrevValue = (
   meterReading: MeterReading, 
-  prevRecord: MeterReading, 
+  meterReadings: MeterReading[], 
   index: number,
   property: keyof Pick<MeterReading, 'powerConsumptionCoef'>
 ): CalculatedValue | undefined => {
 
   const calculatedValue: CalculatedValue | undefined = meterReading[property];
-  const prevValue: CalculatedValue | undefined = prevRecord ? prevRecord[property] : undefined;
+  let prevValue: CalculatedValue | undefined = undefined
+
+  for (let i = index - 1; i >= 0; i--) {
+    if (meterReadings[i][property]) {
+      prevValue = meterReadings[i][property]
+      break
+    }
+  }
   
   if (index === 0) return calculatedValue
   if (!calculatedValue || !calculatedValue.value) return
-  if (!prevValue || !prevValue.value) return
+  if (!prevValue || prevValue.value === undefined) prevValue = { value: calculatedValue.value }
 
   const updatedValue: CalculatedValue = {
     ...calculatedValue
