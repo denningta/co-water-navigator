@@ -122,6 +122,8 @@ export function generateFormElements(calendarYear: number | string): FormElement
         return false
       }
 
+      if (!data) data = {}
+
       data[formControl] = {
         ...data[formControl],
         value: +newValue,
