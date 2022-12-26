@@ -51,6 +51,7 @@ export interface CellRendererParams {
 
 export interface FormRendererParams {
   formMetadata: FormMetaData,
+  onChange: (e: CellValueChangedEvent) => void
 }
 
 export interface FormElement {
@@ -107,6 +108,10 @@ const FormWithCells = ({
     }
   }
 
+  const handleFormChange = (e: CellValueChangedEvent) => {
+    onCellValueChanged(e)
+  }
+
   return (
     <div ref={containerRef}>
       {formElements.map((
@@ -130,7 +135,11 @@ const FormWithCells = ({
           `}
         >
           <div className="col-span-4">
-            <Form formMetadata={formMetadata} customFormRenderer={(params) => formComponent(params)} />
+            <Form 
+              formMetadata={formMetadata} 
+              customFormRenderer={(params) => formComponent(params)} 
+              onChange={handleFormChange}
+            />
           </div>
 
           <div className="col-span-2 px-4 flex items-center">

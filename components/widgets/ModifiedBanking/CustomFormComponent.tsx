@@ -6,7 +6,7 @@ import useModifiedBanking from "../../../hooks/useModifiedBanking"
 import { FormRendererParams } from "./FormWithCells"
 
 
-const CustomFormComponent = ({ formMetadata }: FormRendererParams) => {
+const CustomFormComponent = ({ formMetadata, onChange }: FormRendererParams) => {
   const { lineNumber, title, description, descriptionAlt, permitNumber, year } = formMetadata
   const [selection, setSelection] = useState('b')
   const { data, mutate } = useModifiedBanking(permitNumber, year)
@@ -29,6 +29,12 @@ const CustomFormComponent = ({ formMetadata }: FormRendererParams) => {
     try {
       const url = `/api/v1/modified-banking/${permitNumber}/${year}`
       const res = await axios.patch(url, body)
+      onChange({
+        data: body,
+        newValue: body.line6Option,
+        oldValue: selection,
+        formControl: 'line6Option'
+      })
     } catch (error: any) {
       enqueueSnackbar('Something went wrong.  Please try again.', { variant: 'error' })
     }
