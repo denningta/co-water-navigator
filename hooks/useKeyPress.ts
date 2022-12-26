@@ -1,20 +1,33 @@
 import { useEffect, useState } from "react";
 
-function useKeyPress(targetKey?: string | undefined) {
+function useKeyPress(targetKey?: string) {
   // State for keeping track of whether key is pressed
   const [keyPressed, setKeyPressed] = useState<{ 
     key: string | undefined, pressed: boolean, event: KeyboardEvent | undefined 
   }>(
-    {key: targetKey ?? undefined, pressed: false, event: undefined}
+    {key: undefined, pressed: false, event: undefined}
   );
   // If pressed key is our target key then set to true
+
   function downHandler(event: KeyboardEvent) {
+    if (targetKey === 'alphanumeric') {
+      if (event.key.length > 1) return
+      setKeyPressed({ key: event.key, pressed: true, event: event });
+      return
+    }
+
     if (targetKey === undefined || event.key === targetKey) {
       setKeyPressed({ key: event.key, pressed: true, event: event });
     }
   }
   // If released key is our target key then set to false
   const upHandler = (event: KeyboardEvent) => {
+    if (targetKey === 'alphanumeric') {
+      if (event.key.length > 1) return
+      setKeyPressed({ key: event.key, pressed: true, event: event });
+      return
+    }
+
     if (targetKey === undefined || event.key === targetKey) {
       setKeyPressed({ key: event.key, pressed: false, event: event });
     }

@@ -6,6 +6,7 @@ import { CellRendererParams, CellValueChangedEvent } from "./FormWithCells"
 
 export interface CellApi {
   setCellValue: (input: string) => void
+  cursorToEnd: () => void
 }
 
 interface Props {
@@ -34,7 +35,7 @@ const Cell = forwardRef((
     onClick = () => {},
     onFocusClick = () => {},
     onCellValueChanged = () => {},
-    cellRendererComponent = () => {}
+    cellRendererComponent = () => {},
   }: Props, 
   ref: React.ForwardedRef<CellApi>
 ) => {
@@ -44,13 +45,21 @@ const Cell = forwardRef((
   const [oldValue, setOldValue] = useState<string | undefined>(value)
   const [newValue, setNewValue] = useState<string | undefined>(value)
 
-  const setCellValue = (value: string) => {
+  const setCellValue = (value: string, triggerCellChanged: boolean = true) => {
     setNewValue(value)
-    onCellValueChanged({ oldValue: oldValue, newValue: value })
+    if (triggerCellChanged) onCellValueChanged({ oldValue: oldValue, newValue: value })
   }
 
-  const cellApi = {
+  const cursorToEnd = () => {
+    setTimeout(() => {
+      if (!inputRef.current) return
+      inputRef.current.setSelectionRange(newValue?.length ?? 0, newValue?.length ?? 0)
+    }, 10)
+  }
+
+  const cellApi: CellApi = {
     setCellValue: setCellValue,
+    cursorToEnd: cursorToEnd
   }
 
   useImperativeHandle(ref, () => cellApi)

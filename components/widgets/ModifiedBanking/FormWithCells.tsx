@@ -1,8 +1,10 @@
 import { CellRendererComponent } from "ag-grid-community/dist/lib/components/framework/componentTypes"
-import React, { useEffect, useRef } from "react"
+import React, { useEffect, useMemo, useRef } from "react"
 import useCellNavigation from "../../../hooks/useCellNavigation"
 import AddCommentButton from "./AddCommentButton"
 import Cell, { CellApi } from "./Cell"
+import Form from "./Form"
+import { FormMetaData, generateformMetaData } from "./generatre-form-elements"
 
 export type CellValueChangedEvent = {
   formControl: string
@@ -47,9 +49,14 @@ export interface CellRendererParams {
   cellApi?: CellApi | null
 }
 
+export interface FormRendererParams {
+  formMetadata: FormMetaData,
+}
+
 export interface FormElement {
+  formMetadata: FormMetaData
   formControl: string
-  formComponent?: JSX.Element
+  formComponent?: (params: FormRendererParams) => (JSX.Element | void)
   cellLabel?: string
   cellRendererComponent?: (params: CellRendererParams) => (JSX.Element | void)
   valueGetter?: (params: ValueGetterParams) => string
@@ -100,13 +107,13 @@ const FormWithCells = ({
     }
   }
 
-
   return (
     <div ref={containerRef}>
       {formElements.map((
         {
+          formMetadata,
           formControl, 
-          formComponent, 
+          formComponent = (params) => {}, 
           cellLabel, 
           valueGetter, 
           valueSetter,
@@ -123,7 +130,7 @@ const FormWithCells = ({
           `}
         >
           <div className="col-span-4">
-            {formComponent}
+            <Form formMetadata={formMetadata} customFormRenderer={(params) => formComponent(params)} />
           </div>
 
           <div className="col-span-2 px-4 flex items-center">

@@ -1,7 +1,6 @@
 import axios from "axios"
 import { useSnackbar } from "notistack"
-import { useEffect, useRef, useState } from "react"
-import { BsInfoLg } from "react-icons/bs"
+import { useEffect, useState } from "react"
 import useModifiedBanking from "../../../hooks/useModifiedBanking"
 import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
 import FormWithCells, { CellValueChangedEvent, FormElement } from "./FormWithCells"
@@ -24,9 +23,9 @@ const ModifiedBankingComponent = ({
   const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
-    if (!year) return
-    setFormElements(generateFormElements(year))
-  }, [year])
+    if (!year || !permitNumber) return
+    setFormElements(generateFormElements(permitNumber, year))
+  }, [year, permitNumber])
 
   const handleCellValueChanged = async (
     event: CellValueChangedEvent, 
@@ -79,16 +78,6 @@ const ModifiedBankingComponent = ({
           onValueSetterError={handleValueSetterError}
         /> 
       }
-      {/* { permitNumber && year &&
-        <ModifiedBankingForm 
-          ref={formRef}
-          permitNumber={permitNumber} 
-          year={year} 
-          modifiedBankingData={modifiedBankingData}
-          // onCellValueChanged={handleCellValueChanged}
-          onCommentsChanged={handleCommentsChanged}
-        />
-      } */}
     </div>
   )
 }

@@ -12,7 +12,8 @@ const useCellNavigation = (containerRef: MutableRefObject<any>, numberOfCells: n
   const tab = useKeyPress('Tab')
   const shift = useKeyPress('Shift')
   const enter = useKeyPress('Enter')
-  const anyKey = useKeyPress()
+  const anyKey = useKeyPress('alphanumeric')
+
 
   useEffect(() => {
     if (!containerFocus) setFocusIndex(null)
@@ -76,6 +77,7 @@ const useCellNavigation = (containerRef: MutableRefObject<any>, numberOfCells: n
     editingIndex: editingIndex,
     setEditingIndex: setEditingIndex,
     handleCellClick: handleCellClick,
+    key: anyKey.key
   }
 
 }

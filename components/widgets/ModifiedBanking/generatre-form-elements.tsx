@@ -14,16 +14,17 @@ export interface FormMetaData {
   formControlDisabled?: boolean;
   status?: 'committed' | 'reference' | 'warning' | 'undefined' | 'unsaved';
   shouldBe?: number;
+  permitNumber?: string;
+  year?: string;
 }
 
 export type ModifiedBankingFormControls = 'originalAppropriation' | 'allowedAppropriation' | 'line3' | 'bankingReserveLastYear' | 'maxBankingReserve' | 'pumpingLimitThisYear' | 'totalPumpedThisYear' | 'changeInBankingReserveThisYear' | 'bankingReserveThisYear' | 'line10' | 'pumpingLimitNextYear'
 
-export function generateFormElements(calendarYear: number | string): FormElement[] {
-  const thisYear = calendarYear;
-  const nextYear = +calendarYear + 1;
-  const lastYear = +calendarYear - 1;
+export const generateformMetaData = (thisYear: string | number, permitNumber: string): FormMetaData[] => {
+  const lastYear = (+thisYear - 1).toString()
+  const nextYear = (+thisYear + 1).toString()
 
-  const formMetaData: FormMetaData[] = [
+  return [
     { 
       lineNumber: 1,
       formControl: 'originalAppropriation',
@@ -66,6 +67,8 @@ export function generateFormElements(calendarYear: number | string): FormElement
       shortTitle: `Pumping limit ${thisYear}`,
       description: `A) If ${thisYear} is the first year or a re-initiating year under the three year modified banking provision enter the amount from line 2`,
       descriptionAlt: `B) Enter the lesser of (line 1) or (line 2 plus line 5). (This will be the same as line 11 of the ${lastYear} report)`,
+      year: thisYear.toString(),
+      permitNumber: permitNumber
     },
     {
       lineNumber: 7,
@@ -104,10 +107,15 @@ export function generateFormElements(calendarYear: number | string): FormElement
     },
   ];
 
+}
 
-  return formMetaData.map(el => ({
+export function generateFormElements(permitNumber: string, calendarYear: number | string): FormElement[] {
+
+
+  return generateformMetaData(calendarYear, permitNumber).map(el => ({
+    formMetadata: el,
     formControl: el.formControl,
-    formComponent: CustomFormComponent(el),
+    formComponent: CustomFormComponent,
     cellLabel: el.shortTitle,
     valueGetter: ({ data, formControl }: ValueGetterParams) => {
       if (!data || !data[formControl]) return ''
