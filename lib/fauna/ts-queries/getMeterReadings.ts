@@ -54,16 +54,20 @@ const getMeterReadings = (
       {
         preFilter: q.Map(
         q.Paginate(
-          q.Intersection(
-            [
-              permitNumberQuery,
-              yearQuery,
-              dateQuery
-            ].filter(el => el)
+          q.Join(
+            q.Intersection(
+              [
+                permitNumberQuery,
+                yearQuery,
+                dateQuery
+              ].filter(el => el)
+            ),
+            q.Index('meter-readings-sort-by-date-asc')
           )
+
         ),
-        q.Lambda('record',
-          q.Select(['data'], q.Get(q.Var('record')))
+        q.Lambda(['record', 'ref'],
+          q.Select(['data'], q.Get(q.Var('ref')))
         )
       )
       },
