@@ -32,17 +32,26 @@ export function calculatedValueGetter({ data }: ValueGetterParams, field: string
   }
 }
 
-export function calculatedValueSetter({ data, newValue }: ValueSetterParams, field: string) {
-  if (data[field] && newValue === '') {
-    delete data[field]
+export function calculatedValueSetter(
+  params: ValueSetterParams, 
+  field: string, 
+  validatorFn: (params: ValueSetterParams) => boolean
+) {
+  if (validatorFn(params)) {
+    if (params.data[field] && params.newValue === '') {
+      delete params.data[field]
+      return true
+    }
+    
+    params.data[field] = {
+      value: +params.newValue,
+      source: 'user'
+    }
     return true
+  } else {
+    return false
   }
-  
-  data[field] = {
-    value: +newValue,
-    source: 'user'
-  }
-  return true
+
 }
 
 export function getCellClassRules(field: string) {

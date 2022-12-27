@@ -4,13 +4,11 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { AgGridReact } from "ag-grid-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { calculatedValueGetter, calculatedValueSetter, dateFormatter, getCellClassRules, initPlaceholderData } from "./helpers";
-import { CellValueChangedEvent, ColDef, ColumnApi, GetRowIdFunc, GetRowIdParams, GridApi, ICellRendererParams } from "ag-grid-community";
-import TableLoading from "../../common/TableLoading";
-import CalcValueCellRenderer from "./CalcValueCellRenderer";
-import AbstractCellRenderer from "./CalcValueCellRenderer";
-import { readingsGridColDefs, readingsGridDefaultColDef } from "./readings-grid-colDefs";
+import { dateFormatter, getCellClassRules, initPlaceholderData } from "./helpers";
+import { CellValueChangedEvent, ColDef, ColumnApi, GetRowIdFunc, GetRowIdParams, GridApi, ICellRendererParams, ValueSetterParams } from "ag-grid-community";
+import { createCalculatedValueColDef, readingsGridDefaultColDef } from "./readings-grid-colDefs";
 import useMeterReadings from "../../../hooks/useMeterReadings";
+import { useSnackbar } from "notistack";
 
 interface Props {
   permitNumber: string
@@ -24,6 +22,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
   const [gridApi, setGridApi] = useState<GridApi | null>(null)
   const [columnApi, setColumnApi] = useState<ColumnApi | null>(null)
   const [rowData, setRowData] = useState<MeterReading[]>(initPlaceholderData(permitNumber, year))
+  const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
     onCalculating(undefined)
@@ -61,8 +60,52 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
     })
   }
 
+  const numberValidator = (params: ValueSetterParams) => {
+    const test = !!(+params.newValue)
+    if (!test) enqueueSnackbar('Invalid input: value must be a number', { variant: 'error' })
+    return test;
+  }
+
+  const readByValidator = (params: ValueSetterParams) => {
+    const test = params.newValue.length <= 3
+    if (!test) enqueueSnackbar('Invalid input: value must be a three letter initial', { variant: 'error' })
+    return test
+  }
+
   const [defaultColDef] = useState<ColDef>(readingsGridDefaultColDef)
-  const [columnDefs] = useState<ColDef[]>(readingsGridColDefs)
+  const [columnDefs] = useState<ColDef[]>([
+    { 
+      field: 'date',
+      minWidth: 150,
+      editable: false,
+      sort: 'asc',
+      valueFormatter: dateFormatter,
+      cellClassRules: getCellClassRules('date'),
+    },
+    createCalculatedValueColDef('flowMeter', numberValidator),
+    createCalculatedValueColDef('powerMeter', numberValidator),
+    createCalculatedValueColDef('powerConsumptionCoef', numberValidator),
+    createCalculatedValueColDef('pumpedThisPeriod', numberValidator),
+    createCalculatedValueColDef('pumpedYearToDate', numberValidator),
+    createCalculatedValueColDef('availableThisYear', numberValidator),
+    { 
+      field: 'readBy',
+      valueSetter: (params) => {
+        if (readByValidator(params)) {
+          params.data.readBy = params.newValue
+          return true
+        } else {
+          return false
+        }
+      }
+    },
+    { field: 'comments' },
+    { 
+      field: 'updatedBy',
+      editable: false,
+      cellClassRules: getCellClassRules('updatedBy')
+    },
+  ])
 
   const handleCellValueChange = async ({ data }: CellValueChangedEvent) => {
     onCalculating(true)
