@@ -1,4 +1,4 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { getServerSidePropsWrapper, getSession, withPageAuthRequired } from '@auth0/nextjs-auth0'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import useSWR from 'swr'
@@ -7,6 +7,7 @@ import MainContent, { Widget } from '../../../components/MainContent'
 import Header from '../../../components/widgets/Header'
 import AdminProfileComponent from '../../../components/widgets/AdminProfile/AdminProfileComponent'
 import { NextPageWithLayout } from '../../_app'
+import { GetServerSideProps } from 'next'
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
@@ -43,7 +44,19 @@ const UserDetailsPage: NextPageWithLayout = () => {
   )
 }
 
-export const getServerSideProps = withPageAuthRequired()
+export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(async ({ query, req, res}) => {
+  const session = getSession(req, res)
+  const admin = (session?.user['coWaterExport/roles'] as string[]).includes('admin')
+
+  if (admin) return {
+    props: {}
+  }
+
+  return {
+    redirect: { destination: '/not-authorized' },
+    props: {}
+  }
+})
 
 UserDetailsPage.getLayout = function getLayout(page: ReactElement) {
   return (

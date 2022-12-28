@@ -43,7 +43,19 @@ const ManageUsers: NextPageWithLayout = () => {
   )
 }
 
-export const getServerSideProps = withPageAuthRequired()
+export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(async ({ query, req, res}) => {
+  const session = getSession(req, res)
+  const admin = (session?.user['coWaterExport/roles'] as string[]).includes('admin')
+
+  if (admin) return {
+    props: {}
+  }
+
+  return {
+    redirect: { destination: '/not-authorized' },
+    props: {}
+  }
+})
 
 ManageUsers.getLayout = function getLayout(page: ReactElement) {
   return (

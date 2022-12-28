@@ -13,6 +13,7 @@ const Toolbar = () => {
   const { user, error, isLoading } = useUser()
   const [ collapsed, setCollapsed ] = useState(true)
   const duration = '100ms'
+  const admin = user && (user['coWaterExport/roles'] as string[]).includes('admin')
 
   const handleMouseEnter = () => {
     setCollapsed(false)
@@ -60,9 +61,11 @@ const Toolbar = () => {
           <NavButton title="Profile" route="/profile" size={collapsed ? 'small' : 'normal'}>
             <FaUserCircle/>
           </NavButton>
-          <NavButton title="Manage Users" route="/manage-users" size={collapsed ? 'small' : 'normal'}>
-            <FaUserShield />
-          </NavButton>
+          {admin &&
+            <NavButton title="Manage Users" route="/manage-users" size={collapsed ? 'small' : 'normal'}>
+              <FaUserShield />
+            </NavButton>
+          }
         </div>
         <div className="grow"></div>
         { user &&
