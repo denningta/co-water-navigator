@@ -5,10 +5,11 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { AgGridReact } from "ag-grid-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { dateFormatter, getCellClassRules, initPlaceholderData } from "./helpers";
-import { CellValueChangedEvent, ColDef, ColumnApi, GetRowIdFunc, GetRowIdParams, GridApi, ICellRendererParams, ValueSetterParams } from "ag-grid-community";
+import { CellValueChangedEvent, ColDef, ColumnApi, GetRowIdFunc, GetRowIdParams, GridApi, ICellRendererParams, ValueGetterParams, ValueSetterParams } from "ag-grid-community";
 import { createCalculatedValueColDef, readingsGridDefaultColDef } from "./readings-grid-colDefs";
 import useMeterReadings from "../../../hooks/useMeterReadings";
 import { useSnackbar } from "notistack";
+import { useUser } from "@auth0/nextjs-auth0";
 
 interface Props {
   permitNumber: string
@@ -23,6 +24,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
   const [columnApi, setColumnApi] = useState<ColumnApi | null>(null)
   const [rowData, setRowData] = useState<MeterReading[]>(initPlaceholderData(permitNumber, year))
   const { enqueueSnackbar } = useSnackbar()
+  const { user } = useUser()
 
   useEffect(() => {
     onCalculating(undefined)
@@ -103,12 +105,18 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
     { 
       field: 'updatedBy',
       editable: false,
-      cellClassRules: getCellClassRules('updatedBy')
+      cellClassRules: getCellClassRules('updatedBy'),
+      valueGetter: (params: ValueGetterParams) => {
+        if (params.data?.updatedBy) return params.data.updatedBy.name
+      }
     },
   ])
 
   const handleCellValueChange = async ({ data }: CellValueChangedEvent) => {
     onCalculating(true)
+
+    data.updatedBy = user
+
     const url = `/api/v1/meter-readings/${data.permitNumber}/${data.date}`
     try {
       await fetch(url, {
