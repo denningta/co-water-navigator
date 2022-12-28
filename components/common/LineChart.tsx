@@ -1,18 +1,13 @@
-import generateDateValue, { DateValue } from '@visx/mock-data/lib/generators/genDateValue';
-import { scaleTime, scaleLinear, scaleUtc, scaleOrdinal } from '@visx/scale';
-import { extent } from 'd3-array';
-import { MarkerCircle } from '@visx/marker';
+import { scaleTime, scaleLinear, scaleOrdinal } from '@visx/scale';
 import { curveMonotoneX } from '@visx/curve';
-import { Group } from '@visx/group';
-import { useTooltip, useTooltipInPortal, withTooltip } from '@visx/tooltip'
+import { useTooltip, useTooltipInPortal } from '@visx/tooltip'
 import { AxisBottom, AxisLeft } from '@visx/axis';
-import { Circle, line, LinePath } from '@visx/shape';
+import { Circle, LinePath } from '@visx/shape';
 import { localPoint } from '@visx/event';
-import cityTemperature from '@visx/mock-data/lib/mocks/cityTemperature'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { voronoi, VoronoiPolygon } from '@visx/voronoi';
-import genRandomNormalPoints, { PointsRange } from '@visx/mock-data/lib/generators/genRandomNormalPoints';
-import _, { divide } from 'lodash';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { voronoi } from '@visx/voronoi';
+import { PointsRange } from '@visx/mock-data/lib/generators/genRandomNormalPoints';
+import _ from 'lodash';
 import { LegendOrdinal } from '@visx/legend';
 
 interface PumpedThisPeriod {
@@ -146,7 +141,6 @@ const LineChart = ({
     setLineActive(undefined)
   }
 
-
   return (
     <div className="relative" ref={containerRef}>
       <svg width={width} height={height} ref={svgRef}
@@ -166,22 +160,23 @@ const LineChart = ({
               x={(d) => xScale(date(d) ?? 0)}
               y={(d: any) => yScale(pumpedThisPeriod(d) ?? 0)}
               opacity={lineActive === index ? 1 : 0.4}
-              stroke={ordinalColorScale(record.permit) ?? '#3A86FF'}
+              stroke={ordinalDomain.includes(record.permit) ? ordinalColorScale(record.permit) : '#3A86FF'}
               strokeWidth={3}
               strokeDasharray="1,2"
             />
           )}
 
-          {points.map((point, i) => 
-            <Circle 
+          {points.map((point, i) => {
+            const permit = rawData.find(el => el.lineId === point[2]).permit
+            return (<Circle 
               key={`point-${point[0]}-${i}`}
               cx={x(point)}
               cy={y(point)}
               r={4}
-              fill={colors[point[2]] ?? '#3A86FF'}
+              fill={ordinalDomain.includes(permit) ? ordinalColorScale(permit) : '#3A86FF'}
               opacity={pointActive === i ? 1 : 0.4}
-            />
-          )}
+            />)
+          })}
       </svg>
       <LegendOrdinal
         scale={ordinalColorScale}
@@ -190,11 +185,13 @@ const LineChart = ({
           <div className="border w-fit py-2 px-4 rounded-lg absolute top-0 right-0 select-none">
             <div className='font-bold mb-1'>Well Permits</div>
             <div className='grid grid-cols-1 gap-x-4'>
-              {labels.map((label, i) => (
-                <div key={i} 
+              {labels.map((label, i) => {
+                const lineId = rawData.find(el => el.permit === label.datum)?.lineId
+                return (
+                <div key={lineId} 
                   className="flex items-center"
-                  style={{ opacity: lineActive === label.index ? 1 : 0.5 }}
-                  onMouseEnter={() => handleLegendEnter(label.index)}
+                  style={{ opacity: lineActive === lineId ? 1 : 0.5 }}
+                  onMouseEnter={() => handleLegendEnter(lineId)}
                   onMouseLeave={handleLegendLeave}
                 >
                   <div
@@ -203,7 +200,7 @@ const LineChart = ({
                   />
                   <div className='ml-3'>{label.datum}</div>
                 </div>
-              ))}
+              )})}
             </div>
           </div>
         )}
