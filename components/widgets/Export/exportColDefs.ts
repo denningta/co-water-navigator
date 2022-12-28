@@ -1,24 +1,28 @@
 import { ColDef } from "ag-grid-community";
 import DataSummaryCellRenderer from "../CalendarYearSelector/Dbb004HeatmapCellRenderer";
+import Dbb013HeatmapCellRenderer from "../CalendarYearSelector/Dbb013HeatmapCellRenderer";
 
 
 export const exportColDefs: ColDef[] = [
   {
     field: 'permitNumber',
-    checkboxSelection: true
+    checkboxSelection: true,
+    maxWidth: 160
   },
   { 
     field: 'year',
-    checkboxSelection: false
+    checkboxSelection: false,
+    maxWidth: 100
   },
   { 
     field: 'dbb004Summary',
     cellRenderer: DataSummaryCellRenderer,
-    minWidth: 370
+    minWidth: 400
   },
   { 
     field: 'dbb013Summary',
-    minWidth: 370
+    minWidth: 400,
+    cellRenderer: Dbb013HeatmapCellRenderer
   }
 ]
 

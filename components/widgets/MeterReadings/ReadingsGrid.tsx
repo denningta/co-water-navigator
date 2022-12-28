@@ -10,6 +10,7 @@ import { createCalculatedValueColDef, readingsGridDefaultColDef } from "./readin
 import useMeterReadings from "../../../hooks/useMeterReadings";
 import { useSnackbar } from "notistack";
 import { useUser } from "@auth0/nextjs-auth0";
+import { isNumber } from "lodash";
 
 interface Props {
   permitNumber: string
@@ -63,7 +64,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
   }
 
   const numberValidator = (params: ValueSetterParams) => {
-    const test = !!(+params.newValue)
+    const test = isNumber(+params.newValue)
     if (!test) enqueueSnackbar('Invalid input: value must be a number', { variant: 'error' })
     return test;
   }
