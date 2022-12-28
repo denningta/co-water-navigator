@@ -8,10 +8,16 @@ interface Props {
   hideTitle?: boolean
   route?: string
   size?: 'normal' | 'small'
+  transitionDelay?: string
   children?: JSX.Element
 }
 
-const NavButton = ({ title = '', route = '/', size = 'normal', children }: Props) => {
+const NavButton = ({ 
+  title = '', 
+  route = '/', 
+  size = 'normal', 
+  children
+}: Props) => {
   const [hover, setHoverState] = useState(false)
   const { pathname } = useRouter()
   const path = pathname.split('/')
@@ -29,16 +35,18 @@ const NavButton = ({ title = '', route = '/', size = 'normal', children }: Props
           <div className={`flex items-center text-2xl transition ease-in-out ${hover ? 'text-primary' : 'text-gray-400'}`}>
             { children || <IoHome /> }
           </div>
-          { size === 'normal' &&
-            <div className={`
-              mt-2 
-              text-center text-sm 
-              min-w-fit
+          <div 
+            className={`
+              mt-1
+              text-center text-xs transition-all ease-in-out
+              whitespace-nowrap overflow-hidden
+              min-h-fit
               ${hover ? 'text-white' : 'text-gray-400'}
-            `}>
-              { title }
-            </div>
-          }
+              ${size === 'small' ? 'opacity-0' : 'opacity-100'}
+            `}
+          >
+            { title }
+          </div>
         </div>
     </Link>
   )

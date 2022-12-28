@@ -12,6 +12,7 @@ import { TiExport } from "react-icons/ti"
 const Toolbar = () => {
   const { user, error, isLoading } = useUser()
   const [ collapsed, setCollapsed ] = useState(true)
+  const duration = '100ms'
 
   const handleMouseEnter = () => {
     setCollapsed(false)
@@ -23,7 +24,16 @@ const Toolbar = () => {
   
   return (
     <div 
-      className={`flex flex-col items-center bg-black drop-shadow-lg text-white h-full transition-all ease-in-out ${collapsed ? 'w-[75px]' : 'w-[150px] px-4'}`}
+      className={`
+        flex flex-col items-center 
+        bg-black drop-shadow-lg 
+        text-white 
+        h-full 
+        transition-all ease-in-out 
+        duration-100
+        ${collapsed ? 'w-[75px]' : 'w-[150px] px-4'}
+      `}
+      style={{ transitionDuration: duration }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -32,42 +42,57 @@ const Toolbar = () => {
           <GiWaterSplash />
         </div>
       </Link>
-      <NavButton title="Dashboard" route="/dashboard" size={collapsed ? 'small' : 'normal'}>
-        <IoHome/>
-      </NavButton>
-      <NavButton title="Well Permits" route="/well-permits" size={collapsed ? 'small' : 'normal'}>
-        <FaListAlt/>
-      </NavButton>
-      <NavButton title="Export" route="/export" size={collapsed ? 'small' : 'normal'}>
-        <TiExport />
-      </NavButton>
-      <NavButton title="Profile" route="/profile" size={collapsed ? 'small' : 'normal'}>
-        <FaUserCircle/>
-      </NavButton>
-      <NavButton title="Manage Users" route="/manage-users" size={collapsed ? 'small' : 'normal'}>
-        <FaUserShield />
-      </NavButton>
-      <div className="grow"></div>
-      { user &&
-        <div className="flex flex-col items-center mb-6">
-          { !collapsed && <div className="text-gray-500 text-xs text-center mb-4">ACCOUNT</div> }
-          <div className="flex flex-col items-center mb-8">
-            {user.picture && 
-              <Image 
-                src={user.picture}
-                alt='Profile picture'
-                width={collapsed ? 30 : 50}
-                height={collapsed ? 30 : 50}
-                className="rounded-full overflow-hidden"
-              />
-            }
-            { !collapsed && <div className="text-sm text-gray-400 mt-2">{`${user.name}`}</div> }
-          </div>
-          
-          <LogoutButton size={collapsed ? 'small' : 'normal'} />
-
+        <div 
+          className={`
+            min-h-fit 
+            ${collapsed ? 'overflow-y-hidden' : 'overflow-y-auto'}
+          `}
+        >
+          <NavButton title="Dashboard" route="/dashboard" size={collapsed ? 'small' : 'normal'}>
+            <IoHome/>
+          </NavButton>
+          <NavButton title="Well Permits" route="/well-permits" size={collapsed ? 'small' : 'normal'}>
+            <FaListAlt/>
+          </NavButton>
+          <NavButton title="Export" route="/export" size={collapsed ? 'small' : 'normal'}>
+            <TiExport />
+          </NavButton>
+          <NavButton title="Profile" route="/profile" size={collapsed ? 'small' : 'normal'}>
+            <FaUserCircle/>
+          </NavButton>
+          <NavButton title="Manage Users" route="/manage-users" size={collapsed ? 'small' : 'normal'}>
+            <FaUserShield />
+          </NavButton>
         </div>
-      }
+        <div className="grow"></div>
+        { user &&
+          <div className="flex flex-col items-center mb-6">
+            <div className={`text-gray-500 text-xs text-center mb-4 ${collapsed ? 'opacity-0' : 'opacity-100'}`}>ACCOUNT</div>
+            <Link href="/profile">
+              <div className="flex flex-col items-center mb-8 cursor-pointer">
+                {user.picture &&
+                  <div
+                    className={`
+                      transition-all ease-in-out
+                      ${collapsed ? 'w-[30px]' : 'w-[50px]'}
+                    `}
+                  >
+                    <Image
+                      src={user.picture}
+                      alt='Profile picture'
+                      width={50}
+                      height={50}
+                      className="rounded-full overflow-hidden"
+                    />
+                  </div>
+                }
+                <div className={`text-sm text-gray-400 mt-2 whitespace-nowrap ${collapsed ? 'opacity-0' : 'opacity-100'}`}>{`${user.name}`}</div>
+              </div>
+            </Link>
+        
+            <LogoutButton size={collapsed ? 'small' : 'normal'} />
+          </div>
+        }
     </div>
   )
 }
