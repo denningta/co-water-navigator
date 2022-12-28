@@ -1,5 +1,6 @@
-import { ColDef } from "ag-grid-community";
-import DataSummaryCellRenderer from "./DataSummaryCellRenderer";
+import { ColDef, ICellRendererParams } from "ag-grid-community";
+import DataSummaryCellRenderer from "./Dbb004HeatmapCellRenderer";
+import Dbb013HeatmapCellRenderer from "./Dbb013HeatmapCellRenderer";
 
 export const yearSelectorColDefs: ColDef[] = [
   { 
@@ -11,7 +12,8 @@ export const yearSelectorColDefs: ColDef[] = [
     cellRenderer: DataSummaryCellRenderer
   },
   { 
-    field: 'dbb013Summary' 
+    field: 'dbb013Summary',
+    cellRenderer: Dbb013HeatmapCellRenderer
   }
 ]
 

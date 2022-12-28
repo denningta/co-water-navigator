@@ -1,5 +1,5 @@
 import { ColDef } from "ag-grid-community";
-import DataSummaryCellRenderer from "../CalendarYearSelector/DataSummaryCellRenderer";
+import DataSummaryCellRenderer from "../CalendarYearSelector/Dbb004HeatmapCellRenderer";
 
 
 export const exportColDefs: ColDef[] = [
