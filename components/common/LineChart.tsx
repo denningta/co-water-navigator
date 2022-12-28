@@ -49,11 +49,15 @@ const LineChart = ({
   const date = (d: PumpedThisPeriod) => d && new Date(d.date).valueOf();
   const pumpedThisPeriod = (d: PumpedThisPeriod) => d && Number(d.pumpedThisPeriod);
 
+  const rawData = data.map((record, index) => 
+    record.pumpData.map((el: any) => ({ ...el, lineId: index, permit: record.permit }))
+  ).flat(1)
+
   const yScale = useMemo(() => scaleLinear({
-    domain: [0, 35],
+    domain: [0, Math.max(...rawData.map(el => el.pumpedThisPeriod))],
     range: [height - margin, margin],
     round: true,
-  }), [height, margin])
+  }), [rawData])
 
   const xScale = useMemo(() => scaleTime({
     domain: [
@@ -67,9 +71,7 @@ const LineChart = ({
   const x = (d: PointsRange) => d[0];
   const y = (d: PointsRange) => d[1];
 
-  const rawData = data.map((record, index) => 
-    record.pumpData.map((el: any) => ({ ...el, lineId: index, permit: record.permit }))
-  ).flat(1)
+
 
   const points: PointsRange[] = rawData.map((d, index) => {
     return [
