@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import { IconType } from "react-icons"
 import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs"
 
@@ -18,10 +19,15 @@ const TableActionButton = ({
   color = 'primary',
   onClick = () => {} 
 }: Props) => {
+  const [bgColor, setBgColor] = useState('#30BCED')
 
   const handleClick = () => {
     onClick()
   }
+
+  useEffect(() => {
+    setBgColor(color)
+  }, [numSelected, color])
 
   return (
     <button
@@ -33,8 +39,12 @@ const TableActionButton = ({
         drop-shadow
         flex items-center
         transition ease-in-out
-        ${(numSelected > 0) ? `bg-${color}-600 text-white` : 'bg-slate-200 text-slate-400'}
+
       `}
+      style={{ 
+        backgroundColor: (numSelected > 0) ? bgColor : 'rgb(226 232 240)',
+        color: (numSelected > 0 ? 'white' : 'rgb(71 85 105)')
+      }}
       disabled={numSelected <= 0}
     >
       <span className="border-r border-slate-300 px-4 w-28">

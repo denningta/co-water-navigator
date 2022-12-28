@@ -95,14 +95,14 @@ const WellPermitsManager = ({ user }: Props) => {
           icon={<BsCheckCircleFill />}
           numSelected={selectedRowNodes.length}
           onClick={handleApproveAccess}
-          color="green"
+          color="limegreen"
         />
         <TableActionButton 
           title="Reject" 
           icon={<BsXCircleFill />}
           numSelected={selectedRowNodes.length}
           onClick={handleRejectAccess}
-          color="rose"
+          color="crimson"
         />
         <TableActionButton 
           title="Delete" 
