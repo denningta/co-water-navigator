@@ -56,10 +56,12 @@ const createPdf = async ({ documents, dataSelection, agentInfo }: ExportData) =>
   await Promise.all(
     dataSelection.map(async (el) => {
       if (documents.dbb004) {
+        if (!el.dbb004Summary) return
         const dbb004 = await addDbb004(el.dbb004Summary, agentInfo, el.wellUsage, el.permitNumber, el.year)
         await mergeDocuments(pdfDoc, dbb004)
       }
       if (documents.dbb013) {
+        if (!el.dbb013Summary[0]) return
         const dbb013 = await addDbb013(el.dbb013Summary, agentInfo, el.wellUsage)
         await mergeDocuments(pdfDoc, dbb013)
       }
