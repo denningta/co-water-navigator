@@ -1,6 +1,5 @@
-import useSWR, { KeyedMutator } from "swr"
-import { ModifiedBankingSummary, WellUsage } from "../interfaces/ModifiedBanking"
-import { WellPermitAssignment } from "../interfaces/WellPermit"
+import useSWR from "swr"
+import { ModifiedBankingSummary } from "../interfaces/ModifiedBanking"
 
 const fetcher = async (url: string, permitNumber: string, year: string) => {
   const res = await fetch(url + '?permitNumber=' + permitNumber + '&year=' + year)
@@ -12,12 +11,12 @@ const fetcher = async (url: string, permitNumber: string, year: string) => {
   return res.json()
 }
 
-const useDbb013Summary = (
+const useDbb004BankingSummary = (
   permitNumber: string | undefined,
   year: string | undefined
-): { data: ModifiedBankingSummary, mutate: KeyedMutator<any> } => {
-  const { data, mutate } = useSWR([
-      (permitNumber && year) ? `/api/v1/data-summary/dbb013-summary` : null,
+) => {
+  const { data, mutate } = useSWR<ModifiedBankingSummary>([
+      (permitNumber && year) ? `/api/v1/data-summary/dbb004-banking-summary` : null,
       permitNumber,
       year
     ],
@@ -30,4 +29,4 @@ const useDbb013Summary = (
   }
 }
 
-export default useDbb013Summary
+export default useDbb004BankingSummary

@@ -1,4 +1,4 @@
-import useDbb013Summary from "../../../hooks/useDbb013Summary"
+import useDbb004BankingSummary from "../../../hooks/useDbb004BankingSummary"
 import EditButton from "../../common/EditButton"
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
 }
 
 const ModifiedBankingSummary = ({ permitNumber, year }: Props) => {
-  const { data } = useDbb013Summary(permitNumber, year)
+  const { data } = useDbb004BankingSummary(permitNumber, year)
 
   return (
     <div className="relative">

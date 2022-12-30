@@ -4,7 +4,7 @@ import { PDFCheckBox, PDFDocument, PDFTextField, rgb, StandardFonts } from "pdf-
 import { convertToTableData, getForm } from ".."
 import { AgentInfo } from "../../../../../interfaces/AgentInfo"
 import MeterReading from "../../../../../interfaces/MeterReading"
-import { WellUsage } from "../../../../../interfaces/ModifiedBanking"
+import { ModifiedBankingSummary, WellUsage } from "../../../../../interfaces/ModifiedBanking"
 import { WellPermit } from "../../../../../interfaces/WellPermit"
 import faunaClient from "../../../../../lib/fauna/faunaClient"
 import getWellPermitRecord from "../../../../../lib/fauna/ts-queries/getWellPermitRecord"
@@ -14,6 +14,7 @@ import fields from "./dbb004-fields"
 
 const addDbb004 = async (
   data: MeterReading[], 
+  bankingSummary: ModifiedBankingSummary,
   agentInfo: AgentInfo, 
   wellUsage: WellUsage,
   permitNumber: string, 
@@ -44,6 +45,7 @@ const addDbb004 = async (
 
   const formData: any = {
     ...agentInfo,
+    ...bankingSummary,
     permitNumber: permitNumber,
     location: `${q40} 1/4 ${q160} 1/4 Sec ${section}, T ${township}, R ${range}`,
     owner: contactName,

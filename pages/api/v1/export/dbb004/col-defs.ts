@@ -45,7 +45,7 @@ const colDefs = (font: PDFFont): PDFColDef[] => [
     font: font
   },
   { 
-    field: 'readyBy', 
+    field: 'readBy', 
     title: 'Read By (init)',
     width: 29.5,
     font: font

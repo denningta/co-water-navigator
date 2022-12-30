@@ -2,6 +2,7 @@ import { Expr } from "faunadb";
 import { q } from "../faunaClient";
 import getLastMeterReadingPrevYear from "./getLastMeterReadingPrevYear";
 import getWellUsageQuery from "./getWellUsageQuery";
+import getDbb004BankingSummary from "./getDbb004BankingSummary";
 
 const getDataSummary = (permitNumbers: string[]) => 
   q.Reduce(
@@ -73,6 +74,7 @@ q.Let(
             )
           )
         ),
+        dbb004BankingSummary: getDbb004BankingSummary(permitNumber, q.Var('year')),
         dbb013Summary: q.Select(['data'], q.Map(
           q.Paginate(
             q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, q.Var('year')])

@@ -134,8 +134,6 @@ export const drawTable = (
       }
       showBorders && page.drawRectangle(cellBox)
 
-
-
       const cellValue = (data && data[rowIndex] && data[rowIndex][column.field] !== undefined) 
         ? data[rowIndex][column.field].toString() : ''
 

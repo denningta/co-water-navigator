@@ -55,7 +55,7 @@ const fields = (debug: boolean = false): Field[] => {
       }
     },
     {
-      name: 'allowedAnnualAppropriation',
+      name: 'allowedAppropriation',
       type: 'textField',
       box: {
         x: 675,

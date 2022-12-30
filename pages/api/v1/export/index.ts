@@ -9,6 +9,7 @@ import faunaClient from "../../../../lib/fauna/faunaClient";
 import getAgentInfo from "../../../../lib/fauna/ts-queries/getAgentInfo";
 import addDbb004 from "./dbb004/dbb004";
 import addDbb013 from "./dbb013/dbb013";
+import { DataSummary } from "../../../../hooks/useDataSummaryByPermit";
 
 export interface ExportData {
   fileType: 'pdf' | 'csv'
@@ -16,13 +17,7 @@ export interface ExportData {
     dbb004: boolean
     dbb013: boolean
   }
-  dataSelection: {
-    year: string
-    permitNumber: string
-    dbb004Summary: MeterReading[]
-    dbb013Summary: ModifiedBanking[]
-    wellUsage: WellUsage
-  }[]
+  dataSelection: DataSummary[]
   agentInfo: AgentInfo
 }
 
@@ -57,7 +52,7 @@ const createPdf = async ({ documents, dataSelection, agentInfo }: ExportData) =>
     dataSelection.map(async (el) => {
       if (documents.dbb004) {
         if (!el.dbb004Summary) return
-        const dbb004 = await addDbb004(el.dbb004Summary, agentInfo, el.wellUsage, el.permitNumber, el.year)
+        const dbb004 = await addDbb004(el.dbb004Summary, el.dbb004BankingSummary, agentInfo, el.wellUsage, el.permitNumber, el.year)
         await mergeDocuments(pdfDoc, dbb004)
       }
       if (documents.dbb013) {
