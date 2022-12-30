@@ -18,7 +18,7 @@ interface Props {
 
 const ExportComponent = ({ 
 }: Props) => {
-  const [dataSelection, setDataSelection] = useState<any[]>()
+  const [dataSelection, setDataSelection] = useState<any[]>([])
   const [documents, setDocuments] = useState({
     dbb004: false,
     dbb013: false
@@ -28,6 +28,7 @@ const ExportComponent = ({
   const { data, mutate } = useDataSummaryTotal()
   const gridRef = useRef(null)
   const { enqueueSnackbar } = useSnackbar()
+  const [exportDisabled, setExportDisabled] = useState(true)
 
   const handleGridReady = ({ api, columnApi }: GridReadyEvent) => {
     api.sizeColumnsToFit()
@@ -44,6 +45,10 @@ const ExportComponent = ({
   const handleDocumentsChange = (documents: DocumentSelectionObj) => {
     setDocuments(documents)
   }
+
+  useEffect(() => {
+    setExportDisabled(!((documents.dbb004 || documents.dbb013) && dataSelection.length))
+  }, [documents, dataSelection])
 
   const handleExport = async () => {
     try {
@@ -96,15 +101,20 @@ const ExportComponent = ({
           </div>
           <div className="flex grow justify-end items-end">
             <span>
-              <Button title="Export..." icon={<TiExport />} onClick={handleExport} />
+              <Button 
+                title="Export..." 
+                icon={<TiExport />} 
+                onClick={handleExport} 
+                disabled={exportDisabled} 
+              />
             </span>
           </div>
         </div>
-        <iframe 
+        {blobUrl && <iframe 
           src={blobUrl}
           itemType="application/pdf"
           className="w-full my-10 h-[1000px]"
-        ></iframe>
+        ></iframe>}
       </div>
   )
 }

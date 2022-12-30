@@ -11,6 +11,7 @@ interface Props {
   type?: 'button' | 'submit' | 'reset'
   color?: 'primary' | 'secondary'
   href?: string | undefined
+  disabled?: boolean
   onClick?: (e: MouseEvent) => void
 }
 
@@ -22,6 +23,7 @@ const Button = ({
   type = 'button',
   color = 'primary',
   href,
+  disabled = false,
   onClick = () => {}
 }: Props) => {
   const [Icon, setIcon] = useState<JSX.Element>()
@@ -49,9 +51,14 @@ const Button = ({
         transition ease-in-out
         ${isLoading && 'bg-gray-400 text-gray-200'}
       `}
-      style={{ pointerEvents: 'all' }}
+      style={{ 
+        pointerEvents: 'all',
+        backgroundColor: disabled ? 'gray' : '',
+        color: disabled ? 'white' : '',
+        cursor: disabled ? 'not-allowed' : ''
+      }}
       onClick={handleClick}
-      disabled={isLoading}
+      disabled={isLoading || disabled}
       type={type}
     >
       { !isLoading && Icon &&
