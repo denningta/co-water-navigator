@@ -11,6 +11,7 @@ import { AgGridReact } from "ag-grid-react"
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 import { useSnackbar } from "notistack"
+import QuickSearch from "../../common/QuickSearch"
 
 
 interface Props {
@@ -29,6 +30,7 @@ const ExportComponent = ({
   const gridRef = useRef(null)
   const { enqueueSnackbar } = useSnackbar()
   const [exportDisabled, setExportDisabled] = useState(true)
+  const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined)
 
   const handleGridReady = ({ api, columnApi }: GridReadyEvent) => {
     api.sizeColumnsToFit()
@@ -76,6 +78,7 @@ const ExportComponent = ({
       <div className="p-6">
         <div className="mb-6">
           <div className="text-xl font-bold mb-2">Select data to export</div>
+          <QuickSearch onChange={(value) => setQuickFilter(value)} />
           <div className="ag-theme-alpine" style={{ height: 300 }}>
             <AgGridReact
               ref={gridRef}
@@ -87,6 +90,7 @@ const ExportComponent = ({
               onGridReady={handleGridReady}
               rowSelection="multiple"
               onSelectionChanged={handleSelectionChanged}
+              quickFilterText={quickFilter}
             />
           </div>
         </div>
