@@ -14,6 +14,8 @@ import { useSnackbar } from "notistack";
 import { WellPermit } from "../../../interfaces/WellPermit";
 import TableFilters from "../../common/TableFilterSelect";
 import TableFilter from "./TableFilter";
+import TableActionButton from "../../common/TableActionButton";
+import { tailwindColors } from "../../../lib/tailwindcss/tailwindConfig";
 
 interface SearchTerm {
   term: string
@@ -146,23 +148,13 @@ const WellPermitSearch = () => {
         />
       </div>
 
-      <button 
+      <TableActionButton 
+        title="Add permits"
+        icon={<IoAdd />}
         onClick={handleAddPermits}
-        className={`flex items-center mb-4  rounded-lg py-3 drop-shadow w-fit transition ease-in-out ${(selectedRowNodes && selectedRowNodes.length) ? 'bg-green-600 text-white' : 'bg-slate-200 text-slate-400'}`}
-        disabled={!selectedRowNodes?.length}>
-        <span className="border-r border-slate-300 px-4 ">
-          { selectedRowNodes ? selectedRowNodes.length : 0 } selected
-        </span>
-          <div className="flex items-center justify-center px-4 w-[150px] ">
-              {!addPermitsLoading && 
-                <IoAdd className=" font-extrabold" size={20} />
-              }
-              {addPermitsLoading && 
-                <CircularProgress color="inherit" size={20} />
-              }
-            <span className="ml-1">Add permits</span>
-          </div>
-      </button>
+        numSelected={selectedRowNodes?.length}
+        color={tailwindColors['success']['600']}
+      /> 
       <WellPermitTable 
         defaultColDef={defaultColDef}
         columnDefs={wellPermitColumnDefs} 
