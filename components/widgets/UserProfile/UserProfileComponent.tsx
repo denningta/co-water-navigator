@@ -17,7 +17,7 @@ const UserProfileComponent = ({ user }: Props) => {
   return (
     <div>
       <div className="grid grid-cols-4">
-        <div className="col-span-1 flex flex-col items-center border-r">
+        <div className="col-span-4 md:col-span-1 flex flex-col items-center border-r">
           {user?.picture &&
             <Image
               src={user.picture}
@@ -35,7 +35,7 @@ const UserProfileComponent = ({ user }: Props) => {
           }
         </div>
 
-        <div className="col-span-3">
+        <div className="col-span-4 md:col-span-3">
           <>
             { user && user['coWaterExport/roles'] &&
               <div className="grow p-4 border-b">

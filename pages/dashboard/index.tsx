@@ -1,20 +1,18 @@
-import { Context, ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import AppLayout from '../../components/AppLayout'
 import { NextPageWithLayout } from '../_app'
-import { getServerSidePropsWrapper, getSession, UserProvider, useUser, withPageAuthRequired } from '@auth0/nextjs-auth0'
-import WellPermitTable from '../../components/widgets/DataTable/DataTable'
+import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0'
 import MainContent, { Widget } from '../../components/MainContent'
 import Header from '../../components/widgets/Header'
-import WellPermitsContainer from '../../components/widgets/WellPermitsAssignment/WellPermitsAssignment'
-import WellPermitSearch from '../../components/widgets/WellPermitSearch/WellPermitSearch'
 import PermitPreview from '../../components/widgets/PermitPreview'
 import AgentDetails from '../../components/widgets/AgentDetails'
-import { GetServerSideProps, NextApiRequest, NextApiResponse } from 'next'
-import { AppContext } from 'next/app'
 import WellPermitsAssignment from '../../components/widgets/WellPermitsAssignment/WellPermitsAssignment'
+import { tailwindBreakpoints } from '../../lib/tailwindcss/tailwindConfig'
+import useTailwindBreakpoints from '../../hooks/useTailwindBreakpoints'
 
 const Dashboard: NextPageWithLayout = () => {
   const { user } = useUser()
+  const breakpoint = useTailwindBreakpoints()
 
   const widgets: Widget[] = [
     { 
@@ -24,8 +22,14 @@ const Dashboard: NextPageWithLayout = () => {
       />, 
       colspan: 3
     },
-    { component: <PermitPreview />, colspan: 2 },
-    { component: <AgentDetails />, colspan: 1 },
+    { 
+      component: <PermitPreview />, 
+      colspan: breakpoint === 'sm' || breakpoint === 'md' ? 3 : 2 
+    },
+    { 
+      component: <AgentDetails />, 
+      colspan: breakpoint === 'sm' || breakpoint === 'md' ? 3 : 1 
+    },
     { component: <WellPermitsAssignment />, colspan: 3 }
   ]
 

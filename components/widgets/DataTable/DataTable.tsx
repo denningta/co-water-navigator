@@ -108,7 +108,7 @@ const DataTable = ({
         </AgGridReact>
       </div>
       <div 
-      className='border-t border-b border-gray-400 p-3 w-[40px] cursor-pointer'
+      className='border-t border-b border-gray-400 w-0 hidden md:block md:p-3 md:w-[40px] cursor-pointer'
       onClick={handleClick}>
         <button
           className="">

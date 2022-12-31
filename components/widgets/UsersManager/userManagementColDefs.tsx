@@ -12,7 +12,7 @@ const userManagementColDefs: ColDef[] = [
   {
     field: '',
     pinned: 'right',
-    width: 70,
+    minWidth: 60,
     cellRenderer: ActionsCellRenderer,
     cellStyle: { textAlign: 'center' },
     filter: false
@@ -20,15 +20,18 @@ const userManagementColDefs: ColDef[] = [
   {
     field: 'name',
     hide: false,
+    minWidth: 150,
     cellRenderer: NameCellRenderer
   },
   { 
     field: 'email',
+    minWidth: 150,
     hide: false
   },
   { 
     field: 'last_login',
     hide: false,
+    minWidth: 150,
     headerName: 'Last Login',
     valueFormatter: (params: ValueFormatterParams) => 
       params.value ? new Date(params.value).toDateString() : ''
@@ -40,6 +43,7 @@ const userManagementColDefs: ColDef[] = [
   },
   {
     field: 'roles',
+    minWidth: 150,
     cellRenderer: RolesCellRenderer
   },
   { 

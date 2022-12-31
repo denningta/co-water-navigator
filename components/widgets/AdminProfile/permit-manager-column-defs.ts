@@ -9,7 +9,8 @@ const wellPermitColumnDefs: ColDef[] = [
   {
     field: '',
     filter: false,
-    maxWidth: 55,
+    maxWidth: 55, 
+    minWidth: 55,
     pinned: true,
     suppressMovable: true,
     checkboxSelection: true
@@ -17,19 +18,19 @@ const wellPermitColumnDefs: ColDef[] = [
   {
     field: 'permit',
     hide: false,
-    initialWidth: 150
+    minWidth: 150
   },
   {
     field: 'status',
     headerName: 'Access',
     hide: false,
-    initialWidth: 150,
+    minWidth: 150,
     cellRenderer: AccessCellRenderer
   },
   {
     field: 'latestMeterReading',
     hide: false,
-    initialWidth: 150
+    minWidth: 150
   },
   {
     field: 'receipt',
@@ -37,6 +38,7 @@ const wellPermitColumnDefs: ColDef[] = [
   },
   {
     field: 'contactName',
+    minWidth: 150,
     hide: false
   },
   {

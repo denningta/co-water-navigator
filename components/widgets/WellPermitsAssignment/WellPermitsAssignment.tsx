@@ -31,7 +31,7 @@ const WellPermitsAssignment = () => {
       <QuickSearch onChange={handleChange}/>
 
       <div className="flex overflow-hidden">
-        <div className="w-full mr-4">
+        <div className="w-full">
           <DataTable 
             defaultColDef={defaultColDef}
             columnDefs={wellPermitColumnDefs} 

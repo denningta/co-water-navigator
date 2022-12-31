@@ -90,13 +90,14 @@ const WellPermitsManager = ({ user }: Props) => {
 
   return (
     <div>
-      <div className='flex'>
+      <div className='flex flex-col md:flex-row mb-4'>
         <TableActionButton 
           title="Approve" 
           icon={<BsCheckCircleFill />}
           numSelected={selectedRowNodes.length}
           onClick={handleApproveAccess}
           color={tailwindColors['success']['600']}
+          className="mb-2"
         />
         <TableActionButton 
           title="Reject" 
@@ -104,6 +105,7 @@ const WellPermitsManager = ({ user }: Props) => {
           numSelected={selectedRowNodes.length}
           onClick={handleRejectAccess}
           color={tailwindColors['error']['500']}
+          className="mb-2"
         />
         <TableActionButton 
           title="Delete" 
@@ -111,6 +113,7 @@ const WellPermitsManager = ({ user }: Props) => {
           numSelected={selectedRowNodes.length}
           onClick={handleDeleteRequest}
           color={"gray"}
+          className="mb-2"
         />
       </div>
 

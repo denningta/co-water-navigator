@@ -58,13 +58,13 @@ const formData = {
   state: {
     value: '',
     title: 'State',
-    colspan: 1,
+    colspan: 2,
     placeholder: ''
   },
   zip: {
     value: '',
     title: 'Postal Code',
-    colspan: 1,
+    colspan: 2,
     placeholder: ''
   },
 }

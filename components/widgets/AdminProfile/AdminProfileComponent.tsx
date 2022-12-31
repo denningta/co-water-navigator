@@ -21,7 +21,7 @@ const AdminProfileComponent = ({ user }: Props) => {
 
   return (
     <div className="grid grid-cols-4">
-      <div className="col-span-1 flex flex-col items-center border-r">
+      <div className="col-span-4 md:col-span-1 flex flex-col items-center border-r">
         {user?.picture &&
           <Image
             src={user.picture}
@@ -114,12 +114,12 @@ const AdminProfileComponent = ({ user }: Props) => {
         </div>
       </div>
 
-      <div className="flex flex-col col-span-3">
-        <div className="grow p-4 border-b">
+      <div className="flex flex-col col-span-4 md:col-span-3">
+        <div className="grow px-2 py-4 md:py-4 md:px-4 border-b">
           <div className="text-xl font-semibold mb-4">Roles</div>
           <RolesManager user={user} assignedRoles={user?.roles} />
         </div>
-        <div className="grow p-4">
+        <div className="grow mt-4">
           <div className="text-xl font-semibold mb-4">Well Permits</div>
           <WellPermitsManager user={user} />
         </div>

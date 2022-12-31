@@ -43,7 +43,7 @@ const PermitPreview = () => {
   }
 
   return (
-    <div className="">
+    <div className="overflow-x-auto">
       <Tabs value={range} onChange={handleChange}>
         <Tab label="1Y" value={1} disableRipple />
         <Tab label="2Y" value={2} disableRipple />

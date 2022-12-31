@@ -5,22 +5,27 @@ import Image from 'next/image'
 import NavButton from "./NavButton"
 import { useUser } from "@auth0/nextjs-auth0"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import LogoutButton from "./common/LogoutButton"
 import { TiExport } from "react-icons/ti"
+import useTailwindBreakpoints from "../hooks/useTailwindBreakpoints"
 
 const Toolbar = () => {
   const { user, error, isLoading } = useUser()
+  const breakpoint = useTailwindBreakpoints()
   const [ collapsed, setCollapsed ] = useState(true)
-  const duration = '100ms'
   const admin = user && (user['coWaterExport/roles'] as string[]).includes('admin')
+
+  useEffect(() => {
+    if (breakpoint === 'sm') setCollapsed(false)
+  }, [breakpoint])
 
   const handleMouseEnter = () => {
     setCollapsed(false)
   }
 
   const handleMouseLeave = () => {
-    setCollapsed(true)
+    setCollapsed(breakpoint === 'sm' ? false : true)
   }
   
   return (
@@ -32,9 +37,9 @@ const Toolbar = () => {
         h-full 
         transition-all ease-in-out 
         duration-100
-        ${collapsed ? 'w-[75px]' : 'w-[150px] px-4'}
+        w-[150px]
+        ${collapsed ? 'md:w-[75px]' : 'md:w-[150px] px-4'}
       `}
-      style={{ transitionDuration: duration }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

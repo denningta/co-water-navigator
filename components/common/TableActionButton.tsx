@@ -10,6 +10,7 @@ interface Props {
   numSelected?: number
   title?: string
   color?: string
+  className?: string
 }
 
 const TableActionButton = ({ 
@@ -18,7 +19,8 @@ const TableActionButton = ({
   numSelected = 0, 
   icon, 
   color,
-  onClick = () => {} 
+  onClick = () => {},
+  className = ''
 }: Props) => {
   const [bgColor, setBgColor] = useState<string | undefined>(tailwindColors['primary']['500'])
 
@@ -34,8 +36,9 @@ const TableActionButton = ({
     <button
       onClick={handleClick}
       className={`
+        ${className}
         w-fit
-        ml-4 mb-4 py-3
+        py-2
         rounded-lg
         drop-shadow
         flex items-center

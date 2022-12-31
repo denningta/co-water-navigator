@@ -13,7 +13,7 @@ const wellPermitColumnDefs: ColDef[] = [
   {
     field: '',
     filter: false,
-    width: 70,
+    minWidth: 70,
     pinned: 'right',
     suppressMovable: true,
     resizable: false,
@@ -24,27 +24,27 @@ const wellPermitColumnDefs: ColDef[] = [
   {
     field: 'permit',
     hide: false,
-    initialWidth: 120,
+    minWidth: 120,
     cellRenderer: PermitCellRenderer
   },
   {
     field: 'status',
     headerName: 'Access',
     hide: false,
-    initialWidth: 120,
+    minWidth: 120,
     cellRenderer: AccessCellRenderer
   },
   {
     field: 'Meter Reading Summary',
     hide: false,
-    initialWidth: 300,
+    minWidth: 300,
     cellRenderer: HeatmapCellRenderer,
     // headerComponent: HeatmapHeaderRenderer
   },
   {
     field: 'latestMeterReading',
     hide: false,
-    initialWidth: 150,
+    minWidth: 150,
   },
   {
     field: 'receipt',
