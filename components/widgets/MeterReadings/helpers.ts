@@ -56,7 +56,7 @@ export function calculatedValueSetter(
 
 export function getCellClassRules(field: string) {
   return {
-    'bg-orange-500 bg-opacity-25': ({ value, data }: CellClassParams) => {
+    'bg-warning-500 bg-opacity-25': ({ value, data }: CellClassParams) => {
       if (value === undefined) return false;
       return data[field].calculationState === 'warning' && !data.comments;
     },
@@ -64,7 +64,7 @@ export function getCellClassRules(field: string) {
       return !colDef.editable
     },
     // global style in style.scss
-    'bg-emerald-500 bg-opacity-30': ({ value, data }: CellClassParams) => {
+    'bg-success-500 bg-opacity-30': ({ value, data }: CellClassParams) => {
       if (!value) return false;
       return data[field].calculationState === 'warning' && data.comments
     }

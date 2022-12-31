@@ -5,8 +5,8 @@ import { GrStatusGoodSmall } from 'react-icons/gr'
 
 const AccessCellRenderer = (props: ICellRendererParams) => {
   let className = 'bg-violet-300 text-violet-700'
-  if (props.value === 'approved') className = 'bg-emerald-300 text-emerald-700'
-  if (props.value === 'rejected') className = 'bg-rose-300 text-rose-700'
+  if (props.value === 'approved') className = 'bg-success-300 text-success-700'
+  if (props.value === 'rejected') className = 'bg-error-300 text-error-700'
 
   const cellValue = props.value 
     ? props.value.charAt(0).toUpperCase() + props.value.slice(1)

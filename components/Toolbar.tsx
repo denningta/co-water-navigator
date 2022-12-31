@@ -27,7 +27,7 @@ const Toolbar = () => {
     <div 
       className={`
         flex flex-col items-center 
-        bg-black drop-shadow-lg 
+        bg-dark drop-shadow-lg 
         text-white 
         h-full 
         transition-all ease-in-out 

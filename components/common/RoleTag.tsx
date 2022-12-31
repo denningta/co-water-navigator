@@ -7,8 +7,8 @@ interface Props {
 }
 
 const RoleTag = ({ role, editable = false }: Props) => {
-  let color = 'bg-emerald-200 text-emerald-800'
-  if (role.name === 'admin') color = 'bg-rose-200 text-rose-800'
+  let color = 'bg-success-200 text-success-700'
+  if (role.name === 'admin') color = 'bg-error-200 text-error-700'
 
   return (
     <span  className={`select-none mr-2 px-3 py-1 rounded font-semibold ${color}`}>

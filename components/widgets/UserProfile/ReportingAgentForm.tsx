@@ -113,7 +113,7 @@ const ReportingAgentForm = () => {
                 <Field
                   id={formKey}
                   name={formKey}
-                  className="bg-gray-100 outline-primary border border-gray-300 py-2 px-3 rounded"
+                  className="bg-gray-100 outline-primary-500 border border-gray-300 py-2 px-3 rounded"
                   placeholder={formData[formKey].placeholder}
                 />
               </div>

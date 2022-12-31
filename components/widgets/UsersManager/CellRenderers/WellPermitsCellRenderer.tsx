@@ -38,21 +38,21 @@ const WellPermitsCellRenderer = (params: ICellRendererParams) => {
         }
         {approved && approved.length > 0 &&
         <Tooltip title={getPermitNumbers(approved)} arrow={true}>
-          <span className="ml-2 px-3 py-1 bg-emerald-200 text-emerald-700 rounded font-semibold">
+          <span className="ml-2 px-3 py-1 bg-success-200 text-success-700 rounded font-semibold">
             {approved.length} approved
           </span>
         </Tooltip>
         }
         {rejected && rejected.length > 0 &&
           <Tooltip title={getPermitNumbers(rejected)} arrow={true}>
-            <span className="ml-2 px-3 py-1 bg-rose-200 text-rose-700 rounded font-semibold">
+            <span className="ml-2 px-3 py-1 bg-error-200 text-error-700 rounded font-semibold">
               {rejected.length} rejected
             </span>
           </Tooltip>
         }
       </>}
       {!data && 
-        <span className=" px-16 rounded-full bg-gradient-to-r from-primary via-white to-primary bg-opacity-10 background-animate text-white">
+        <span className=" px-16 rounded-full bg-gradient-to-r from-primary-500 via-white to-primary-500 bg-opacity-10 background-animate text-white">
           loading . . .
         </span>
       }

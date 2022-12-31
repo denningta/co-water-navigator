@@ -133,7 +133,7 @@ const Rectangle = ({ bin, href, tooltipComponent }: RectangleProps) => {
     >
       <rect
         key={`heatmap-rect-${bin.row}-${bin.column}`}
-        className="hover:stroke-2 hover:stroke-primary drop-shadow cursor-pointer"
+        className="hover:stroke-2 hover:stroke-primary-500 drop-shadow cursor-pointer"
         width={bin.width}
         height={bin.height}
         x={bin.x}

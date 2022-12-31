@@ -52,7 +52,7 @@ const RbCheckedIcon = ({ hover }: RbCheckedIconProps) => {
           w-[13px]
           rounded-full
           tranisition ease-in-out
-          ${hover ? 'bg-sky-600' : 'bg-primary'}
+          ${hover ? 'bg-sky-600' : 'bg-primary-500'}
         `}
       />
     </span>

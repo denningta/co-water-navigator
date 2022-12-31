@@ -11,6 +11,8 @@ import CircularProgressWithLabel from "../../common/CircularProgressWithLabel"
 import useHeatmapSummary from "../../../hooks/useHeatmapSummary"
 import Link from "next/link"
 import CustomHeatmap, { CustomBinDatum, HeatmapConfig } from "../../common/visx_custom/Heatmap"
+import tailwindCss, { tailwindColors } from "../../../lib/tailwindcss/tailwindConfig"
+import { KeyValuePair } from "tailwindcss/types/config"
 
 const HeatmapCellRenderer = (params: ICellRendererParams) => {
   const { data, mutate } = useHeatmapSummary(params.data.permit)
@@ -18,7 +20,6 @@ const HeatmapCellRenderer = (params: ICellRendererParams) => {
   const currYear = new Date().getFullYear()
   let binData: CustomBinDatum[] = []
 
-  useMemo(() => {
     for (let year = currYear - 10; year <= currYear; year++) {
       binData.push(
         {
@@ -34,14 +35,12 @@ const HeatmapCellRenderer = (params: ICellRendererParams) => {
       )
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currYear, data, params.data.permit])
-
 
   const heatmapConfig: HeatmapConfig = {
     width: 400,
     height: 41,
     color1: '#9ca3af',
-    color2: '#22c55e',
+    color2: tailwindColors['success']['500'],
     xDomain: [0, 11],
     yDomain: [0, 1],
     colorDomain: [0, 24],
@@ -107,7 +106,7 @@ const Rectangle = ({ bin, permit }: RectangleProps) => {
       >
         <rect
           key={`heatmap-rect-${bin.row}-${bin.column}`}
-          className="hover:stroke-2 hover:stroke-primary drop-shadow cursor-pointer"
+          className="hover:stroke-2 hover:stroke-primary-500 drop-shadow cursor-pointer"
           width={bin.width}
           height={bin.height}
           x={bin.x}

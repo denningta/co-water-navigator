@@ -108,7 +108,7 @@ const Cell = forwardRef((
       <div
         ref={cellRef}
         onClick={handleClick}
-        className={`h-[38px] w-full bg-white hover:bg-primary hover:bg-opacity-10 ${focus ? 'outline outline-primary' : 'outline-none'} ${editing ? 'drop-shadow-lg' : 'drop-shadow-none'}`}>
+        className={`h-[38px] w-full bg-white hover:bg-primary-500 hover:bg-opacity-10 ${focus ? 'outline outline-primary-500' : 'outline-none'} ${editing ? 'drop-shadow-lg' : 'drop-shadow-none'}`}>
         { !editing &&
           <div className={`w-full h-full px-3 flex items-center select-none ${className}`}>
             { cellRendererComponent({ value: newValue }) ?? newValue }

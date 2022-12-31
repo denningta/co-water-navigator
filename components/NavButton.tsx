@@ -29,10 +29,10 @@ const NavButton = ({
         <div
           onMouseEnter={() => setHoverState(true)}
           onMouseLeave={() => setHoverState(false)}
-          className="flex flex-col w-full items-center justify-center hover:bg-primary hover:bg-opacity-20   transition ease-in-out p-3 rounded-lg cursor-pointer mb-4 h-[70px]"
+          className="flex flex-col w-full items-center justify-center hover:bg-primary-500 hover:bg-opacity-20   transition ease-in-out p-3 rounded-lg cursor-pointer mb-4 h-[70px]"
         >
-          { isActive && <div className='absolute right-0 w-[6px] h-[15px] bg-primary rounded-l'></div> }
-          <div className={`flex items-center text-2xl transition ease-in-out ${hover ? 'text-primary' : 'text-gray-400'}`}>
+          { isActive && <div className='absolute right-0 w-[6px] h-[15px] bg-primary-500 rounded-l'></div> }
+          <div className={`flex items-center text-2xl transition ease-in-out ${hover ? 'text-primary-500' : 'text-gray-400'}`}>
             { children || <IoHome /> }
           </div>
           <div 

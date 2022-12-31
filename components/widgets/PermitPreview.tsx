@@ -59,7 +59,7 @@ const PermitPreview = () => {
             </div>
           }
           { data && !data.length &&
-              <div className="absolute top-0 left-0 h-full w-full flex flex-col items-center justify-center bg-black bg-opacity-5 backdrop-blur-sm">
+              <div className="absolute top-0 left-0 h-full w-full flex flex-col items-center justify-center bg-dark bg-opacity-5 backdrop-blur-sm">
                 <div className='text-sm mb-3'>You have not requested access to any well permits</div>
                 <Button title="Add well permits" icon={<BiPlus />} onClick={handleClick} />
             </div>

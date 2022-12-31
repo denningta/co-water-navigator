@@ -14,6 +14,7 @@ import TableActionButton from '../../common/TableActionButton'
 import { useSnackbar } from 'notistack'
 import useSWR, { useSWRConfig } from 'swr'
 import useWellPermitsByUser from '../../../hooks/useWellPermitsByUser'
+import { tailwindColors } from '../../../lib/tailwindcss/tailwindConfig'
 
 interface Props {
   user: UserManagement | undefined
@@ -95,21 +96,21 @@ const WellPermitsManager = ({ user }: Props) => {
           icon={<BsCheckCircleFill />}
           numSelected={selectedRowNodes.length}
           onClick={handleApproveAccess}
-          color="limegreen"
+          color={tailwindColors['success']['600']}
         />
         <TableActionButton 
           title="Reject" 
           icon={<BsXCircleFill />}
           numSelected={selectedRowNodes.length}
           onClick={handleRejectAccess}
-          color="crimson"
+          color={tailwindColors['error']['500']}
         />
         <TableActionButton 
           title="Delete" 
           icon={<FaTrashAlt />}
           numSelected={selectedRowNodes.length}
           onClick={handleDeleteRequest}
-          color="gray"
+          color={"gray"}
         />
       </div>
 

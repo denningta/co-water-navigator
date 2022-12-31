@@ -47,7 +47,7 @@ const Checkbox = ({
         className={`w-[20px] h-[20px] border border-gray-300 rounded overflow-clip transition ease-in-out ${hover && 'bg-gray-100'}`
         }
       >
-        { check && <div className={`flex items-center justify-center text-white w-full h-full transition ease-in-out bg-primary p-1 ${hover && 'bg-sky-600'}`}>
+        { check && <div className={`flex items-center justify-center text-white w-full h-full transition ease-in-out bg-primary-500 p-1 ${hover && 'bg-sky-600'}`}>
           <FaCheck />
         </div> }
       </div>

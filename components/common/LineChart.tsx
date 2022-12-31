@@ -197,7 +197,7 @@ const LineChart = ({
                   onMouseLeave={handleLegendLeave}
                 >
                   <div
-                    className='w-[8px] h-[8px] rounded-full bg-black'
+                    className='w-[8px] h-[8px] rounded-full bg-dark'
                     style={{ backgroundColor: label.value }}
                   />
                   <div className='ml-3'>{label.datum}</div>

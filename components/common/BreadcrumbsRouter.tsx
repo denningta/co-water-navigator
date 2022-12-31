@@ -25,6 +25,7 @@ const BreadcrumbsRouter = () => {
             } else {
               return (
                 <Link key={i} 
+                  className="text-primary-600"
                   href={i === 0 ? '/' : path.slice(0, i+1).join('/')} 
                   underline="hover"
                 >

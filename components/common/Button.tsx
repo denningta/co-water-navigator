@@ -42,7 +42,7 @@ const Button = ({
   return (
     <button 
       className={`
-        ${color === 'primary' && 'bg-primary text-white hover:bg-sky-600' }
+        ${color === 'primary' && 'bg-primary-500 text-white hover:bg-sky-600' }
         ${color === 'secondary' && 'bg-gray-100 text-gray-600 hover:bg-gray-300'}
         px-3 py-2 
         rounded

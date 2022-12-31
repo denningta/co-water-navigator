@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { IconType } from "react-icons"
 import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs"
+import { tailwindColors } from "../../lib/tailwindcss/tailwindConfig"
 
 interface Props {
   disabled?: boolean
@@ -16,10 +17,10 @@ const TableActionButton = ({
   disabled = false, 
   numSelected = 0, 
   icon, 
-  color = 'primary',
+  color,
   onClick = () => {} 
 }: Props) => {
-  const [bgColor, setBgColor] = useState('#30BCED')
+  const [bgColor, setBgColor] = useState<string | undefined>(tailwindColors['primary']['500'])
 
   const handleClick = () => {
     onClick()
@@ -39,11 +40,10 @@ const TableActionButton = ({
         drop-shadow
         flex items-center
         transition ease-in-out
-
       `}
       style={{ 
-        backgroundColor: (numSelected > 0) ? bgColor : 'rgb(226 232 240)',
-        color: (numSelected > 0 ? 'white' : 'rgb(71 85 105)')
+        backgroundColor: (numSelected > 0) ? bgColor : tailwindColors['disabled'],
+        color: tailwindColors['light']
       }}
       disabled={numSelected <= 0}
     >

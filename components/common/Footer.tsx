@@ -27,10 +27,10 @@ const Footer = ({ permitNumber, loading }: Props) => {
         </div>
         <div className="flex items-center justify-center">
           { loading === false  &&
-            <span className="bg-emerald-200 text-emerald-800 px-3 py-1 rounded">Saved</span>
+            <span className="bg-success-200 text-success-700 px-3 py-1 rounded">Saved</span>
           }
           { loading === true &&
-            <div className="text-primary">
+            <div className="text-primary-500">
               <CircularProgress color="inherit" />
             </div>
           }

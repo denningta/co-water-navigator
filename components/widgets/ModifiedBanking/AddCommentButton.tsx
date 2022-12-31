@@ -70,7 +70,7 @@ const AddCommentButton = ({ comments = [], onCommentsChange = () => {} }: Props)
           <BiCommentAdd />
         </div>
         { commentsList.length > 0 &&
-          <div className="absolute top-0 left-3 h-4 w-4 bg-primary rounded-full text-white text-xs font-bold flex items-center justify-center">
+          <div className="absolute top-0 left-3 h-4 w-4 bg-primary-500 rounded-full text-white text-xs font-bold flex items-center justify-center">
             { commentsList.length }
           </div>
         }
@@ -81,7 +81,7 @@ const AddCommentButton = ({ comments = [], onCommentsChange = () => {} }: Props)
             <div className="max-h-[200px] overflow-y-auto">
               <ol>
                 {commentsList.map((comment, i) =>
-                  <div key={i} className="flex hover:bg-primary hover:bg-opacity-10">
+                  <div key={i} className="flex hover:bg-primary-500 hover:bg-opacity-10">
                     <li className="grow px-2 py-1 rounded" >{ comment }</li>
                     <button onClick={(e) => handleDeleteComment(e, i)}
                       className="px-1">
@@ -102,7 +102,7 @@ const AddCommentButton = ({ comments = [], onCommentsChange = () => {} }: Props)
                 </textarea>
                 <div
                   onClick={() => handleNewComment(newComment)}
-                  className="flex items-center justify-center text-white text-xl bg-primary -ml-4 w-[40px] cursor-pointer">
+                  className="flex items-center justify-center text-white text-xl bg-primary-500 -ml-4 w-[40px] cursor-pointer">
                     <IoIosSend />
                 </div>
             </div>

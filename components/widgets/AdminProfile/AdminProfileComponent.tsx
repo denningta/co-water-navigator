@@ -38,8 +38,8 @@ const AdminProfileComponent = ({ user }: Props) => {
           user?.email &&
           <div className="text-gray-500 flex items-center">
             {user.email_verified && 
-              <Tooltip title="email verified">
-                <span className="mr-2 text-emerald-500"><BsCheckCircleFill /></span>
+              <Tooltip title="Verified email">
+                <span className="mr-2 text-success-600"><BsCheckCircleFill /></span>
               </Tooltip>
             } 
             {!user.email_verified && 
