@@ -41,7 +41,6 @@ export const useDataSummaryTotal = () => {
     fetcher
   )
 
-  console.log(data)
   return {
     data: data,
     mutate: mutate

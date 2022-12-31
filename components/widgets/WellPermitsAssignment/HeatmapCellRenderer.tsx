@@ -6,32 +6,36 @@ import { Bins } from "@visx/mock-data/lib/generators/genBins"
 import { Group } from "@visx/group"
 import { RectCell } from "@visx/heatmap/lib/heatmaps/HeatmapRect"
 import { styled, Tooltip, tooltipClasses, TooltipProps } from "@mui/material"
-import React, { forwardRef } from "react"
+import React, { forwardRef, useMemo } from "react"
 import CircularProgressWithLabel from "../../common/CircularProgressWithLabel"
 import useHeatmapSummary from "../../../hooks/useHeatmapSummary"
 import Link from "next/link"
-import CustomHeatmap, { HeatmapConfig } from "../../common/visx_custom/Heatmap"
+import CustomHeatmap, { CustomBinDatum, HeatmapConfig } from "../../common/visx_custom/Heatmap"
 
 const HeatmapCellRenderer = (params: ICellRendererParams) => {
   const { data, mutate } = useHeatmapSummary(params.data.permit)
 
   const currYear = new Date().getFullYear()
-  let binData = []
+  let binData: CustomBinDatum[] = []
 
-  for (let year = currYear - 10; year <= currYear; year++) {
-    binData.push(
-      {
-        bin: year,
-        bins: [
-          {
-            bin: 0,
-            count: (data && data.find(el => el.year === year.toString())?.percentComplete) ?? 0
-          },
-        ],
-        href: `/well-permits/${params.data.permit}/${year}`
-      },
-    )
-  }
+  useMemo(() => {
+    for (let year = currYear - 10; year <= currYear; year++) {
+      binData.push(
+        {
+          bin: year,
+          bins: [
+            {
+              bin: 0,
+              count: (data && data.find(el => el.year === year.toString())?.percentComplete) ?? 0
+            },
+          ],
+          href: `/well-permits/${params.data.permit}/${year}`
+        },
+      )
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currYear, data, params.data.permit])
+
 
   const heatmapConfig: HeatmapConfig = {
     width: 400,

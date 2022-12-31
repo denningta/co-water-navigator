@@ -39,7 +39,7 @@ const wellPermitColumnDefs: ColDef[] = [
     hide: false,
     initialWidth: 300,
     cellRenderer: HeatmapCellRenderer,
-    headerComponent: HeatmapHeaderRenderer
+    // headerComponent: HeatmapHeaderRenderer
   },
   {
     field: 'latestMeterReading',
