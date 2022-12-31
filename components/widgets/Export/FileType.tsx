@@ -30,9 +30,9 @@ const FileType = ({
           label=".pdf" 
         />
         <FormControlLabel 
-          value="csv" 
+          value="json" 
           control={<Radio disableRipple={true} disableFocusRipple={true} />} 
-          label=".csv" 
+          label=".json" 
         />
       </RadioGroup>
     </>

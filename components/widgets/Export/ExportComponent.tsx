@@ -4,14 +4,15 @@ import { exportColDefs, exportDefaultColDefs } from "./exportColDefs"
 import React, { useEffect, useRef, useState } from "react"
 import FileType from "./FileType"
 import DocumentSelection, { DocumentSelectionObj } from "./DocumentSelection"
-import { GridReadyEvent, SelectionChangedEvent } from "ag-grid-community"
+import { ColumnApi, GridApi, GridReadyEvent, SelectionChangedEvent } from "ag-grid-community"
 import axios from "axios"
-import { useDataSummaryTotal } from "../../../hooks/useDataSummaryByPermit"
+import { DataSummary, useDataSummaryTotal } from "../../../hooks/useDataSummaryByPermit"
 import { AgGridReact } from "ag-grid-react"
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 import { useSnackbar } from "notistack"
 import QuickSearch from "../../common/QuickSearch"
+import { ApiError } from "next/dist/server/api-utils"
 
 
 interface Props {
@@ -19,7 +20,7 @@ interface Props {
 
 const ExportComponent = ({ 
 }: Props) => {
-  const [dataSelection, setDataSelection] = useState<any[]>([])
+  const [dataSelection, setDataSelection] = useState<DataSummary[]>([])
   const [documents, setDocuments] = useState({
     dbb004: false,
     dbb013: false
@@ -27,12 +28,19 @@ const ExportComponent = ({
   const [fileType, setFileType] = useState('pdf')
   const [blobUrl, setBlobUrl] = useState<string | undefined>(undefined)
   const { data, mutate } = useDataSummaryTotal()
-  const gridRef = useRef(null)
   const { enqueueSnackbar } = useSnackbar()
   const [exportDisabled, setExportDisabled] = useState(true)
   const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined)
+  const gridRef = useRef<AgGridReact>(null);
+  const [gridApi, setGridApi] = useState<GridApi | null>(null)
+  const [columnApi, setColumnApi] = useState<ColumnApi | null>(null)
 
   const handleGridReady = ({ api, columnApi }: GridReadyEvent) => {
+    api.sizeColumnsToFit()
+    if (!gridRef.current) return
+    if (api == null || columnApi == null) return
+    setGridApi(api)
+    setColumnApi(columnApi)
     api.sizeColumnsToFit()
   }
 
@@ -48,23 +56,35 @@ const ExportComponent = ({
     setDocuments(documents)
   }
 
+  const exportJson = () => {
+    const json = JSON.stringify(dataSelection, null, 2);
+    const file = new Blob([json], { type: 'text/json' })
+    const url = URL.createObjectURL(file)
+    window.open(url, '_blank')?.focus()
+    URL.revokeObjectURL(url)
+  }
+
   useEffect(() => {
     setExportDisabled(!((documents.dbb004 || documents.dbb013) && dataSelection.length))
   }, [documents, dataSelection])
 
   const handleExport = async () => {
-    try {
-      const res = await axios.post(
-        '/api/v1/export',
-        {
-          fileType: fileType,
-          documents: documents,
-          dataSelection: dataSelection
-        }
-      )
-      renderInIframe(new Uint8Array(JSON.parse(res.data)))
-    } catch (error: any) {
-      enqueueSnackbar('Something went wrong, please try again.', { variant: 'error' })
+    if (fileType === 'pdf') {
+      try {
+        const res = await axios.post(
+          '/api/v1/export',
+          {
+            fileType: fileType,
+            documents: documents,
+            dataSelection: dataSelection
+          }
+        )
+        renderInIframe(new Uint8Array(JSON.parse(res.data)))
+      } catch (error: any) {
+        enqueueSnackbar('Something went wrong, please try again.', { variant: 'error' })
+      }
+    } else if (fileType === 'json') {
+      exportJson()
     }
   }
 
