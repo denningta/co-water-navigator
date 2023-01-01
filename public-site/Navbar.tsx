@@ -12,13 +12,13 @@ const Navbar = () => {
   }
 
   return (
-    <div className="flex items-center p-2 px-7 h-[60px]">
+    <div className="flex items-center justify-center sm:justify-start p-2 px-7 h-[60px]">
       <div className="text-5xl bg-slate-100 p-2 rounded-full drop-shadow"><GiWaterSplash size={35} /></div>
-      <div className="text-2xl ml-4 font-bold">Colorado Water Export</div>
-      <div className="grow"></div>
-      <div className="flex">
+      <div className="text-xl sm:text-2xl ml-4 font-bold">Colorado Water Export</div>
+      <div className="md:grow"></div>
+      <div className="hidden md:flex">
         <div className="mr-4"><Button title="Sign up" onClick={handleLogin} /></div>
-        <div><Button title="Log in" color="secondary" onClick={handleLogin} /></div>
+        <div className="" ><Button title="Log in" color="secondary" onClick={handleLogin} /></div>
       </div>
     </div>
   )

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { tailwindBreakpoints } from "../lib/tailwindcss/tailwindConfig"
 
 const useTailwindBreakpoints = () => {
-  const [breakpoint, setBreakpoint] = useState('sm')
+  const [breakpoint, setBreakpoint] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     window.addEventListener('resize', handleResize)
@@ -21,7 +21,7 @@ const useTailwindBreakpoints = () => {
 
   useEffect(() => {
     determineBreakpoint()
-  }, [])
+  })
 
   const handleResize = () => {
     determineBreakpoint()

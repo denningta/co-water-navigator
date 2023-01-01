@@ -24,20 +24,22 @@ const wellPermitColumnDefs: ColDef[] = [
   {
     field: 'permit',
     hide: false,
-    minWidth: 120,
+    minWidth: 90,
+    maxWidth: 150,
     cellRenderer: PermitCellRenderer
   },
   {
     field: 'status',
     headerName: 'Access',
     hide: false,
-    minWidth: 120,
+    minWidth: 130,
+    maxWidth: 150,
     cellRenderer: AccessCellRenderer
   },
   {
     field: 'Meter Reading Summary',
     hide: false,
-    minWidth: 300,
+    minWidth: 410,
     cellRenderer: HeatmapCellRenderer,
     // headerComponent: HeatmapHeaderRenderer
   },

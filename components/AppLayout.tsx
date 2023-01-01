@@ -2,7 +2,7 @@ import { UserProvider } from "@auth0/nextjs-auth0"
 import Toolbar from "./Toolbar"
 import useTailwindBreakpoints from "../hooks/useTailwindBreakpoints"
 import { IoIosMenu } from "react-icons/io"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import useFocus from "../hooks/useFocus"
 
 interface Props {
@@ -12,6 +12,14 @@ interface Props {
 const AppLayout = ({ children }: Props) => {
   const breakpoint = useTailwindBreakpoints()
   const [hideToolbar, setHideToolbar] = useState(true)
+
+  
+  useEffect(() => {
+    if (!breakpoint) return
+    console.log(breakpoint, hideToolbar)
+    if (breakpoint !== 'sm') setHideToolbar(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [breakpoint])
 
   const toggleToolbar = () => {
     setHideToolbar(!hideToolbar)
@@ -48,7 +56,7 @@ const AppLayout = ({ children }: Props) => {
             onClick={() => setHideToolbar(true)}
           /> 
         }
-        <main className="md:ml-[75px] w-full md:px-8 md:py-6">
+        <main className="md:ml-[75px] md:px-8 md:py-6">
           { children }
         </main>
       </div>

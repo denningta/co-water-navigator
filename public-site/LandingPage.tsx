@@ -16,9 +16,9 @@ const LandingPage = () => {
     <div className="max-w-primary-col mx-auto">
 
       <div className="w-full h-[300px] flex justify-center items-center">
-        <div className="flex flex-col items-center">
-          <div className="text-5xl font-bold mb-2">Smart Well Management</div>
-          <div className="text-xl mb-6">Store, manage, analyze, and export ground well data.</div>
+        <div className="flex flex-col items-center px-2">
+          <div className="text-5xl font-bold mb-2 text-center">Smart Well Management</div>
+          <div className="text-xl mb-6 text-center">Store, manage, analyze, and export ground well data.</div>
           <div className="flex">
             <div className="mr-4"><Button title="Get started" onClick={handleLogin} /></div>
             <div><Button title="Log in" color="secondary" onClick={handleLogin} /></div>
@@ -26,8 +26,8 @@ const LandingPage = () => {
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-2">
-        <div className="grow p-6 flex justify-center">
+      <div className="w-full grid md:grid-cols-2">
+        <div className="grow p-6 flex justify-center order-last md:order-first">
           <div className='max-w-[600px] p-2 bg-white rounded drop-shadow-lg'> 
             <Image src={meterReadingsPhoto} alt="Meter readings photo" ></Image>
           </div>
@@ -43,7 +43,7 @@ const LandingPage = () => {
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-2">
+      <div className="w-full grid md:grid-cols-2">
         <div className="grow p-6 flex flex-col items-center justify-center">
           <div className="w-full">
             <div className="uppercase text-primary-500 font-extrabold mb-2">Export to PDF</div>
