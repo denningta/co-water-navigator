@@ -2,6 +2,7 @@ import { CircularProgress } from "@mui/material"
 import BreadcrumbsRouter from "./BreadcrumbsRouter"
 import Button from "./Button"
 import { TiExport } from 'react-icons/ti'
+import useTailwindBreakpoints from "../../hooks/useTailwindBreakpoints"
 
 interface Props {
   permitNumber?: string
@@ -13,25 +14,28 @@ const Footer = ({ permitNumber, loading }: Props) => {
   return (
     <div 
       className="
-        sticky bottom-0 left-0 
         bg-white 
-        -mx-8 -mb-6 
-        h-[70px] 
-        p-3 px-6 
+        md:-mx-8 md:-mb-6 
+        h-[55px]
+        py-2 px-3
+        md:h-[70px] 
+        md:p-3 md:px-6 
         border-t
       "
     >
-      <div className="grid grid-cols-3 content-center max-w-primary-col mx-auto px-6">
+      <div className="grid grid-cols-3 content-center max-w-primary-col md:mx-auto md:px-6">
         <div className="flex items-center">
-          <BreadcrumbsRouter />
+          <div className="hidden md:block">
+            <BreadcrumbsRouter />
+          </div>
         </div>
         <div className="flex items-center justify-center">
           { loading === false  &&
             <span className="bg-success-200 text-success-700 px-3 py-1 rounded">Saved</span>
           }
           { loading === true &&
-            <div className="text-primary-500">
-              <CircularProgress color="inherit" />
+            <div className="text-primary-500 flex items-center">
+              <CircularProgress color="inherit" size={30} />
             </div>
           }
         </div>

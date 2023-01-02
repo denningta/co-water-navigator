@@ -134,7 +134,7 @@ const FormWithCells = ({
             ${i%2 === 1 ? 'bg-gray-200' : 'bg-gray-100'}
           `}
         >
-          <div className="col-span-4">
+          <div className="col-span-6 md:col-span-4">
             <Form 
               formMetadata={formMetadata} 
               customFormRenderer={(params) => formComponent(params)} 
@@ -142,7 +142,7 @@ const FormWithCells = ({
             />
           </div>
 
-          <div className="col-span-2 px-4 flex items-center">
+          <div className=" col-span-6 md:col-span-2 px-4 flex items-center">
             <div className="grow">
               <Cell
                 ref={(el: CellApi) => cellRefs.current[i] = el}

@@ -27,6 +27,9 @@ const Button = ({
   onClick = () => {}
 }: Props) => {
   const [Icon, setIcon] = useState<JSX.Element>()
+  const [style, setStyle] = useState<React.CSSProperties>({ 
+    pointerEvents: 'all',
+  })
   const router = useRouter()
 
   const handleClick = (event: MouseEvent) => {
@@ -38,6 +41,18 @@ const Button = ({
     if (!icon) return
     setIcon(cloneElement(icon, { size: size }))
   }, [icon, size])
+
+  useEffect(() => {
+    if (disabled) setStyle({
+      pointerEvents: 'all',
+      backgroundColor: 'gray',
+      color: 'white',
+      cursor: 'not-allowed'
+    })
+    else setStyle({
+      pointerEvents: 'all',
+    })
+  }, [disabled])
   
   return (
     <button 
@@ -51,12 +66,7 @@ const Button = ({
         transition ease-in-out
         ${isLoading && 'bg-gray-400 text-gray-200'}
       `}
-      style={{ 
-        pointerEvents: 'all',
-        backgroundColor: disabled ? 'gray' : '',
-        color: disabled ? 'white' : '',
-        cursor: disabled ? 'not-allowed' : ''
-      }}
+      style={style}
       onClick={handleClick}
       disabled={isLoading || disabled}
       type={type}

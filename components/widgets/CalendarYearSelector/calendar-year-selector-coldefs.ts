@@ -5,14 +5,17 @@ import Dbb013HeatmapCellRenderer from "./Dbb013HeatmapCellRenderer";
 export const yearSelectorColDefs: ColDef[] = [
   { 
     field: 'year',
-    maxWidth: 100
+    maxWidth: 100,
+    minWidth: 90
   },
   { 
     field: 'dbb004Summary',
+    minWidth: 410,
     cellRenderer: DataSummaryCellRenderer
   },
   { 
     field: 'dbb013Summary',
+    minWidth: 410,
     cellRenderer: Dbb013HeatmapCellRenderer
   }
 ]

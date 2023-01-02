@@ -16,7 +16,6 @@ const AppLayout = ({ children }: Props) => {
   
   useEffect(() => {
     if (!breakpoint) return
-    console.log(breakpoint, hideToolbar)
     if (breakpoint !== 'sm') setHideToolbar(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [breakpoint])

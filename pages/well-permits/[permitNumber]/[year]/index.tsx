@@ -84,7 +84,9 @@ const WellPermit: NextPageWithLayout = () => {
       <div className='mb-6'>
         <MainContent widgets={widgets} columns={3} />
       </div>
-      <Footer loading={calculating} />
+      <div className='sticky bottom-0 left-0'>
+        <Footer loading={calculating} />
+      </div>
     </>
   )
 }

@@ -32,15 +32,15 @@ const MeterReadingsComponent = ({permitNumber, year, onCalculating = () => {} }:
 
   return (
     <div className="grid grid-cols-3 gap-3">
-      <div className="col-span-3 font-bold text-2xl flex items-center">
+      <div className="relative col-span-3 font-bold text-2xl md:flex md:items-center">
         <div>Meter Readings (DBB-004)</div>
-        <div className="grow"><span className="ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>
-        <div><button className="btn-round" onClick={handleClick}><BsInfoLg /></button></div>
+        <div className="md:grow"><span className="md:ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>
+        <div className="absolute top-0 right-0 md:relative"><button className="btn-round" onClick={handleClick}><BsInfoLg /></button></div>
       </div>
-      <div className="col-span-1">
+      <div className="col-span-3 md:col-span-1">
         <WellUsageComponent permitNumber={permitNumber} year={year} />
       </div>
-      <div className="col-span-2">
+      <div className="col-span-3 md:col-span-2">
         <ModifiedBankingSummary permitNumber={permitNumber} year={year} />
       </div>
 

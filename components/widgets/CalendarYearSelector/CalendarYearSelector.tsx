@@ -96,8 +96,8 @@ const CalendarYearSelector = ({
 
   return (
     <div>
-      <div className="grid grid-cols-8 gap-6">
-        <div className="ag-theme-alpine col-span-6" style={{ height: 265 }}>
+      <div className="md:flex">
+        <div className="w-full ag-theme-alpine" style={{ height: 265 }}>
           <AgGridReact
             ref={gridRef}
             onGridReady={onGridReady}
@@ -112,7 +112,7 @@ const CalendarYearSelector = ({
           >
           </AgGridReact>
         </div>
-        <div className="w-full h-full col-span-2 flex flex-col justify-center">
+        <div className="p-4 col-span-2 flex flex-col justify-center items-center md:w-auto">
           <div className="flex justify-center mb-6">
             <YearPicker onSubmit={(year) => handleSubmit(year)} />
           </div>

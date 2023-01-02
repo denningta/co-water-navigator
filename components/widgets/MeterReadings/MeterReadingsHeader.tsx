@@ -36,7 +36,7 @@ const MeterReadingsHeader = ({ permitNumber, year, owner, location }: Props) => 
         </div>
       </div>
       <div className="grow"></div>
-      <div className="flex items-center h-full mr-8">
+      <div className="hidden md:flex items-center h-full mr-8">
         <Button title="Export" icon={<TiExport />} type="button" onClick={handleClick} />
       </div>
     </div>

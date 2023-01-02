@@ -66,9 +66,9 @@ const ModifiedBankingComponent = ({
 
   return (
     <div>
-        <div className="flex items-center font-bold text-2xl mb-4">
+        <div className="md:flex items-center font-bold text-2xl mb-4">
           <div>Three Year Modified Banking (DBB-013)</div>
-          <div className="grow"><span className="ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>
+          <div className="md:grow"><span className="md:ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>
       </div>
       { year && 
         <FormWithCells 
