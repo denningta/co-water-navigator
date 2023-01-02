@@ -13,10 +13,15 @@ const AppLayout = ({ children }: Props) => {
   const breakpoint = useTailwindBreakpoints()
   const [hideToolbar, setHideToolbar] = useState(true)
 
+  console.log(breakpoint, 'hideToolbar: ', hideToolbar)
   
   useEffect(() => {
-    if (!breakpoint) return
-    if (breakpoint !== 'sm') setHideToolbar(false)
+    if (breakpoint === 'sm' || breakpoint === 'md') {
+      setHideToolbar(true)
+    } else {
+      setHideToolbar(false)
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [breakpoint])
 

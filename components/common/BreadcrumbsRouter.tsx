@@ -16,26 +16,28 @@ const BreadcrumbsRouter = () => {
 
   return (
     <div>
-      {router && (path.length > 1 && !path.includes('dashboard')) && <Breadcrumbs aria-label='breadcrumb' separator={<BsChevronRight/>}>
-          {path.map((el, i) => {
-            if (i + 1 === path.length) {
-              return (
-                <div key={i}>{ el === '' ? <IoHome /> : toTitleCase(el) }</div>
-              )
-            } else {
-              return (
-                <Link key={i} 
-                  className="text-primary-600"
-                  href={i === 0 ? '/' : path.slice(0, i+1).join('/')} 
-                  underline="hover"
-                >
-                  { el === '' ? <IoHome /> : toTitleCase(el) }
-                </Link>
-              )
-            }
+      {router && (path.length > 1 && !path.includes('dashboard')) && 
+        <Breadcrumbs aria-label='breadcrumb' separator={<BsChevronRight/>}>
+            {path.map((el, i) => {
+              if (i + 1 === path.length) {
+                return (
+                  <div key={i}>{ el === '' ? <IoHome /> : toTitleCase(el) }</div>
+                )
+              } else {
+                return (
+                  <Link key={i} 
+                    className="text-primary-600"
+                    href={i === 0 ? '/' : path.slice(0, i+1).join('/')} 
+                    underline="hover"
+                  >
+                    { el === '' ? <IoHome /> : toTitleCase(el) }
+                  </Link>
+                )
+              }
 
-          })}
-      </Breadcrumbs>}
+            })}
+        </Breadcrumbs>
+      }
     </div>
   )
 }

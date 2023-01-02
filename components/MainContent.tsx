@@ -1,10 +1,3 @@
-import { useUser } from "@auth0/nextjs-auth0"
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
-import { render } from "react-dom"
-import AgentDetails from "./widgets/AgentDetails"
-import Header from "./widgets/Header"
-import PermitPreview from "./widgets/PermitPreview"
-
 export interface Widget {
   component: JSX.Element
   colspan: number
