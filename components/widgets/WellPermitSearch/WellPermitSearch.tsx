@@ -16,6 +16,7 @@ import TableFilters from "../../common/TableFilterSelect";
 import TableFilter from "./TableFilter";
 import TableActionButton from "../../common/TableActionButton";
 import { tailwindColors } from "../../../lib/tailwindcss/tailwindConfig";
+import Link from "next/link";
 
 interface SearchTerm {
   term: string
@@ -108,7 +109,14 @@ const WellPermitSearch = () => {
         body: JSON.stringify({ permitRefs: permitRefs })
       }).then(res => res.json())
 
-      enqueueSnackbar('Permit(s) successfully added', { variant: 'success' })
+      const successMsg = <div className="flex">
+        <div>Success!  </div>
+        <Link href="/well-permits">
+          <a className="underline text-primary-300 ml-2">View well permits</a>
+        </Link>
+      </div>
+
+      enqueueSnackbar(successMsg, { variant: 'success' })
       setAddPermitsLoading(false)
     } catch (error: any) {
       setAddPermitsLoading(false)
@@ -155,15 +163,17 @@ const WellPermitSearch = () => {
           onClick={handleAddPermits}
           numSelected={selectedRowNodes?.length}
           color={tailwindColors['success']['600']}
+          isLoading={addPermitsLoading}
         />
       </div>
       <WellPermitTable 
         defaultColDef={defaultColDef}
         columnDefs={wellPermitColumnDefs} 
         rowData={rowData} 
-        height={400} 
         filterModel={filterModel}
         onRowSelectionChanged={handleRowSelectionChange}
+        paginationPageSize={20}
+        domLayout="autoHeight"
       />
     </div>
   )

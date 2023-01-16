@@ -2,9 +2,11 @@ import { useEffect, useState } from "react"
 import { IconType } from "react-icons"
 import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs"
 import { tailwindColors } from "../../lib/tailwindcss/tailwindConfig"
+import { CircularProgress } from "@mui/material"
 
 interface Props {
   disabled?: boolean
+  isLoading?: boolean
   icon?: JSX.Element
   onClick?: () => void
   numSelected?: number
@@ -16,6 +18,7 @@ interface Props {
 const TableActionButton = ({ 
   title = '', 
   disabled = false, 
+  isLoading = false,
   numSelected = 0, 
   icon, 
   color,
@@ -43,6 +46,7 @@ const TableActionButton = ({
         drop-shadow
         flex items-center
         transition ease-in-out
+        ${numSelected > 0 ? 'cursor-pointer' : 'cursor-not-allowed'}
       `}
       style={{ 
         backgroundColor: (numSelected > 0) ? bgColor : tailwindColors['disabled'],
@@ -54,9 +58,9 @@ const TableActionButton = ({
         <span>{ numSelected }</span> selected
       </span>
       <div className="flex items-center px-4">
-        { icon  &&
-          <span className="text-xl mr-2">
-            { icon }
+        { icon &&
+          <span className="text-xl mr-2 flex items-center">
+            { !isLoading ? icon : <CircularProgress color="inherit" size={20} /> }
           </span>
         }
         <span className="ml-1">{ title }</span>

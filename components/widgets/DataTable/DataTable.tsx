@@ -19,6 +19,7 @@ interface Props {
   suppressRowClickSelection?: boolean
   quickFilter?: string | undefined
   paginationPageSize?: number
+  domLayout?: 'normal' | 'autoHeight' | 'print'
   noRowsComponent?: () => JSX.Element
   onRowSelectionChanged?: (rowNodes: RowNode[], api: GridApi) => void | null
 }
@@ -33,6 +34,7 @@ const DataTable = ({
   suppressRowClickSelection = false,
   quickFilter,
   paginationPageSize = 10,
+  domLayout = 'normal',
   noRowsComponent,
   onRowSelectionChanged = () => null 
 }: Props) => {
@@ -89,7 +91,7 @@ const DataTable = ({
 
   return (
     <div className='flex'>
-      <div className="w-full ag-theme-alpine" style={{ height: height }}>
+      <div className="w-full ag-theme-alpine">
         <AgGridReact
           ref={gridRef}
           rowData={rowData}
@@ -104,6 +106,7 @@ const DataTable = ({
           suppressRowClickSelection={suppressRowClickSelection}
           loadingOverlayComponent={LoadingOverlay}
           noRowsOverlayComponent={noRowsComponent}
+          domLayout={domLayout}
         >
         </AgGridReact>
       </div>
@@ -116,8 +119,7 @@ const DataTable = ({
         </button>
         <div className="rotate-90 flex justify-start">Menu</div>
       </div>
-      <div className={`${expanded ? 'w-[400px]' : 'w-[0px]'} transition-all ease-in-out overflow-x-hidden border-t border-r border-b border-gray-400`}
-        style={{ height: height }}
+      <div className={`${expanded ? 'w-[400px]' : 'w-[0px]'} h-auto max-h-fit transition-all ease-in-out overflow-x-hidden border-t border-r border-b border-gray-400 overflow-y-auto`}
       >
         <ColumnSelector
           columnDefs={dynamicColDefs}

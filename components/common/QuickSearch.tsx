@@ -12,7 +12,7 @@ const QuickSearch = ({
   }
 
   return (
-    <div className="flex items-center justify-end mb-4 relative w-fit">
+    <div className="flex items-center justify-end relative w-fit">
     <input
       className="border border-gray-400 rounded-full px-3 py-1 pr-10 max-w-lg"
       placeholder="Quick search..."

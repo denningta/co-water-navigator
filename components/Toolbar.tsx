@@ -9,6 +9,7 @@ import { useEffect, useState } from "react"
 import LogoutButton from "./common/LogoutButton"
 import { TiExport } from "react-icons/ti"
 import useTailwindBreakpoints from "../hooks/useTailwindBreakpoints"
+import { IoSearchSharp } from "react-icons/io5"
 
 const Toolbar = () => {
   const { user, error, isLoading } = useUser()
@@ -59,6 +60,9 @@ const Toolbar = () => {
           </NavButton>
           <NavButton title="Well Permits" route="/well-permits" size={collapsed ? 'small' : 'normal'}>
             <FaListAlt/>
+          </NavButton>
+          <NavButton title="Search Permits" route="/search" size={collapsed ? 'small' : 'normal'}>
+            <IoSearchSharp/>
           </NavButton>
           <NavButton title="Export" route="/export" size={collapsed ? 'small' : 'normal'}>
             <TiExport />

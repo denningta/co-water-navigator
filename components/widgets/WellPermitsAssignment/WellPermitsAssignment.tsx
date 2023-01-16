@@ -28,18 +28,21 @@ const WellPermitsAssignment = () => {
         <div className="text-xl font-bold">Your Well Permits</div>
       </div> 
 
-      <QuickSearch onChange={handleChange}/>
+      <div className="flex mb-4">
+        <QuickSearch onChange={handleChange}/>
+      </div>
 
-      <div className="flex overflow-hidden">
+      <div className="flex">
         <div className="w-full">
           <DataTable 
             defaultColDef={defaultColDef}
             columnDefs={wellPermitColumnDefs} 
             rowData={data} 
             suppressRowClickSelection={true}
-            height={520}
             quickFilter={quickFilter}
             noRowsComponent={NoRowsComponent}
+            domLayout="autoHeight"
+            paginationPageSize={20}
           />
         </div>
       </div>
@@ -49,11 +52,6 @@ const WellPermitsAssignment = () => {
 }
 
 const NoRowsComponent = () => {
-  const router = useRouter()
-
-  const handleClick = () => {
-    router.push('/well-permits')
-  }
 
   return (
     <div className="flex flex-col items-center z-50">
@@ -61,7 +59,7 @@ const NoRowsComponent = () => {
       <Button 
         title="Search and add well permits" 
         icon={<BiPlus />}
-        onClick={handleClick}
+        href="/search"
       ></Button>
     </div>
   )

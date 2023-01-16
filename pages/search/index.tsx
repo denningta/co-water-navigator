@@ -25,7 +25,7 @@ const fetcher = async (url: string, user_id: string) => {
   return res.json()
 }
 
-const WellPermits: NextPageWithLayout = () => {
+const Search: NextPageWithLayout = () => {
   const { user }: any = useUser()
   const [permitRefs, setPermitRefs] = useState<AppMetadata['permitRefs']>()
   // const { data } = usePermitAssignments(permitRefs)
@@ -38,12 +38,12 @@ const WellPermits: NextPageWithLayout = () => {
   const widgets: Widget[] = [
     { 
       component: <Header 
-        title="Well Permits"
-        subtitle="Manage well permits and access meter readings"
+        title="Search for Well Permits"
+        subtitle="Search and request access to well permits"
       />, 
       colspan: 3
     },
-    { component: <WellPermitsAssignment />, colspan: 3 },
+    { component: <WellPermitSearch />, colspan: 3 },
   ]
 
   return (
@@ -53,12 +53,12 @@ const WellPermits: NextPageWithLayout = () => {
 
 export const getServerSideProps: GetServerSideProps = withPageAuthRequired()
 
-WellPermits.getLayout = function getLayout(page: ReactElement) {
+Search.getLayout = function getLayout(page: ReactElement) {
   return (
     <AppLayout>
-      {page}
+      { page }
     </AppLayout>
   )
 }
 
-export default WellPermits
+export default Search
