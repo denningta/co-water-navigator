@@ -12,8 +12,6 @@ interface Props {
 const AppLayout = ({ children }: Props) => {
   const breakpoint = useTailwindBreakpoints()
   const [hideToolbar, setHideToolbar] = useState(true)
-
-  console.log(breakpoint, 'hideToolbar: ', hideToolbar)
   
   useEffect(() => {
     if (breakpoint === 'sm' || breakpoint === 'md') {

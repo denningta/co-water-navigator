@@ -20,6 +20,5 @@ export const createCalculatedValueColDef = (field: string, validatorFn: (params:
     valueSetter: (params) => calculatedValueSetter(params, field, validatorFn),
     cellClassRules: getCellClassRules(field),
     cellRenderer: (params: ICellRendererParams) => CalcValueCellRenderer(params, field),
-    headerComponent: CalcValueHeaderRenderer,
   }
 }
