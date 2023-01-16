@@ -10,12 +10,12 @@ export const yearSelectorColDefs: ColDef[] = [
   },
   { 
     field: 'dbb004Summary',
-    minWidth: 410,
+    minWidth: 360,
     cellRenderer: DataSummaryCellRenderer
   },
   { 
     field: 'dbb013Summary',
-    minWidth: 410,
+    minWidth: 310,
     cellRenderer: Dbb013HeatmapCellRenderer
   }
 ]

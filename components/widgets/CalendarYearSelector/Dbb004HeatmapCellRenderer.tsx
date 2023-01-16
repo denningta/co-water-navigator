@@ -52,11 +52,11 @@ const Dbb004HeatmapCellRenderer = (
 
 
   const heatmapConfig: HeatmapConfig = {
-    width: 400,
+    width: 340,
     height: 41,
     color1: '#9ca3af',
     color2: '#22c55e',
-    xDomain: [0, 11],
+    xDomain: [0, 12],
     yDomain: [0, 1],
     colorDomain: [0, 1],
     binWidth: 20,

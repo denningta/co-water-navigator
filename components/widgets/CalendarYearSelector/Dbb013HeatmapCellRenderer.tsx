@@ -22,7 +22,7 @@ const Dbb013HeatmapCellRenderer = (params: ICellRendererParams) => {
   ])
 
   const heatmapConfig: HeatmapConfig = {
-    width: 400,
+    width: 300,
     height: 41,
     color1: '#9ca3af',
     color2: '#22c55e',
