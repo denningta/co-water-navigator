@@ -103,8 +103,10 @@ const ExportComponent = ({
       <div className="p-6">
         <div className="mb-6">
           <div className="text-xl font-bold mb-2">Select data to export</div>
-          <QuickSearch onChange={(value) => setQuickFilter(value)} />
-          <div className="ag-theme-alpine" style={{ height: 300 }}>
+          <div className="flex mb-4">
+            <QuickSearch onChange={(value) => setQuickFilter(value)} />
+          </div>
+          <div className="ag-theme-alpine">
             <AgGridReact
               ref={gridRef}
               columnDefs={exportColDefs}
@@ -116,6 +118,8 @@ const ExportComponent = ({
               rowSelection="multiple"
               onSelectionChanged={handleSelectionChanged}
               quickFilterText={quickFilter}
+              domLayout="autoHeight"
+              paginationPageSize={20}
             />
           </div>
         </div>

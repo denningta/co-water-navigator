@@ -97,7 +97,7 @@ const CalendarYearSelector = ({
   return (
     <div>
       <div className="md:flex">
-        <div className="w-full ag-theme-alpine" style={{ height: 265 }}>
+        <div className="w-full ag-theme-alpine">
           <AgGridReact
             ref={gridRef}
             onGridReady={onGridReady}
@@ -109,6 +109,8 @@ const CalendarYearSelector = ({
             suppressCellFocus={true}
             getRowId={getRowId}
             onSelectionChanged={handleSelectionChange}
+            domLayout="autoHeight"
+            paginationPageSize={20}
           >
           </AgGridReact>
         </div>

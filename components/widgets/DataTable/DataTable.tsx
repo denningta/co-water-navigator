@@ -33,8 +33,8 @@ const DataTable = ({
   rowSelection = 'multiple',
   suppressRowClickSelection = false,
   quickFilter,
-  paginationPageSize = 10,
-  domLayout = 'normal',
+  paginationPageSize = 20,
+  domLayout = 'autoHeight',
   noRowsComponent,
   onRowSelectionChanged = () => null 
 }: Props) => {
