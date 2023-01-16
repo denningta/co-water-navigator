@@ -97,7 +97,7 @@ const WellPermitsManager = ({ user }: Props) => {
           numSelected={selectedRowNodes.length}
           onClick={handleApproveAccess}
           color={tailwindColors['success']['600']}
-          className="mb-2"
+          className="mr-2"
         />
         <TableActionButton 
           title="Reject" 
@@ -105,7 +105,7 @@ const WellPermitsManager = ({ user }: Props) => {
           numSelected={selectedRowNodes.length}
           onClick={handleRejectAccess}
           color={tailwindColors['error']['500']}
-          className="mb-2"
+          className="mr-2"
         />
         <TableActionButton 
           title="Delete" 
@@ -113,7 +113,7 @@ const WellPermitsManager = ({ user }: Props) => {
           numSelected={selectedRowNodes.length}
           onClick={handleDeleteRequest}
           color={"gray"}
-          className="mb-2"
+          className="mr-2"
         />
       </div>
 

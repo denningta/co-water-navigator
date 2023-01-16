@@ -148,13 +148,15 @@ const WellPermitSearch = () => {
         />
       </div>
 
-      <TableActionButton 
-        title="Add permits"
-        icon={<IoAdd />}
-        onClick={handleAddPermits}
-        numSelected={selectedRowNodes?.length}
-        color={tailwindColors['success']['600']}
-      /> 
+      <div className="mb-4">
+        <TableActionButton
+          title="Add permits"
+          icon={<IoAdd />}
+          onClick={handleAddPermits}
+          numSelected={selectedRowNodes?.length}
+          color={tailwindColors['success']['600']}
+        />
+      </div>
       <WellPermitTable 
         defaultColDef={defaultColDef}
         columnDefs={wellPermitColumnDefs} 

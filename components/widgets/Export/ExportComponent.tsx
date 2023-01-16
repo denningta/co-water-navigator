@@ -34,6 +34,7 @@ const ExportComponent = ({
   const gridRef = useRef<AgGridReact>(null);
   const [gridApi, setGridApi] = useState<GridApi | null>(null)
   const [columnApi, setColumnApi] = useState<ColumnApi | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleGridReady = ({ api, columnApi }: GridReadyEvent) => {
     api.sizeColumnsToFit()
@@ -69,6 +70,7 @@ const ExportComponent = ({
   }, [documents, dataSelection])
 
   const handleExport = async () => {
+    setIsLoading(true)
     if (fileType === 'pdf') {
       try {
         const res = await axios.post(
@@ -80,11 +82,14 @@ const ExportComponent = ({
           }
         )
         renderInIframe(new Uint8Array(JSON.parse(res.data)))
+        setIsLoading(false)
       } catch (error: any) {
         enqueueSnackbar('Something went wrong, please try again.', { variant: 'error' })
+        setIsLoading(false)
       }
     } else if (fileType === 'json') {
       exportJson()
+      setIsLoading(false)
     }
   }
 
@@ -130,6 +135,7 @@ const ExportComponent = ({
                 icon={<TiExport />} 
                 onClick={handleExport} 
                 disabled={exportDisabled} 
+                isLoading={isLoading}
               />
             </span>
           </div>

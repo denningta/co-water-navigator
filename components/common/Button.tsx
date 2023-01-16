@@ -65,6 +65,7 @@ const Button = ({
         drop-shadow 
         transition ease-in-out
         ${isLoading && 'bg-gray-400 text-gray-200'}
+        ${(disabled || isLoading) && 'cursor-not-allowed'}
       `}
       style={style}
       onClick={handleClick}
@@ -72,12 +73,12 @@ const Button = ({
       type={type}
     >
       { !isLoading && Icon &&
-        <span className="mr-2">
+        <span className="mr-2 flex items-center">
           {Icon}
         </span>
       }
       { isLoading && 
-        <span className="mr-2">
+        <span className="mr-2 flex items-center">
           <CircularProgress color="inherit" size={size} />
         </span>
       }
