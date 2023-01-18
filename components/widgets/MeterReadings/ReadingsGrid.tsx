@@ -64,7 +64,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
   }
 
   const numberValidator = (params: ValueSetterParams) => {
-    const test = isNumber(+params.newValue)
+    const test = isFinite(+params.newValue)
     if (!test) enqueueSnackbar('Invalid input: value must be a number', { variant: 'error' })
     return test;
   }
@@ -116,7 +116,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
   const handleCellValueChange = async ({ data }: CellValueChangedEvent) => {
     onCalculating(true)
 
-    data.updatedBy = user
+    data.updatedBy = { name: user?.name, user_id: user?.sub }
 
     const url = `/api/v1/meter-readings/${data.permitNumber}/${data.date}`
     try {
