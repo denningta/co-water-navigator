@@ -11,7 +11,7 @@ async function approveHandler(
 ): Promise<any | HttpError> {
   if (!req || !req.method) throw new Error('Invalid request or request method')
 
-  if (req.method === 'POST') {
+  if (req.method === 'PATCH') {
     const { user_id } = req.query
     if (!user_id) throw new Error('user_id was not included in the query')
     if (Array.isArray(user_id)) throw new Error('Querying by a single user_id is allowed at a time')
@@ -21,12 +21,13 @@ async function approveHandler(
     if (!Array.isArray(permitRefs)) throw new Error('Must provide an array of permitRefs')
 
     try {
-      const { app_metadata } = await updatePermitRefs(
+      const { data } = await updatePermitRefs(
         user_id, 
-        permitRefs.map(ref => ({ ...ref, status: 'approved' }))
+        permitRefs.map(ref => ({ ...ref, status: 'approved' })),
+        req.method
       )
-      if (!app_metadata) throw new Error('No app_metadata returned.  Something went wrong.')
-      const wellPermitAssignmentData = await listWellPermitsByPermitRef(app_metadata.permitRefs)
+      if (!data.app_metadata) throw new Error('No app_metadata returned.  Something went wrong.')
+      const wellPermitAssignmentData = await listWellPermitsByPermitRef(data.app_metadata.permitRefs)
       res.status(200).json(wellPermitAssignmentData)
 
     } catch (error: any) {

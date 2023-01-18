@@ -5,6 +5,7 @@ import MainContent, { Widget } from '../../components/MainContent'
 import { NextPageWithLayout } from '../_app'
 import Header from '../../components/widgets/Header'
 import Button from '../../components/common/Button'
+import Link from 'next/link'
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
@@ -49,8 +50,11 @@ const GoBack = () => {
   return (
     <div className='h-[400px] flex justify-center items-center'>
       <div className='flex flex-col items-center'>
-        <div className='mb-4'>
+        <div className='mb-3'>
           You are not authorized to access the well permit number you selected.
+        </div>
+        <div className='mb-5 text-xs'>
+          Note: you may need to <Link href="/api/auth/logout"><a className='text-primary-500 underline'>log out</a></Link> and log back in to update your authorization.
         </div>
         <Button title="Back to Well Permits" onClick={handleClick} />
       </div>

@@ -98,25 +98,30 @@ const WellPermitSearch = () => {
       const permitRefs = res.map((el: any) => ({ 
         document_id: el.document_id, 
         permit: el.permit, 
-        status: 'requested' 
+        status: 'requested'
       }))
   
       const appMetaDataRes = await fetch('/api/auth/user/update-app-meta-data', {
-        method: 'PATCH',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ permitRefs: permitRefs })
       }).then(res => res.json())
 
-      const successMsg = <div className="flex">
-        <div>Success!  </div>
+      const successMsg = (updates: number) => <div className="flex">
+        <div>Success! {updates} permit(s) updated.  </div>
         <Link href="/well-permits">
           <a className="underline text-primary-300 ml-2">View well permits</a>
         </Link>
       </div>
 
-      enqueueSnackbar(successMsg, { variant: 'success' })
+      if (appMetaDataRes.updates) enqueueSnackbar(successMsg(appMetaDataRes.updates), { variant: 'success' })
+      if (appMetaDataRes.warnings.length > 0) {
+        appMetaDataRes.warnings.forEach((warning: string, index: number) => 
+          index < 4 && enqueueSnackbar(warning)  
+        )
+      }
       setAddPermitsLoading(false)
     } catch (error: any) {
       setAddPermitsLoading(false)

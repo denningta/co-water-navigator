@@ -25,13 +25,14 @@ const WellPermitsManager = ({ user }: Props) => {
   const [selectedRowNodes, setSelectedRowNodes] = useState<RowNode[]>([])
   const [api, setApi] = useState<GridApi | undefined>(undefined)
   const { data, mutate } = useWellPermitsByUser(user?.user_id)
+  const [isLoading, setIsLoading] = useState({ approve: false, reject: false, delete: false })
 
   const getSelectedPermitRefs = () => {
     return selectedRowNodes.map(({ data }): PermitRef => ({
       document_id: data.document_id,
       permit: data.permit,
       status: data.status,
-      ts: new Date().getMilliseconds()
+      ts: new Date().getTime()
     }))
   }
 
@@ -41,51 +42,74 @@ const WellPermitsManager = ({ user }: Props) => {
   }
 
   const handleApproveAccess = async () => {
-    selectedRowNodes.forEach(rowNode => rowNode.setData({ ...rowNode.data, status: 'approved'}))
+    setIsLoading({ ...isLoading, approve: true })
     try {
-      await mutate(updateStatus('approve'), {
-        rollbackOnError: true,
-        populateCache: true,
-        revalidate: true
-      })
+      const res = await updateStatus('approve')
+      selectedRowNodes.forEach(rowNode => rowNode.setData({ ...rowNode.data, status: 'approved'}))
       enqueueSnackbar('Update Successful!', { variant: 'success' })
+      setIsLoading({ ...isLoading, approve: false })
     } catch (e) {
       enqueueSnackbar('Something went wrong - please try again', { variant: 'error' })
+      setIsLoading({ ...isLoading, approve: false })
     }
   }
 
   const handleRejectAccess = async () => {
-    selectedRowNodes.forEach(rowNode => rowNode.setData({ ...rowNode.data, status: 'rejected'}))
+    setIsLoading({ ...isLoading, reject: true })
     try {
-      await mutate(updateStatus('reject'), {
-        rollbackOnError: true,
-        populateCache: true,
-        revalidate: true
-      })
+      const res = await updateStatus('reject')
+      selectedRowNodes.forEach(rowNode => rowNode.setData({ ...rowNode.data, status: 'rejected'}))
       enqueueSnackbar('Update Successful!', { variant: 'success' })
+      setIsLoading({ ...isLoading, reject: false })
     } catch (e) {
       enqueueSnackbar('Something went wrong - please try again', { variant: 'error' })
+      setIsLoading({ ...isLoading, reject: false })
     }
   }
 
-  const handleDeleteRequest = () => {
-
+  const handleDeleteRequest = async () => {
+    setIsLoading({ ...isLoading, delete: true })
+    try {
+      const document_ids = selectedRowNodes.map(rowNode => rowNode.data.document_id)
+      const res = await deleteRequest(document_ids)
+      api?.setRowData(res.app_metadata.permitRefs)
+      enqueueSnackbar('Delete Successful', { variant: 'success' })
+      setIsLoading({ ...isLoading, delete: false })
+    } catch (e) {
+      enqueueSnackbar('Something went wrong - please try again', { variant: 'error' })
+      setIsLoading({ ...isLoading, delete: false })
+    }
   }
 
   const updateStatus = async (action: 'approve' | 'reject') => {
     const permitRefs = getSelectedPermitRefs()
-      if (!user) throw new Error('No user defined')
-      const res = await fetch(
-        `/api/v1/well-permits/${user.user_id}/${action}`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ permitRefs: permitRefs }),
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        }
-      ).then(res => res.json()).catch(err => err)
-      return res
+    if (!user) throw new Error('No user defined')
+    const res = await fetch(
+      `/api/v1/well-permits/${user.user_id}/${action}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ permitRefs: permitRefs }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }
+    ).then(res => res.json()).catch(err => err)
+    return res
+  }
+
+  const deleteRequest = async (document_ids: string[]) => {
+    if (!user) throw new Error('No user defined')
+    const res = await fetch(
+      `/api/v1/well-permits/${user?.user_id}/delete`,
+      {
+        method: 'DELETE',
+        body: JSON.stringify({ document_ids: document_ids }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }
+    ).then(res => res.json())
+    return res
   }
 
   return (
@@ -98,6 +122,7 @@ const WellPermitsManager = ({ user }: Props) => {
           onClick={handleApproveAccess}
           color={tailwindColors['success']['600']}
           className="mr-2"
+          isLoading={isLoading.approve}
         />
         <TableActionButton 
           title="Reject" 
@@ -106,6 +131,7 @@ const WellPermitsManager = ({ user }: Props) => {
           onClick={handleRejectAccess}
           color={tailwindColors['error']['500']}
           className="mr-2"
+          isLoading={isLoading.reject}
         />
         <TableActionButton 
           title="Delete" 
@@ -114,6 +140,7 @@ const WellPermitsManager = ({ user }: Props) => {
           onClick={handleDeleteRequest}
           color={"gray"}
           className="mr-2"
+          isLoading={isLoading.delete}
         />
       </div>
 

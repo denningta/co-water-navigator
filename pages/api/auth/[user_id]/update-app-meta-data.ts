@@ -1,67 +1,69 @@
 import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { NextApiRequest, NextApiResponse } from "next";
 import managementClient from "../../../../lib/auth0/auth0ManagementClient";
-import { v4 as uuidv4 } from 'uuid'
-import { PermitRef } from "../../../../interfaces/WellPermit";
-import { HttpError } from "../../v1/interfaces/HttpError";
-import validateQuery from "../../v1/validatorFunctions";
-import { reject } from "lodash";
+import { PermitRef, WellPermitStatus } from "../../../../interfaces/WellPermit";
 import _ from "lodash";
 
 const handleUpdateAppMetaData = async (req: NextApiRequest, res: NextApiResponse) => {
-  const errors = validateQuery(req, [
-    'bodyExists'
-  ]);
-  
   const { body } = req
 
-  if (!body.permitRefs) errors.push(new HttpError(
-    'Bad Argument',
-    'permitRef missing from body of the request',
-    400
-  ))
+  if (!body.permitRefs) throw new Error('Bad Argument: permitRef missing from body of the request')
 
   body.permitRefs.map((permitRef: PermitRef) => {
     if(!permitRef.hasOwnProperty('document_id')) {
-      errors.push(new HttpError(
-        'Property missing',
-        'document_id missing from a record',
-        400
-      ))
+      throw new Error('Property missing: document_id missing from a record')
     }
   })
 
-  if (errors.length > 0) reject(errors)
-
-  const session = await getSession(req, res)
-  const id = session?.user.sub
-
   try {
-    const response = await updatePermitRefs(id, body.permitRefs)
+    const session = getSession(req, res)
+    const id = session?.user.sub
+    const response = await updatePermitRefs(id, body.permitRefs, req.method)
     res.status(200).json(response)
   } catch (error: any) {
     res.status(500).json({ statusCode: 500, message: error.message })
   }
 }
 
-export const updatePermitRefs = async (user_id: string, newPermitRefs: PermitRef[]) => {
+export const updatePermitRefs = async (user_id: string, newPermitRefs: PermitRef[], method: string | undefined) => {
   try {
     const auth0 = managementClient
     const { app_metadata } = await auth0.getUser({ id: user_id })
 
     const oldPermitRefs: PermitRef[] | undefined = app_metadata?.permitRefs
+    const warnings: string[] = []
+    let updates: number = 0;
 
     if (oldPermitRefs) {
-      // Upsert
       newPermitRefs.forEach((newRef, newIndex) => {
-        const matchIndex = oldPermitRefs.findIndex((oldRef) => oldRef.document_id === newRef.document_id)
-        if (matchIndex >= 0) oldPermitRefs[matchIndex] = newRef
-        else oldPermitRefs.push(newRef)
+        const matchIndex = oldPermitRefs.findIndex((oldRef) => {
+          return oldRef.document_id === newRef.document_id
+        })
+
+        if (method === 'POST') {
+          if (matchIndex >= 0) {
+            warnings.push(`Access already ${oldPermitRefs[matchIndex].status} for permit ${newRef.permit}`)
+          } else {
+            oldPermitRefs.push(newRef)
+            updates++
+          } 
+        } else if (method === 'PATCH') {
+          if (matchIndex >= 0) { 
+            oldPermitRefs[matchIndex] = newRef
+          } else {
+            oldPermitRefs.push(newRef)
+            updates++
+          } 
+        } else {
+          throw new Error('Invalid request method')
+        }
+
+
       })
     }
 
     const response = await auth0.updateAppMetadata({ id: user_id }, { permitRefs: oldPermitRefs ?? newPermitRefs })
-    return response
+    return { data: response, updates: updates, warnings: warnings}
 
   } catch (error: any) {
     return error
