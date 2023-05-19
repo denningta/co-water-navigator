@@ -87,8 +87,8 @@ const calculationFns: CalculationFns = {
 
   pumpingLimitThisYear: ({ data }) => {
     if (
-      !data.originalAppropriation 
-      || !data.allowedAppropriation 
+      !data.originalAppropriation
+      || !data.allowedAppropriation
       || !data.bankingReserveLastYear
     ) return
     let shouldBe
@@ -105,9 +105,9 @@ const calculationFns: CalculationFns = {
 
   totalPumpedThisYear: ({ data, totalPumpedThisYear }) => {
     if (!totalPumpedThisYear && !data.totalPumpedThisYear?.value === undefined) return
-    if (totalPumpedThisYear) 
+    if (totalPumpedThisYear)
       return abstractCalculationFn('totalPumpedThisYear', data, totalPumpedThisYear)
-    if (data.totalPumpedThisYear?.value !== undefined) 
+    if (data.totalPumpedThisYear?.value !== undefined)
       return abstractCalculationFn('totalPumpedThisYear', data, data.totalPumpedThisYear.value)
   },
 
@@ -119,7 +119,7 @@ const calculationFns: CalculationFns = {
 
   bankingReserveThisYear: ({ data }) => {
     if (
-      !data.maxBankingReserve 
+      !data.maxBankingReserve
       || !data.bankingReserveLastYear
       || !data.changeInBankingReserveThisYear
     ) return
@@ -138,7 +138,7 @@ const calculationFns: CalculationFns = {
 
   pumpingLimitNextYear: ({ data }) => {
     if (!data.originalAppropriation || !data.line10) return
-    const shouldBe = data.originalAppropriation.value + data.line10.value
+    const shouldBe = Math.min(data.originalAppropriation.value, data.line10.value)
     return abstractCalculationFn('pumpingLimitNextYear', data, shouldBe)
   },
 
