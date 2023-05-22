@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, } from 'react'
 import AppLayout from '../../components/AppLayout'
 import { NextPageWithLayout } from '../_app'
 import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0'
@@ -7,7 +7,6 @@ import Header from '../../components/widgets/Header'
 import PermitPreview from '../../components/widgets/PermitPreview'
 import AgentDetails from '../../components/widgets/AgentDetails'
 import WellPermitsAssignment from '../../components/widgets/WellPermitsAssignment/WellPermitsAssignment'
-import { tailwindBreakpoints } from '../../lib/tailwindcss/tailwindConfig'
 import useTailwindBreakpoints from '../../hooks/useTailwindBreakpoints'
 import useAgentInfo from '../../hooks/useAgentInfo'
 
@@ -22,7 +21,6 @@ const Dashboard: NextPageWithLayout = () => {
   let title: string = 'Hello'
   let name: string | undefined = undefined
 
-
   if (user) {
     name = user && (user.given_name as string ?? user.name)
     title = `Hello, ${name}`
@@ -32,9 +30,6 @@ const Dashboard: NextPageWithLayout = () => {
     name = `${data.firstName} ${data.lastName}`
     title = `Hello, ${name}`
   }
-
-
-
 
   const widgets: Widget[] = [
     {
