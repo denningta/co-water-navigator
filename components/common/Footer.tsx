@@ -12,7 +12,7 @@ interface Props {
 const Footer = ({ permitNumber, loading }: Props) => {
 
   return (
-    <div 
+    <div
       className="
         bg-white 
         md:-mx-8 md:-mb-6 
@@ -30,17 +30,17 @@ const Footer = ({ permitNumber, loading }: Props) => {
           </div>
         </div>
         <div className="flex items-center justify-center">
-          { loading === false  &&
+          {loading === false &&
             <span className="bg-success-200 text-success-700 px-3 py-1 rounded">Saved</span>
           }
-          { loading === true &&
+          {loading === true &&
             <div className="text-primary-500 flex items-center">
               <CircularProgress color="inherit" size={30} />
             </div>
           }
         </div>
         <div className="flex items-center justify-end">
-          <Button title="Export" icon={<TiExport />} type="button" />
+          <Button title="Export" href={'/export'} icon={<TiExport />} type="button" />
         </div>
       </div>
     </div>

@@ -1,12 +1,6 @@
-import { Breadcrumbs } from '@mui/material'
-import Link from '@mui/material/Link'
 import { TiExport } from 'react-icons/ti'
-import { IoHome } from 'react-icons/io5'
-import { BsChevronRight } from 'react-icons/bs'
 import BreadcrumbsRouter from '../../common/BreadcrumbsRouter'
 import Button from '../../common/Button'
-import ExportDialog from '../Export/ExportComponent'
-import { useState } from 'react'
 
 interface Props {
   permitNumber?: string
@@ -15,29 +9,19 @@ interface Props {
   location?: string
 }
 
-const MeterReadingsHeader = ({ permitNumber, year, owner, location }: Props) => {
-  const [dialogOpen, setDialogOpen] = useState(false)
-
-  const handleClick = () => {
-    setDialogOpen(true)
-  }
-
-  const handleClose = () => {
-    setDialogOpen(false)
-  }
-
+const MeterReadingsHeader = ({ permitNumber }: Props) => {
   return (
     <div className="flex items-center">
       <div>
         <div className="font-thin">WELL PERMIT</div>
-        { permitNumber && <div className="font-extrabold text-3xl">{ permitNumber }</div>}
+        {permitNumber && <div className="font-extrabold text-3xl">{permitNumber}</div>}
         <div className="mt-2">
           <BreadcrumbsRouter />
         </div>
       </div>
       <div className="grow"></div>
       <div className="hidden md:flex items-center h-full mr-8">
-        <Button title="Export" icon={<TiExport />} type="button" onClick={handleClick} />
+        <Button title="Export" href="/export" icon={<TiExport />} type="button" />
       </div>
     </div>
   )
