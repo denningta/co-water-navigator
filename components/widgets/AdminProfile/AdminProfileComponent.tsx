@@ -1,17 +1,10 @@
-import { UserProfile, useUser } from "@auth0/nextjs-auth0"
-import { User, UserMetadata } from "auth0"
 import Image from "next/image"
-import { useEffect, useState } from "react"
-import { AppMetadata, UserManagement } from "../../../interfaces/User"
-import RoleTag from "../../common/RoleTag"
-import DataTable from "../DataTable/DataTable"
-import wellPermitColumnDefs from "../WellPermitsAssignment/well-permit-column-defs"
-import WellPermitsAssignment from "../WellPermitsAssignment/WellPermitsAssignment"
+import { UserManagement } from "../../../interfaces/User"
 import RolesManager from "./RolesManager"
-import WellPermitsManager from "./WellPermitsManager"
 import { BsCheckCircleFill, BsHourglassSplit } from 'react-icons/bs'
 import { Tooltip } from "@mui/material"
-import useRoles from "../../../hooks/useRoles"
+import WellPermitsManager from "./WellPermitsManager"
+import ReportingAgentForm from "../UserProfile/ReportingAgentForm"
 
 interface Props {
   user: UserManagement | undefined
@@ -31,28 +24,28 @@ const AdminProfileComponent = ({ user }: Props) => {
             className="rounded-full overflow-hidden"
           />
         }
-        { user?.name &&
-          <div className="mt-4 font-bold text-xl">{ user?.name }</div>
+        {user?.name &&
+          <div className="mt-4 font-bold text-xl">{user?.name}</div>
         }
         {
           user?.email &&
           <div className="text-gray-500 flex items-center">
-            {user.email_verified && 
+            {user.email_verified &&
               <Tooltip title="Verified email">
                 <span className="mr-2 text-success-600"><BsCheckCircleFill /></span>
               </Tooltip>
-            } 
-            {!user.email_verified && 
+            }
+            {!user.email_verified &&
               <Tooltip title="email not verified">
                 <span className="mr-2 text-gray-500"><BsHourglassSplit /></span>
               </Tooltip>
-            } 
-            { user?.email }
+            }
+            {user?.email}
           </div>
         }
 
         <div className="mt-4 w-full">
-          { user?.last_login &&
+          {user?.last_login &&
             <div className="mt-4">
               <span className="text-gray-500">Last Login</span>
               <div className="font-bold">
@@ -64,7 +57,7 @@ const AdminProfileComponent = ({ user }: Props) => {
               </div>
             </div>
           }
-          { user?.last_ip &&
+          {user?.last_ip &&
             <div className="mt-4">
               <span className="text-gray-500">Last IP</span>
               <div className="font-bold">
@@ -72,7 +65,7 @@ const AdminProfileComponent = ({ user }: Props) => {
               </div>
             </div>
           }
-          { user?.created_at &&
+          {user?.created_at &&
             <div className="mt-4">
               <span className="text-gray-500">Account Created</span>
               <div className="font-bold">
@@ -84,7 +77,7 @@ const AdminProfileComponent = ({ user }: Props) => {
               </div>
             </div>
           }
-          { user?.logins_count &&
+          {user?.logins_count &&
             <div className="mt-4">
               <span className="text-gray-500">Number of Logins</span>
               <div className="font-bold">
@@ -92,7 +85,7 @@ const AdminProfileComponent = ({ user }: Props) => {
               </div>
             </div>
           }
-          { user?.user_id &&
+          {user?.user_id &&
             <div className="mt-4">
               <span className="text-gray-500">User ID</span>
               <div className="font-bold">
@@ -100,16 +93,16 @@ const AdminProfileComponent = ({ user }: Props) => {
               </div>
             </div>
           }
-          { user?.identities && 
-          <div className="mt-4">
-            <span className="text-gray-500">Identity Providers</span>
-            {user.identities.map((identity, i) =>
-              <div key={i} className="font-bold">
-                {identity.provider}
-              </div>
-            )}
+          {user?.identities &&
+            <div className="mt-4">
+              <span className="text-gray-500">Identity Providers</span>
+              {user.identities.map((identity, i) =>
+                <div key={i} className="font-bold">
+                  {identity.provider}
+                </div>
+              )}
 
-          </div>
+            </div>
           }
         </div>
       </div>
@@ -119,9 +112,12 @@ const AdminProfileComponent = ({ user }: Props) => {
           <div className="text-xl font-semibold mb-4">Roles</div>
           <RolesManager user={user} assignedRoles={user?.roles} />
         </div>
-        <div className="grow mt-4 px-4">
+        <div className="grow pt-4 pb-8 px-4 border-b">
           <div className="text-xl font-semibold mb-4">Well Permits</div>
           <WellPermitsManager user={user} />
+        </div>
+        <div className="grow pt-6 pb-8 px-4">
+          <ReportingAgentForm user_id={user?.user_id} />
         </div>
       </div>
     </div>

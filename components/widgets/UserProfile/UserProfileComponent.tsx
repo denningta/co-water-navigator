@@ -1,10 +1,9 @@
-import { UserProfile, useUser } from "@auth0/nextjs-auth0"
+import { UserProfile } from "@auth0/nextjs-auth0"
 import Image from "next/image"
-import { UserManagement } from "../../../interfaces/User"
 import RoleTag from "../../common/RoleTag"
 import ReportingAgentForm from "./ReportingAgentForm"
 
-type CustomUserProfile = UserProfile & {
+export type CustomUserProfile = UserProfile & {
   'coWaterExport/roles'?: string[]
 }
 
@@ -27,28 +26,28 @@ const UserProfileComponent = ({ user }: Props) => {
               className="rounded-full overflow-hidden"
             />
           }
-          { user?.name &&
-            <div className="mt-4 font-bold text-xl">{ user.name }</div>
+          {user?.name &&
+            <div className="mt-4 font-bold text-xl">{user.name}</div>
           }
-          { user?.email &&
-            <div className="text-gray-500">{ user.email }</div>
+          {user?.email &&
+            <div className="text-gray-500">{user.email}</div>
           }
         </div>
 
         <div className="col-span-4 md:col-span-3">
           <>
-            { user && user['coWaterExport/roles'] &&
+            {user && user['coWaterExport/roles'] &&
               <div className="grow p-4 border-b">
                 <span className="text-xl font-semibold">Roles</span>
                 <div className="mt-3">
                   {user['coWaterExport/roles'].map((role, i) =>
-                      <RoleTag key={i} role={{ name: role }} />
+                    <RoleTag key={i} role={{ name: role }} />
                   )}
                 </div>
               </div>
             }
             <div className="grow p-4">
-              <ReportingAgentForm />
+              <ReportingAgentForm user_id={user?.sub} />
             </div>
           </>
         </div>

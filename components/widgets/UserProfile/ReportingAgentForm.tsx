@@ -1,13 +1,10 @@
-import { useUser } from "@auth0/nextjs-auth0"
 import axios from "axios"
 import { Field, Form, Formik, FormikHelpers } from "formik"
 import { useSnackbar } from "notistack"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { FaSave } from "react-icons/fa"
-import { placeholderCSS } from "react-select/dist/declarations/src/components/Placeholder"
 import useAgentInfo from "../../../hooks/useAgentInfo"
 import Button from "../../common/Button"
-import toTitleCase from "../../common/toTitleCase"
 
 interface FormData {
   [key: string]: {
@@ -18,7 +15,7 @@ interface FormData {
   }
 }
 
-const formData = {
+const formData: FormData = {
   firstName: {
     value: '',
     title: 'First Name',
@@ -69,10 +66,13 @@ const formData = {
   },
 }
 
-const ReportingAgentForm = () => {
-  const { user } = useUser()
+interface ReportingAgentFormProps {
+  user_id: string | undefined | null
+}
+
+const ReportingAgentForm = ({ user_id }: ReportingAgentFormProps) => {
   const { enqueueSnackbar } = useSnackbar()
-  const { data } = useAgentInfo((user && user.sub) ?? null)
+  const { data } = useAgentInfo(user_id ?? null)
   const [loading, setLoading] = useState(false)
 
 
@@ -81,10 +81,10 @@ const ReportingAgentForm = () => {
 
   const handleSubmit = async (values: any, formikHelpers: FormikHelpers<{}>) => {
     setLoading(true)
-    if (!user) return
-    values.user_id = user.sub
+    if (!user_id) return
+    values.user_id = user_id
     try {
-      const res = await axios.post(`/api/auth/${user.sub}/agent-info`, values)
+      const res = await axios.post(`/api/auth/${user_id}/agent-info`, values)
       enqueueSnackbar('Success! Agent information updated.', { variant: 'success' })
       setLoading(false)
     } catch (error: any) {
@@ -104,12 +104,12 @@ const ReportingAgentForm = () => {
       >
         <Form>
           <div className="grid grid-cols-4 gap-6 max-w-[800px]">
-            { formKeys.map(formKey =>             
-              <div key={formKey} 
+            {formKeys.map(formKey =>
+              <div key={formKey}
                 className="flex flex-col"
-                style={{ gridColumn: `span ${formData[formKey].colspan} / span ${formData[formKey].colspan}`}}
+                style={{ gridColumn: `span ${formData[formKey].colspan} / span ${formData[formKey].colspan}` }}
               >
-                <label htmlFor={formKey.toString()} className="mb-1">{ formData[formKey].title }</label>
+                <label htmlFor={formKey.toString()} className="mb-1">{formData[formKey].title}</label>
                 <Field
                   id={formKey}
                   name={formKey}
