@@ -4,17 +4,20 @@
   "AUTH0_ALLOW_DELETE": true,
   "AUTH0_KEYWORD_REPLACE_MAPPINGS": {
     "APP_CALLBACKS": [
-      "https://www.co-water-navigator.vercel.app/api/auth/callback", 
-      "https://co-water-navigator.vercel.app/api/auth/callback"
+      "https://cowaterexport.com/api/auth/callback",
+      "https://www.cowaterexport.com/api/auth/callback"
     ],
     "ALLOWED_LOGOUTS": [
-      "https://co-water-navigator.vercel.app/",
-      "https://www.co-water-navigator.vercel.app/"
-    ],
-    "API_IDENTIFIER": "https://co-water-export-prod.us.auth0.com/api/v2/"
+      "https://cowaterexport.com",
+      "https://www.cowaterexport.com"
+    ]
   },
   "EXCLUDED_PROPS": {
-    "clients": ["client_secret"],
-    "connections": ["options.client_secret"]
+    "clients": [
+      "client_secret"
+    ],
+    "connections": [
+      "options.client_secret"
+    ]
   }
 }

@@ -4,16 +4,19 @@
   "AUTH0_ALLOW_DELETE": true,
   "AUTH0_KEYWORD_REPLACE_MAPPINGS": {
     "APP_CALLBACKS": [
-      "https://www.co-water-navigator-git-staging-denningta.vercel.app/api/auth/callback", 
-      "https://co-water-navigator-git-staging-denningta.vercel.app/api/auth/callback"
+      "https://test.cowaterexport.com/api/auth/callback",
+      "http://test.cowaterexport.com/api/auth/callback"
     ],
     "ALLOWED_LOGOUTS": [
-      "https://co-water-navigator-git-staging-denningta.vercel.app/"
-    ],
-    "API_IDENTIFIER": "https://co-water-export-staging.us.auth0.com/api/v2/"
+      "https://test.cowaterexport.com"
+    ]
   },
   "EXCLUDED_PROPS": {
-    "clients": ["client_secret"],
-    "connections": ["options.client_secret"]
+    "clients": [
+      "client_secret"
+    ],
+    "connections": [
+      "options.client_secret"
+    ]
   }
 }
