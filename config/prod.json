@@ -4,13 +4,14 @@
   "AUTH0_ALLOW_DELETE": true,
   "AUTH0_KEYWORD_REPLACE_MAPPINGS": {
     "APP_CALLBACKS": [
-      "https://cowaterexport.com/api/auth/callback",
-      "https://www.cowaterexport.com/api/auth/callback"
+      "https://cowaterexport.com",
+      "https://www.cowaterexport.com"
     ],
     "ALLOWED_LOGOUTS": [
       "https://cowaterexport.com",
       "https://www.cowaterexport.com"
-    ]
+    ],
+    "API_IDENTIFIER": "https://co-water-export-prod.us.auth0.com/api/v2/"
   },
   "EXCLUDED_PROPS": {
     "clients": [

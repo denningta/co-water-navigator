@@ -9,7 +9,8 @@
     ],
     "ALLOWED_LOGOUTS": [
       "https://test.cowaterexport.com"
-    ]
+    ],
+    "API_IDENTIFIER": "https://co-water-export-staging.us.auth0.com/api/v2/"
   },
   "EXCLUDED_PROPS": {
     "clients": [
