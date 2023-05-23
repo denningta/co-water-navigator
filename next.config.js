@@ -4,10 +4,10 @@ module.exports = (phase, { defaultConfig }) => {
   const nextConfig = {
     reactStrictMode: true,
     images: {
-      domains: ['lh3.googleusercontent.com']
-    }, 
+      domains: ['lh3.googleusercontent.com', 's.gravatar.com']
+    },
   }
-  
+
   return nextConfig;
 }
 
