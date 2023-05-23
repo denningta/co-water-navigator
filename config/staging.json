@@ -8,7 +8,8 @@
       "http://test.cowaterexport.com/api/auth/callback"
     ],
     "ALLOWED_LOGOUTS": [
-      "https://test.cowaterexport.com"
+      "https://test.cowaterexport.com",
+      "http://test.cowaterexport.com"
     ],
     "API_IDENTIFIER": "https://co-water-export-staging.us.auth0.com/api/v2/"
   },
