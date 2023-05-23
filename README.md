@@ -32,3 +32,66 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Development and Deployment Workflow
+
+1. Check out the `develop` branch.
+
+```
+git checkout develop
+```
+
+2. Make all commits to the `develop` branch.
+
+```
+git add .
+git commit -m "commit message"
+git push -u origin develop
+```
+
+3. Perform any local testing of the changes.
+4. Check out the `staging` branch.
+
+```
+git checkout staging
+```
+
+5. Merge the `develop` branch into the `staging` branch and push the changes.
+
+```
+git merge develop
+git push -u origin staging
+```
+
+6. Perform any testing on the [test instance](https://test.cowaterexport.com)
+
+7. Check out the `main` branch.
+
+```
+git checkout main
+```
+
+8. Merge the `staging` branch into the `main` branch and push the changes.
+
+```
+git merge staging
+git push -u origin main
+```
+
+# Deployment Background Processes
+
+Auth0 and Fauna configurations are both deployed automatically when changes are pushed to the respective branch.
+
+Here is an overview of how those automations are set up.
+
+## Auth 0
+
+The configuration for the development environment is exported using the Auth0 CLI and outputs `tenant.yaml` to the root folder.
+
+```
+npm run export:dev
+```
+
+`tenant.yaml` is then imported into the `staging` and `prod` intances of Auth0 by automated github actions when code is pushed to those respective branches.
+
+Configuration for each Auth0 environment is controlled in the `/config/[environment].json` files. More detail on these configuration files can be found in the [Auth0 Docs](https://auth0.com/docs/deploy-monitor/deploy-cli-tool/configuring-the-deploy-cli).
