@@ -6,7 +6,7 @@ import { FaSave } from "react-icons/fa"
 import useAgentInfo from "../../../hooks/useAgentInfo"
 import Button from "../../common/Button"
 
-interface FormData {
+export interface FormData {
   [key: string]: {
     value: string,
     title: string
