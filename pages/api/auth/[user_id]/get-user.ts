@@ -11,7 +11,9 @@ const getUserHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (session && session.user && !session.user['coWaterExport/roles'].includes('admin'))
     throw new Error('Not authorized')
 
+
   try {
+
     const user = await getUser(user_id)
     res.status(200).json(user)
   } catch (error: any) {
@@ -25,7 +27,7 @@ export const getUser = async (id: string): Promise<UserManagement> => {
     const auth0 = managementClient
     const user = await auth0.getUser({ id: id })
     if (!user || !user.user_id) throw new Error('User not found')
-    const roles = await auth0.getUserRoles({ id: user.user_id})
+    const roles = await auth0.getUserRoles({ id: user.user_id })
     return { ...user, roles: roles }
   } catch (error: any) {
     return error

@@ -1,15 +1,58 @@
 import { ICellRendererParams } from "ag-grid-community"
-import { MouseEvent, useEffect, useState } from "react"
-import { WellPermitAssignment } from "../../../../interfaces/WellPermit"
-import { ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material'
+import { MouseEvent, useState } from "react"
+import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material'
 import { BsThreeDots } from "react-icons/bs"
-import { MdEdit } from "react-icons/md"
+import { MdDelete, MdEdit } from "react-icons/md"
 import { useRouter } from "next/router"
+import useConfirmationDialog from "../../../../hooks/useConfirmationDialog"
+import { useSnackbar } from "notistack"
+
 
 const ActionsCellRenderer = (params: ICellRendererParams) => {
   const router = useRouter()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
+  const { getConfirmation } = useConfirmationDialog()
+  const { enqueueSnackbar } = useSnackbar()
+
+  const menuItems = [
+    {
+      title: 'User Details',
+      icon: MdEdit,
+      handleMenuItemClick: () =>
+        router.push(`manage-users/${encodeURIComponent(params.data.user_id)}`)
+    },
+    {
+      title: 'Delete User',
+      icon: MdDelete,
+      handleMenuItemClick: async () => {
+        const confirmed = await getConfirmation({
+          title: `Delete User`,
+          message: `Are you sure you want to delete user: ${params.data.name}`
+        })
+
+        if (confirmed) {
+          try {
+
+            const res = await fetch(`/api/auth/${params.data.user_id}`, {
+              method: 'DELETE',
+              headers: {
+                "Content-Type": "application/json",
+              },
+            })
+
+            console.log(res.json())
+
+            enqueueSnackbar(`User successfully deleted`, { variant: 'success' })
+
+          } catch (error: any) {
+            enqueueSnackbar(`Something went wrong - please try again.`, { variant: 'error' })
+          }
+        }
+
+      }
+    }
+  ]
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -19,11 +62,6 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const handleSelection = () => {
-    handleClose()
-    router.push(`manage-users/${encodeURIComponent(params.data.user_id)}`)
-  }
 
   return (
     <div>
@@ -39,10 +77,17 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
         open={open}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleSelection}>
-          <ListItemIcon><MdEdit /></ListItemIcon>
-          <ListItemText>User Details</ListItemText>
-        </MenuItem>
+        {menuItems && menuItems.map((item, i) =>
+          <MenuItem key={`item-${i}`} onClick={() => {
+            setAnchorEl(null)
+            item.handleMenuItemClick()
+          }}>
+            <ListItemIcon>
+              {item.icon({})}
+            </ListItemIcon>
+            <ListItemText>{item.title}</ListItemText>
+          </MenuItem>
+        )}
       </Menu>
     </div>
   )
