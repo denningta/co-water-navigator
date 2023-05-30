@@ -1,10 +1,10 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { UserProvider, useUser } from '@auth0/nextjs-auth0'
-import Layout from '../components/AppLayout'
+import { UserProvider } from '@auth0/nextjs-auth0'
 import { NextPage } from 'next'
-import { JSXElementConstructor, ReactElement, ReactNode, useEffect, useState } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { SnackbarProvider } from 'notistack'
+import ConfirmationDialogProvider from '../components/common/ConfirmationDialogProvider'
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -22,7 +22,9 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
       <SnackbarProvider
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <Component {...pageProps} />
+        <ConfirmationDialogProvider>
+          <Component {...pageProps} />
+        </ConfirmationDialogProvider>
       </SnackbarProvider>
     </UserProvider>
   )

@@ -9,14 +9,14 @@ interface Props {
   onChange?: ([value, checked]: [string, boolean]) => void
 }
 
-const Checkbox = ({ 
+const Checkbox = ({
   title,
   checked = false,
   value = 'undefined',
   className = '',
   onChange
 }: Props) => {
-  const [hover , setHover] = useState(false)
+  const [hover, setHover] = useState(false)
   const [checkboxTitle, setCheckboxTitle] = useState(title)
   const [check, setCheck] = useState(checked)
 
@@ -39,19 +39,19 @@ const Checkbox = ({
 
   return (
     <div
-      onClick={handleClick} 
+      onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={`flex items-center cursor-pointer select-none w-fit ${className}`}>
-      <div 
+      <div
         className={`w-[20px] h-[20px] border border-gray-300 rounded overflow-clip transition ease-in-out ${hover && 'bg-gray-100'}`
         }
       >
-        { check && <div className={`flex items-center justify-center text-white w-full h-full transition ease-in-out bg-primary-500 p-1 ${hover && 'bg-sky-600'}`}>
+        {check && <div className={`flex items-center justify-center text-white w-full h-full transition ease-in-out bg-primary-500 p-1 ${hover && 'bg-sky-600'}`}>
           <FaCheck />
-        </div> }
+        </div>}
       </div>
-      <div className="col-span-5 ml-3">{ checkboxTitle }</div>
+      <div className="col-span-5 ml-3">{checkboxTitle}</div>
     </div>
   )
 }

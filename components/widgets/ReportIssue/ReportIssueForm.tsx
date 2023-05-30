@@ -1,7 +1,5 @@
-import { useUser } from "@auth0/nextjs-auth0"
 import { Field, Form, Formik, FormikHelpers } from "formik"
 import Link from "next/link"
-import { Octokit } from "octokit"
 import { useState } from "react"
 import Button from "../../common/Button"
 
@@ -18,19 +16,15 @@ const initialValues = {
 `,
 }
 
-const octokit = new Octokit({
-  auth: process.env.GITHUB_ACCESS_TOKEN
-})
-
 
 const ReportIssueForm = () => {
-  const { user } = useUser()
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [htmlUrl, setHtmlUrl] = useState(undefined)
 
   const handleSubmit = async (values: typeof initialValues, formikHelpers: FormikHelpers<typeof initialValues>) => {
     try {
+      setLoading(true)
       const res = await fetch('/api/github/issue', {
         method: 'POST',
         headers: {
@@ -44,6 +38,7 @@ const ReportIssueForm = () => {
       setHtmlUrl(jsonRes.data.html_url)
 
       setSubmitted(true)
+      setLoading(false)
     } catch (e: any) {
       throw new Error(e)
     }

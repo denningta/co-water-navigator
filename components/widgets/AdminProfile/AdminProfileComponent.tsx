@@ -2,9 +2,10 @@ import Image from "next/image"
 import { UserManagement } from "../../../interfaces/User"
 import RolesManager from "./RolesManager"
 import { BsCheckCircleFill, BsHourglassSplit } from 'react-icons/bs'
-import { Tooltip } from "@mui/material"
+import { Dialog, DialogActions, DialogContent, Tooltip } from "@mui/material"
 import WellPermitsManager from "./WellPermitsManager"
 import ReportingAgentForm from "../UserProfile/ReportingAgentForm"
+import Button from "../../common/Button"
 
 interface Props {
   user: UserManagement | undefined
@@ -110,7 +111,7 @@ const AdminProfileComponent = ({ user }: Props) => {
       <div className="flex flex-col col-span-4 md:col-span-3">
         <div className="grow px-2 py-4 md:py-4 md:px-4 border-b">
           <div className="text-xl font-semibold mb-4">Roles</div>
-          <RolesManager user={user} assignedRoles={user?.roles} />
+          <RolesManager />
         </div>
         <div className="grow pt-4 pb-8 px-4 border-b">
           <div className="text-xl font-semibold mb-4">Well Permits</div>
