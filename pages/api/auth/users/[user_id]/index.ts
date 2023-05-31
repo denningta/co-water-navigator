@@ -1,3 +1,4 @@
+import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { NextApiRequest, NextApiResponse } from "next";
 import managementClient from "../../../../../lib/auth0/auth0ManagementClient";
 
@@ -9,16 +10,20 @@ async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<any> {
-
-  if (!req || !req.method) throw new Error('Invalid request')
-
-  const { user_id } = Array.isArray(req.query) ? req.query[0] : req.query
-
-  const handlers: HandlerFunctions = {
-    DELETE: deleteUser
-  }
-
   try {
+    if (!req || !req.method) throw new Error('Invalid request')
+
+    const session = getSession(req, res)
+
+    if (session && session.user && !session.user['coWaterExport/roles'].includes('admin'))
+      throw new Error('Not authorized')
+
+    const { user_id } = Array.isArray(req.query) ? req.query[0] : req.query
+
+    const handlers: HandlerFunctions = {
+      DELETE: deleteUser
+    }
+
     const response = await handlers[req.method](req, user_id)
     res.status(200).json(response)
   } catch (error: any) {
@@ -39,5 +44,5 @@ export const deleteUser = async (req: NextApiRequest, user_id: string) => {
 
 }
 
-export default handler;
+export default withApiAuthRequired(handler);
 

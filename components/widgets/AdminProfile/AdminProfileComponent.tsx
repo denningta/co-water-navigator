@@ -22,9 +22,9 @@ const AdminProfileComponent = ({ user }: Props) => {
   const handleDeleteUser = async () => {
     const confirmed = await getConfirmation({
       title: `Delete User`,
-      message: `Are you sure you want to delete user ${user?.name}?`,
+      message: `Are you sure you want to delete user ${user?.name && user?.name}?`,
       confirmConfig: { title: 'Delete User', color: 'error' },
-      confirmationMessage: `delete ${user && user.name}`
+      confirmationMessage: `delete ${user?.name ? user.name : 'user'}`
     })
 
     if (confirmed) {
@@ -135,11 +135,8 @@ const AdminProfileComponent = ({ user }: Props) => {
                   {identity.provider}
                 </div>
               )}
-
             </div>
           }
-
-
         </div>
       </div>
 
