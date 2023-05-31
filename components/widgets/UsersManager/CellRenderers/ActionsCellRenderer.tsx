@@ -12,8 +12,6 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
   const router = useRouter()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
-  const { getConfirmation } = useConfirmationDialog()
-  const { enqueueSnackbar } = useSnackbar()
 
   const menuItems = [
     {
@@ -22,36 +20,6 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
       handleMenuItemClick: () =>
         router.push(`manage-users/${encodeURIComponent(params.data.user_id)}`)
     },
-    {
-      title: 'Delete User',
-      icon: MdDelete,
-      handleMenuItemClick: async () => {
-        const confirmed = await getConfirmation({
-          title: `Delete User`,
-          message: `Are you sure you want to delete user: ${params.data.name}`
-        })
-
-        if (confirmed) {
-          try {
-
-            const res = await fetch(`/api/auth/${params.data.user_id}`, {
-              method: 'DELETE',
-              headers: {
-                "Content-Type": "application/json",
-              },
-            })
-
-            console.log(res.json())
-
-            enqueueSnackbar(`User successfully deleted`, { variant: 'success' })
-
-          } catch (error: any) {
-            enqueueSnackbar(`Something went wrong - please try again.`, { variant: 'error' })
-          }
-        }
-
-      }
-    }
   ]
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {

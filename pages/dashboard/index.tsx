@@ -15,8 +15,6 @@ const Dashboard: NextPageWithLayout = () => {
   const { data } = useAgentInfo(user?.sub)
   const breakpoint = useTailwindBreakpoints()
 
-  console.log(data)
-
 
   let title: string = 'Hello'
   let name: string | undefined = undefined

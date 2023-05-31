@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import managementClient from "../../../../lib/auth0/auth0ManagementClient";
+import managementClient from "../../../../../lib/auth0/auth0ManagementClient";
 
 type HandlerFunctions = {
   [key: string]: (req: NextApiRequest, ...args: any) => Promise<any>

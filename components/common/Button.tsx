@@ -1,22 +1,21 @@
 import { CircularProgress } from "@mui/material"
 import { useRouter } from "next/router"
 import React, { cloneElement, MouseEvent, useEffect, useState } from "react"
-import { IoSearchSharp } from "react-icons/io5"
 
-interface Props {
+export interface ButtonProps {
   title: string | JSX.Element
   icon?: JSX.Element
   isLoading?: boolean
   size?: number
   type?: 'button' | 'submit' | 'reset'
-  color?: 'primary' | 'secondary'
+  color?: 'primary' | 'secondary' | 'error'
   href?: string | undefined
   disabled?: boolean
   onClick?: (e: MouseEvent) => void
 }
 
-const Button = ({ 
-  icon, 
+const Button = ({
+  icon,
   title,
   isLoading = false,
   size = 20,
@@ -24,10 +23,10 @@ const Button = ({
   color = 'primary',
   href,
   disabled = false,
-  onClick = () => {}
-}: Props) => {
+  onClick = () => { }
+}: ButtonProps) => {
   const [Icon, setIcon] = useState<JSX.Element>()
-  const [style, setStyle] = useState<React.CSSProperties>({ 
+  const [style, setStyle] = useState<React.CSSProperties>({
     pointerEvents: 'all',
   })
   const router = useRouter()
@@ -53,12 +52,13 @@ const Button = ({
       pointerEvents: 'all',
     })
   }, [disabled])
-  
+
   return (
-    <button 
+    <button
       className={`
-        ${color === 'primary' && 'bg-primary-500 text-white hover:bg-sky-600' }
+        ${color === 'primary' && 'bg-primary-500 text-white hover:bg-sky-600'}
         ${color === 'secondary' && 'bg-gray-100 text-gray-600 hover:bg-gray-300'}
+        ${color === 'error' && 'bg-error-500 text-white hover:bg-error-600'}
         px-3 py-2 
         rounded
         flex items-center
@@ -72,17 +72,17 @@ const Button = ({
       disabled={isLoading || disabled}
       type={type}
     >
-      { !isLoading && Icon &&
+      {!isLoading && Icon &&
         <span className="mr-2 flex items-center">
           {Icon}
         </span>
       }
-      { isLoading && 
+      {isLoading &&
         <span className="mr-2 flex items-center">
           <CircularProgress color="inherit" size={size} />
         </span>
       }
-      <span>{ title }</span>
+      <span>{title}</span>
     </button>
   )
 }

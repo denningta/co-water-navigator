@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogActions, DialogTitle } from "@mui/material"
 import { createContext, ReactNode, useState } from "react"
-import Button from "./Button"
+import Button, { ButtonProps } from "./Button"
 
 interface ConfirmationDialogProviderProps {
   children: ReactNode
@@ -9,6 +9,9 @@ interface ConfirmationDialogProviderProps {
 export interface DialogConfig {
   title?: string
   message?: string
+  confirmConfig?: ButtonProps
+  cancelConfig?: ButtonProps
+  confirmationMessage?: string
   actionCallback: (...args: any) => any
 }
 
@@ -26,10 +29,25 @@ export const ConfirmationDialogContext = createContext<DialogContext>({ openDial
 const ConfirmationDialogProvider = ({ children }: ConfirmationDialogProviderProps) => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [dialogConfig, setDialogConfig] = useState<DialogConfig>({ actionCallback: actionCallbackDefault })
+  const [confirmationMessage, setConfirmationMessage] = useState<string | undefined>(undefined)
 
-  const openDialog = ({ title, message, actionCallback }: DialogConfig) => {
+  const openDialog = ({
+    title,
+    message,
+    confirmConfig,
+    cancelConfig,
+    confirmationMessage,
+    actionCallback
+  }: DialogConfig) => {
     setDialogOpen(true)
-    setDialogConfig({ title, message, actionCallback })
+    setDialogConfig({
+      title,
+      message,
+      confirmConfig,
+      cancelConfig,
+      confirmationMessage,
+      actionCallback
+    })
   }
 
   const resetDialog = () => {
@@ -47,6 +65,10 @@ const ConfirmationDialogProvider = ({ children }: ConfirmationDialogProviderProp
     dialogConfig.actionCallback && dialogConfig.actionCallback(false)
   }
 
+  const handleConfirmationMessageChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmationMessage(target.value)
+  }
+
   return (
     <ConfirmationDialogContext.Provider value={{ openDialog }}>
       <Dialog
@@ -56,10 +78,40 @@ const ConfirmationDialogProvider = ({ children }: ConfirmationDialogProviderProp
           {dialogConfig.title}
         </DialogTitle>
         <DialogContent>
-          {dialogConfig.message}
+          <div className="mb-3">
+            {dialogConfig.message}
+          </div>
+          {dialogConfig.confirmationMessage &&
+            <>
+              <div className="mb-3">
+                {`Type "${dialogConfig.confirmationMessage}" to confirm`}
+              </div>
+              <div className="mb-3">
+                <input
+                  className="bg-gray-100 outline-primary-500 border border-gray-300 py-2 px-3 rounded w-full"
+                  id="confirmationMessage"
+                  name="confirmationMessage"
+                  onChange={handleConfirmationMessageChange}
+                  autoFocus
+                />
+              </div>
+            </>
+          }
           <DialogActions>
-            <Button title='Cancel' color='secondary' onClick={onDismiss} />
-            <Button title='Proceed' onClick={onConfirm} />
+            <div onClick={onDismiss}>
+              <Button
+                title='Cancel'
+                color='secondary'
+                {...dialogConfig.cancelConfig}
+              />
+            </div>
+            <div onClick={onConfirm}>
+              <Button
+                title='Proceed'
+                disabled={!(confirmationMessage && dialogConfig.confirmationMessage === confirmationMessage)}
+                {...dialogConfig.confirmConfig}
+              />
+            </div>
           </DialogActions>
         </DialogContent>
       </Dialog>

@@ -2,16 +2,49 @@ import Image from "next/image"
 import { UserManagement } from "../../../interfaces/User"
 import RolesManager from "./RolesManager"
 import { BsCheckCircleFill, BsHourglassSplit } from 'react-icons/bs'
-import { Dialog, DialogActions, DialogContent, Tooltip } from "@mui/material"
+import { Tooltip } from "@mui/material"
 import WellPermitsManager from "./WellPermitsManager"
 import ReportingAgentForm from "../UserProfile/ReportingAgentForm"
+import { useSnackbar } from "notistack"
+import useConfirmationDialog from "../../../hooks/useConfirmationDialog"
 import Button from "../../common/Button"
+import { useRouter } from "next/router"
 
 interface Props {
   user: UserManagement | undefined
 }
 
 const AdminProfileComponent = ({ user }: Props) => {
+  const { enqueueSnackbar } = useSnackbar()
+  const { getConfirmation } = useConfirmationDialog()
+  const router = useRouter()
+
+  const handleDeleteUser = async () => {
+    const confirmed = await getConfirmation({
+      title: `Delete User`,
+      message: `Are you sure you want to delete user ${user?.name}?`,
+      confirmConfig: { title: 'Delete User', color: 'error' },
+      confirmationMessage: `delete ${user && user.name}`
+    })
+
+    if (confirmed) {
+      try {
+
+        const res = await fetch(`/api/auth/users/${user?.user_id}`, {
+          method: 'DELETE',
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+
+        enqueueSnackbar(`User deleted successfully`, { variant: 'success' })
+        router.push('/manage-users')
+      } catch (error: any) {
+        enqueueSnackbar(`Something went wrong - please try again.`, { variant: 'error' })
+      }
+    }
+
+  }
 
   return (
     <div className="grid grid-cols-4">
@@ -105,6 +138,8 @@ const AdminProfileComponent = ({ user }: Props) => {
 
             </div>
           }
+
+
         </div>
       </div>
 
@@ -117,8 +152,25 @@ const AdminProfileComponent = ({ user }: Props) => {
           <div className="text-xl font-semibold mb-4">Well Permits</div>
           <WellPermitsManager user={user} />
         </div>
-        <div className="grow pt-6 pb-8 px-4">
+        <div className="grow pt-6 pb-8 px-4 border-b">
           <ReportingAgentForm user_id={user?.user_id} />
+        </div>
+        <div className="grow pt-6 pb-8 px-4">
+
+          <div className="text-xl font-semibold mb-4">Danger Zone</div>
+          <div className="flex items-center border border-error-500 rounded p-6">
+            <div className="pr-4">
+              <div className="text-lg font-bold">
+                Delete User
+              </div>
+              <div>
+                Delete user and all associated data.  Roles and well permit assignment will be permenantly deleted.  Deleting a user will not affect well data.
+              </div>
+            </div>
+            <div className="min-w-fit">
+              <Button title="Delete User" color="error" onClick={handleDeleteUser} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
