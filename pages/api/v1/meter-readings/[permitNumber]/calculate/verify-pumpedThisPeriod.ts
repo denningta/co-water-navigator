@@ -1,19 +1,26 @@
-import _ from "lodash";
-import { update } from "lodash";
+import _, { update } from "lodash";
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
-import { getPrecision } from "./helpers";
 
 const verifyPumpedThisPeriod = (
-  meterReading: MeterReading, 
-  meterReadings: MeterReading[], 
+  meterReading: MeterReading,
+  meterReadings: MeterReading[],
   index: number
 ): CalculatedValue | undefined => {
+  console.log('verifyPumpedThisPeriod')
 
   let prevValue: CalculatedValue | undefined = undefined
+  let prevPowerMeter: CalculatedValue | undefined = undefined
 
   for (let i = index - 1; i >= 0; i--) {
     if (meterReadings[i].flowMeter) {
       prevValue = meterReadings[i].flowMeter
+      break
+    }
+  }
+
+  for (let i = index - 1; i >= 0; i--) {
+    if (meterReadings[i].powerMeter) {
+      prevPowerMeter = meterReadings[i].powerMeter
       break
     }
   }
@@ -23,17 +30,53 @@ const verifyPumpedThisPeriod = (
   if (
     meterReading.flowMeter?.value === undefined
   ) {
-    if (meterReading.pumpedThisPeriod?.source === 'user') 
+    if (meterReading.pumpedThisPeriod?.source === 'user')
       return meterReading.pumpedThisPeriod
-    else 
+    else
       return
   }
 
   const shouldBe = parseFloat((meterReading.flowMeter.value - prevValue.value).toFixed(2))
 
-  const updatedValue: CalculatedValue = { 
-    ...meterReading.pumpedThisPeriod, 
+
+  const updatedValue: CalculatedValue = {
+    ...meterReading.pumpedThisPeriod,
     value: shouldBe
+  }
+
+
+  let shouldBePowerMeterCalc = undefined
+
+  if (meterReading.powerMeter?.value && meterReading.powerConsumptionCoef?.value && prevPowerMeter?.value) {
+    shouldBePowerMeterCalc = parseFloat(((meterReading.powerMeter.value - prevPowerMeter.value) * meterReading.powerConsumptionCoef.value).toFixed((2)))
+
+    console.log(`
+shouldBe: ${shouldBe} 
+shouldBePowerMeterCalc: ${shouldBePowerMeterCalc}
+withinPercent: ${withinPercent(shouldBe, shouldBePowerMeterCalc)}
+`)
+
+    const percent = withinPercent(shouldBe, shouldBePowerMeterCalc)
+
+    if (percent < 93) {
+      updatedValue.value = shouldBePowerMeterCalc
+      updatedValue.shouldBe = shouldBe
+      updatedValue.calculationState = 'warning'
+      updatedValue.calculationMessage = `Flow meter outside tolerance range`
+
+    }
+
+    if (percent >= 93 && percent < 97) {
+      updatedValue.shouldBe = shouldBe
+      updatedValue.calculationState = 'warning'
+      updatedValue.calculationMessage = `Flow meter calibration required`
+    }
+
+    if (percent > 97) {
+      delete updatedValue.shouldBe
+      delete updatedValue.calculationState
+      delete updatedValue.calculationMessage
+    }
   }
 
   if (meterReading.pumpedThisPeriod?.source === 'user') {
@@ -50,7 +93,20 @@ const verifyPumpedThisPeriod = (
     }
   }
 
+  console.log(updatedValue)
+
+
   return updatedValue
+}
+
+
+function withinPercent(value: number, target: number) {
+  if (target === value) return 100
+
+  const percent = target > value
+    ? (value / target) * 100
+    : (target / value) * 100
+  return Math.round(percent * 100) / 100
 }
 
 export default verifyPumpedThisPeriod;
