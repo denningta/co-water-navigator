@@ -5,14 +5,16 @@ import { CalendarYearSelectorData } from "../CalendarYearSelector/CalendarYearSe
 
 export function dateFormatter(params: any): string {
   const [year, month] = params.value.split('-')
-  const date = new Date(Date.UTC(+year, +month - 1))
-  return `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`
+  const date = new Date(+year, +month - 1)
+  console.log(date)
+  const formattedDate = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`
+  return formattedDate
 }
 
 export function initPlaceholderData(permitNumber: string, year: string): MeterReading[] {
   const data: MeterReading[] = []
   for (let month = 1; month <= 12; month++) {
-    data.push({ 
+    data.push({
       permitNumber: permitNumber,
       date: `${year}-${month < 10 ? '0' + month : month}`
     })
@@ -33,8 +35,8 @@ export function calculatedValueGetter({ data }: ValueGetterParams, field: string
 }
 
 export function calculatedValueSetter(
-  params: ValueSetterParams, 
-  field: string, 
+  params: ValueSetterParams,
+  field: string,
   validatorFn: (params: ValueSetterParams) => boolean
 ) {
   if (validatorFn(params)) {
@@ -42,7 +44,7 @@ export function calculatedValueSetter(
       delete params.data[field]
       return true
     }
-    
+
     params.data[field] = {
       value: +params.newValue,
       source: 'user'

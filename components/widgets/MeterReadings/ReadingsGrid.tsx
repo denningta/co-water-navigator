@@ -18,7 +18,7 @@ interface Props {
   onCalculating?: (calculating: boolean | undefined) => void
 }
 
-const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) => {
+const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) => {
   const { data, mutate } = useMeterReadings(permitNumber, year)
   const gridRef = useRef<AgGridReact>(null);
   const [gridApi, setGridApi] = useState<GridApi | null>(null)
@@ -31,14 +31,15 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
     onCalculating(undefined)
   }, [])
 
+  console.log(rowData)
+
   useEffect(() => {
     if (!data) return
-    setRowData(
-      initPlaceholderData(permitNumber, year).map(record => 
-        data.find(el => 
-          el.date === record.date) ?? record
-        )
-      )
+    const placeholderData = initPlaceholderData(permitNumber, year).map(record =>
+      data.find(el =>
+        el.date === record.date) ?? record
+    )
+    setRowData(placeholderData)
   }, [data])
 
   const onGridReady = () => {
@@ -77,7 +78,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
 
   const [defaultColDef] = useState<ColDef>(readingsGridDefaultColDef)
   const [columnDefs] = useState<ColDef[]>([
-    { 
+    {
       field: 'date',
       minWidth: 150,
       editable: false,
@@ -91,7 +92,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
     createCalculatedValueColDef('pumpedThisPeriod', numberValidator),
     createCalculatedValueColDef('pumpedYearToDate', numberValidator),
     createCalculatedValueColDef('availableThisYear', numberValidator),
-    { 
+    {
       field: 'readBy',
       valueSetter: (params) => {
         if (readByValidator(params)) {
@@ -103,7 +104,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
       }
     },
     { field: 'comments' },
-    { 
+    {
       field: 'updatedBy',
       editable: false,
       cellClassRules: getCellClassRules('updatedBy'),
@@ -133,7 +134,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
     } catch (error: any) {
       onCalculating(false)
     }
-    
+
 
   }
 
@@ -151,7 +152,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => {} }: Props) =
         domLayout={'autoHeight'}
       >
       </AgGridReact>
-  </div>
+    </div>
   )
 }
 

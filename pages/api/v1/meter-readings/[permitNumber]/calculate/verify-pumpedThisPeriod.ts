@@ -49,13 +49,6 @@ const verifyPumpedThisPeriod = (
 
   if (meterReading.powerMeter?.value && meterReading.powerConsumptionCoef?.value && prevPowerMeter?.value) {
     shouldBePowerMeterCalc = parseFloat(((meterReading.powerMeter.value - prevPowerMeter.value) * meterReading.powerConsumptionCoef.value).toFixed((2)))
-
-    console.log(`
-shouldBe: ${shouldBe} 
-shouldBePowerMeterCalc: ${shouldBePowerMeterCalc}
-withinPercent: ${withinPercent(shouldBe, shouldBePowerMeterCalc)}
-`)
-
     const percent = withinPercent(shouldBe, shouldBePowerMeterCalc)
 
     if (percent < 93) {
