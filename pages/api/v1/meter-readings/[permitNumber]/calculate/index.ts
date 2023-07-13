@@ -1,9 +1,6 @@
-import { verify } from "crypto";
-import { Get } from "faunadb";
 import _ from "lodash";
 import { NextApiRequest, NextApiResponse } from "next";
-import { FaRegFrown } from "react-icons/fa";
-import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
+import MeterReading from "../../../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
@@ -14,35 +11,35 @@ import verifyGreaterThanPrevValue from "./verify-greater-than-prev-value";
 import verifyPumpedThisPeriod from "./verify-pumpedThisPeriod";
 import verifyPumpedYearToDate from "./verify-pumpedYearToDate";
 
-type HandlerFunctions = { 
-  [key: string]: (req: NextApiRequest) => Promise<MeterReading[]> 
+type HandlerFunctions = {
+  [key: string]: (req: NextApiRequest) => Promise<MeterReading[]>
 };
 
-function handler(
-  req: NextApiRequest, 
+async function handler(
+  req: NextApiRequest,
   res: NextApiResponse
 ): Promise<MeterReading[] | HttpError> {
-    if (!req || !req.method) {
-      return Promise.reject(new HttpError(
-        'No Request or Invalid Request Method',
-        'No request or an invalid request method was sent to the server',
-        400
-      ));
-    }
+  if (!req || !req.method) {
+    return Promise.reject(new HttpError(
+      'No Request or Invalid Request Method',
+      'No request or an invalid request method was sent to the server',
+      400
+    ));
+  }
 
-    const handlers: HandlerFunctions = {
-      POST: runCalculationsExternal,
-    }
-  
-    return handlers[req.method](req)
-      .then((response) => {
-        res.status(200).json(response);
-        return response
-      })
-      .catch((errors: any) => {
-        res.status(errors[0].status || 500).json({errors: errors})
-        return errors
-      });
+  const handlers: HandlerFunctions = {
+    POST: runCalculationsExternal,
+  }
+
+  return handlers[req.method](req)
+    .then((response) => {
+      res.status(200).json(response);
+      return response
+    })
+    .catch((errors: any) => {
+      res.status(errors[0].status || 500).json({ errors: errors })
+      return errors
+    });
 }
 
 const runCalculationsExternal = (req: NextApiRequest): Promise<MeterReading[]> => {
@@ -71,7 +68,7 @@ export const runCalculationsInternal = (permitNumber: string): Promise<MeterRead
     if (!meterReadings) {
       reject(new HttpError(
         'Meter reading calculations failed: No Data',
-        `No data found matching the query paramters: ` + 
+        `No data found matching the query paramters: ` +
         `'permitNumber': ${permitNumber}`,
         404
       ))
@@ -86,7 +83,7 @@ export const runCalculationsInternal = (permitNumber: string): Promise<MeterRead
 
 const getMeterReadings = (permitNumber: string | string[]): Promise<MeterReading[]> => {
   return new Promise(async (resolve, reject) => {
-    const response: any = await faunaClient.query( 
+    const response: any = await faunaClient.query(
       q.Map(
         q.Paginate(
           q.Join(
@@ -142,13 +139,13 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
     refRecord.availableThisYear = verifyAvailableThisYear(refRecord, pumpingLimitThisYear, meterReadings, index)
 
     if (index > 0) refMeterReadings.push(refRecord)
-    
+
     let updateRecord = false
     const keys = Object.keys(refRecord) as (keyof typeof refRecord)[]
-    
+
     keys.forEach((key) => {
       if (!calculatedFields.includes(key)) return
-      if(_.isEqual(refRecord[key], meterReading[key])) return
+      if (_.isEqual(refRecord[key], meterReading[key])) return
       if (refRecord[key] === undefined) delete refRecord[key]
       updateRecord = true
     })
@@ -158,11 +155,11 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
       delete refRecord.pumpedYearToDate
       delete refRecord.availableThisYear
     }
-    
+
     if (!updateRecord) return
     updatedMeterReadings.push(refRecord)
   })
-  
+
   return updatedMeterReadings
 }
 
