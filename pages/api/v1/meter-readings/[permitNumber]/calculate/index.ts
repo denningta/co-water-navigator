@@ -42,7 +42,7 @@ async function handler(
     });
 }
 
-const runCalculationsExternal = (req: NextApiRequest): Promise<MeterReading[]> => {
+export const runCalculationsExternal = (req: NextApiRequest): Promise<MeterReading[]> => {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
@@ -151,9 +151,9 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
     })
 
     if (refRecord.flowMeter === undefined) {
-      delete refRecord.pumpedThisPeriod
-      delete refRecord.pumpedYearToDate
-      delete refRecord.availableThisYear
+      refRecord.pumpedThisPeriod?.source !== 'user' ?? delete refRecord.pumpedThisPeriod
+      refRecord.pumpedYearToDate?.source !== 'user' ?? delete refRecord.pumpedYearToDate
+      refRecord.availableThisYear?.source !== 'user' ?? delete refRecord.availableThisYear
     }
 
     if (!updateRecord) return

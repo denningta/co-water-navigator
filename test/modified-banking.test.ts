@@ -1,13 +1,7 @@
-/**
- * Tests meterReadings calculations
- * 
- * @group modified-banking
- * @group calculations
- */
+import { ModifiedBanking } from "../interfaces/ModifiedBanking"
+import { calculate, queryDependencies } from "../pages/api/v1/modified-banking/calculate"
+import { CalculationProps } from "../pages/api/v1/modified-banking/calculate/calculationFns"
 
-import { calculate, queryDependencies } from "."
-import { ModifiedBanking } from "../../../../../interfaces/ModifiedBanking"
-import { CalculationProps } from "./calculationFns"
 
 const header = {
   permitNumber: 'XX-00000',

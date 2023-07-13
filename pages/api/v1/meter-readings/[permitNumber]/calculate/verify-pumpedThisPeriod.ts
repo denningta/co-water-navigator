@@ -1,4 +1,3 @@
-import _, { update } from "lodash";
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
 
 const verifyPumpedThisPeriod = (
@@ -6,7 +5,7 @@ const verifyPumpedThisPeriod = (
   meterReadings: MeterReading[],
   index: number
 ): CalculatedValue | undefined => {
-  console.log('verifyPumpedThisPeriod')
+  console.log(meterReading)
 
   let prevValue: CalculatedValue | undefined = undefined
   let prevPowerMeter: CalculatedValue | undefined = undefined
@@ -38,12 +37,10 @@ const verifyPumpedThisPeriod = (
 
   const shouldBe = parseFloat((meterReading.flowMeter.value - prevValue.value).toFixed(2))
 
-
   const updatedValue: CalculatedValue = {
     ...meterReading.pumpedThisPeriod,
     value: shouldBe
   }
-
 
   let shouldBePowerMeterCalc = undefined
 
