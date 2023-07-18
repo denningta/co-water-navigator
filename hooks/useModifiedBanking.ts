@@ -14,13 +14,13 @@ const fetcher = async (url: string) => {
 const useModifiedBanking = (permitNumber: string | undefined, year: string | undefined) => {
   const { data, mutate } = useSWR(
     (permitNumber && year)
-    ? `/api/v1/modified-banking/${permitNumber}/${year}`
-    : null,
+      ? `/api/v1/modified-banking/${permitNumber}/${year}`
+      : null,
     fetcher
   )
 
-  return  { 
-    data: data,
+  return {
+    data: data ?? {},
     mutate: mutate
   }
 }

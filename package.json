@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watchAll --verbose",
     "export:dev": "a0deploy export --strip --format yaml --output_folder . --config_file ./config/dev.json --secret $DEV_AUTH0_CLIENT_SECRET",
     "import:staging": "a0deploy import --input_file tenant.yaml --config_file ./config/staging.json",
     "import:prod": "a0deploy import --input_file tenant.yaml --config_file ./config/prod.json",

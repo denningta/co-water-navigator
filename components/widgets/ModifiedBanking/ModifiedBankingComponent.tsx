@@ -12,15 +12,17 @@ interface Props {
   onCalculating?: (calculating: boolean | undefined) => void
 }
 
-const ModifiedBankingComponent = ({ 
-  year, 
+const ModifiedBankingComponent = ({
+  year,
   permitNumber,
-  onCalculating = () => {}
+  onCalculating = () => { }
 }: Props) => {
   const { data, mutate } = useModifiedBanking(permitNumber, year)
   const [formElements, setFormElements] = useState<FormElement[]>([])
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
+
+  console.log('data', data)
 
   useEffect(() => {
     if (!year || !permitNumber) return
@@ -28,7 +30,7 @@ const ModifiedBankingComponent = ({
   }, [year, permitNumber])
 
   const handleCellValueChanged = async (
-    event: CellValueChangedEvent, 
+    event: CellValueChangedEvent,
   ) => {
     try {
       onCalculating(true)
@@ -51,14 +53,15 @@ const ModifiedBankingComponent = ({
   }
 
   const handleCommentsChanged = async (
-    comments: string[], 
+    comments: string[],
     formControl: ModifiedBankingFormControls,
-    values: ModifiedBanking  
+    values: ModifiedBanking
   ) => {
 
   }
 
   const updateDatabase = async (body: any) => {
+    console.log('body', body)
     const url = `/api/v1/modified-banking/${permitNumber}/${year}`
     const res = await axios.patch(url, body)
     return res.data
@@ -66,17 +69,17 @@ const ModifiedBankingComponent = ({
 
   return (
     <div>
-        <div className="md:flex items-center font-bold text-2xl mb-4">
-          <div>Three Year Modified Banking (DBB-013)</div>
-          <div className="md:grow"><span className="md:ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>
+      <div className="md:flex items-center font-bold text-2xl mb-4">
+        <div>Three Year Modified Banking (DBB-013)</div>
+        <div className="md:grow"><span className="md:ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>
       </div>
-      { year && 
-        <FormWithCells 
-          formElements={formElements} 
+      {year &&
+        <FormWithCells
+          formElements={formElements}
           data={data}
           onCellValueChanged={handleCellValueChanged}
           onValueSetterError={handleValueSetterError}
-        /> 
+        />
       }
     </div>
   )

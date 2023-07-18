@@ -34,8 +34,6 @@ describe('Calculated Value', () => {
 
   it('set \'source\' property to \'user\' when a value is set by the user', () => {
 
-    const result = verifyPumpedThisPeriod(meterReadings[0], meterReadings, 0)
-    console.log(result)
 
 
   })

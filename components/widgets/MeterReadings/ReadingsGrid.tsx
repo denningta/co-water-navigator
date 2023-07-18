@@ -10,7 +10,6 @@ import { createCalculatedValueColDef, readingsGridDefaultColDef } from "./readin
 import useMeterReadings from "../../../hooks/useMeterReadings";
 import { useSnackbar } from "notistack";
 import { useUser } from "@auth0/nextjs-auth0";
-import { isNumber } from "lodash";
 
 interface Props {
   permitNumber: string
@@ -31,7 +30,6 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) 
     onCalculating(undefined)
   }, [])
 
-  console.log(rowData)
 
   useEffect(() => {
     if (!data) return

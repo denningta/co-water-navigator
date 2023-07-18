@@ -83,9 +83,6 @@ const verifyPumpedThisPeriod = (
     }
   }
 
-  console.log(updatedValue)
-
-
   return updatedValue
 }
 

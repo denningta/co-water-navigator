@@ -6,7 +6,6 @@ import { CalendarYearSelectorData } from "../CalendarYearSelector/CalendarYearSe
 export function dateFormatter(params: any): string {
   const [year, month] = params.value.split('-')
   const date = new Date(+year, +month, 0)
-  console.log(date)
   const formattedDate = `${date.toLocaleString('default', { month: 'short', day: 'numeric' })} ${date.getFullYear()}`
   return formattedDate
 }

@@ -77,26 +77,27 @@ interface Props {
 const FormWithCells = ({
   formElements = [],
   data = {},
-  onCellValueChanged = () => {},
-  onValueSetterError = () => {},
+  onCellValueChanged = () => { },
+  onValueSetterError = () => { },
 }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const { 
+  const {
     focusIndex,
     editingIndex,
     handleCellClick
   } = useCellNavigation(containerRef, formElements.length)
-  
+
   const cellRefs = useRef<Array<CellApi | null>>([])
 
   const handleCellValueChanged = (
-    e: CellValueChangedEvent, 
+    e: CellValueChangedEvent,
     index: number,
     valueSetter: ((params: ValueSetterParams) => boolean) | undefined
   ) => {
     if (valueSetter) {
       const setterResult = valueSetter(e)
       if (setterResult) {
+        console.log(e)
         onCellValueChanged(e)
       } else {
         onValueSetterError(e)
@@ -117,27 +118,27 @@ const FormWithCells = ({
       {formElements.map((
         {
           formMetadata,
-          formControl, 
-          formComponent = (params) => {}, 
-          cellLabel, 
-          valueGetter, 
+          formControl,
+          formComponent = (params) => { },
+          cellLabel,
+          valueGetter,
           valueSetter,
           cellClass,
-          cellRendererComponent = (params) => {},
-        }, 
+          cellRendererComponent = (params) => { },
+        },
         i
       ) =>
-        <div key={i} 
+        <div key={i}
           className={`
             grid grid-cols-6 
             h-fit py-[1px]
-            ${i%2 === 1 ? 'bg-gray-200' : 'bg-gray-100'}
+            ${i % 2 === 1 ? 'bg-gray-200' : 'bg-gray-100'}
           `}
         >
           <div className="col-span-6 md:col-span-4">
-            <Form 
-              formMetadata={formMetadata} 
-              customFormRenderer={(params) => formComponent(params)} 
+            <Form
+              formMetadata={formMetadata}
+              customFormRenderer={(params) => formComponent(params)}
               onChange={handleFormChange}
             />
           </div>
@@ -163,7 +164,7 @@ const FormWithCells = ({
                 )}
               />
             </div>
-            <AddCommentButton comments={[]} onCommentsChange={() => {}} />
+            <AddCommentButton comments={[]} onCommentsChange={() => { }} />
           </div>
         </div>
       )}
@@ -172,14 +173,14 @@ const FormWithCells = ({
 
 }
 
-const CellLabel = ({ label }: {label: string}) => {
+const CellLabel = ({ label }: { label: string }) => {
   return <span className="font-thin text-sm mb-1">{label}</span>
 }
 
-const ErrorMessage = ({ message }: {message: string}) => {
+const ErrorMessage = ({ message }: { message: string }) => {
   return (
     <div className="h-[17px] text-sm mt-1 text-orange-500">
-      { message }
+      {message}
     </div>
   )
 }

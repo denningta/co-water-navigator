@@ -5,12 +5,12 @@ import { HttpError } from "../../interfaces/HttpError"
 import calculationFns, { CalculationProps } from "./calculationFns"
 
 export const runCalculationsInternal = (
-  modifiedBankingData: ModifiedBanking, 
-  permitNumber: string, 
+  modifiedBankingData: ModifiedBanking,
+  permitNumber: string,
   year: string
 ): Promise<ModifiedBanking | undefined> => {
   return new Promise(async (resolve, reject) => {
-    const dependencies: Omit<CalculationProps, 'data'> | void = 
+    const dependencies: Omit<CalculationProps, 'data'> | void =
       await queryDependencies(permitNumber, year)
         .then(res => res)
         .catch(error => reject(error))
@@ -18,7 +18,7 @@ export const runCalculationsInternal = (
     if (!dependencies) {
       reject(new HttpError(
         'Modified banking calculations failed: Missing dependencies',
-        `No data found matching the query paramters: ` + 
+        `No data found matching the query paramters: ` +
         `'permitNumber': ${permitNumber}, year: ${year}`,
         404
       ))
@@ -39,45 +39,45 @@ export const runCalculationsInternal = (
 export const queryDependencies = (
   permitNumber: string, year: string
 ): Promise<Omit<CalculationProps, 'data'>> => {
-  return new Promise(async (resolve, reject) => {    
-    const totalPumpedThisYearQuery = 
-      q.Let(      
+  return new Promise(async (resolve, reject) => {
+    const totalPumpedThisYearQuery =
+      q.Let(
         {
           pumpedYearToDateArray: q.Map(
-          q.Filter(
-            q.Map(
-              q.Paginate(
-                q.Join(
-                  q.Match(q.Index('meter-readings-by-permitNumber-year'), [permitNumber, year]),
-                  q.Index('meter-readings-sort-by-date-asc')
+            q.Filter(
+              q.Map(
+                q.Paginate(
+                  q.Join(
+                    q.Match(q.Index('meter-readings-by-permitNumber-year'), [permitNumber, year]),
+                    q.Index('meter-readings-sort-by-date-asc')
+                  )
+                ),
+                q.Lambda(
+                  ['date', 'ref'],
+                  q.Select(['data'], q.Get(q.Var('ref')))
                 )
               ),
               q.Lambda(
-                ['date', 'ref'],
-                q.Select(['data'], q.Get(q.Var('ref')))
+                'ref',
+                q.ContainsPath(['pumpedYearToDate', 'value'], q.Var('ref'))
               )
             ),
             q.Lambda(
               'ref',
-              q.ContainsPath(['pumpedYearToDate', 'value'], q.Var('ref'))
+              q.Select(['pumpedYearToDate', 'value'], q.Var('ref'))
             )
-          ),
-          q.Lambda(
-            'ref',
-            q.Select(['pumpedYearToDate', 'value'], q.Var('ref'))
           )
-        )
         },
         q.If(
           q.IsEmpty(q.Select(['data'], q.Var('pumpedYearToDateArray'))),
           null,
-          q.Select(0, q.Max(q.Var('pumpedYearToDateArray'))), 
+          q.Select(0, q.Max(q.Var('pumpedYearToDateArray'))),
         )
       )
 
-    const dataLastYearQuery = 
-    q.Let({
-      data: q.Map(
+    const dataLastYearQuery =
+      q.Let({
+        data: q.Map(
           q.Paginate(
             q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, (+year - 1).toString()])
           ),
@@ -87,12 +87,12 @@ export const queryDependencies = (
           )
         )
       },
-      q.If(
-        q.ContainsPath(['data', 0], q.Var('data')),
-        q.Select(['data', 0], q.Var('data')),
-        null
+        q.If(
+          q.ContainsPath(['data', 0], q.Var('data')),
+          q.Select(['data', 0], q.Var('data')),
+          null
+        )
       )
-    )
 
     const response: any = await faunaClient.query(
       q.Let({ dataLastYear: dataLastYearQuery },
@@ -118,7 +118,6 @@ export const queryDependencies = (
 export const calculate = (
   props: CalculationProps
 ): ModifiedBanking | undefined => {
-
   const { data } = props
 
   const refRecord = {
