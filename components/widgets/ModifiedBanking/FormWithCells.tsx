@@ -97,7 +97,6 @@ const FormWithCells = ({
     if (valueSetter) {
       const setterResult = valueSetter(e)
       if (setterResult) {
-        console.log(e)
         onCellValueChanged(e)
       } else {
         onValueSetterError(e)

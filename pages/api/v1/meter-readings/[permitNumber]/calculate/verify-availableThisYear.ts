@@ -1,9 +1,7 @@
-import { GiReturnArrow } from "react-icons/gi";
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
-import { getPrecision } from "./helpers";
 
 const verifyAvailableThisYear = (
-  meterReading: MeterReading, 
+  meterReading: MeterReading,
   pumpingLimitThisYear: number | undefined,
   meterReadings: MeterReading[],
   index: number,
@@ -18,22 +16,26 @@ const verifyAvailableThisYear = (
     }
   }
 
-  if (!prevValue && meterReading.availableThisYear?.value !== undefined) prevValue = { value: meterReading.availableThisYear.value  }
+  if (!prevValue && meterReading.availableThisYear?.value !== undefined) prevValue = { value: meterReading.availableThisYear.value }
 
   if (meterReading.pumpedYearToDate?.value === undefined) {
-    if (meterReading.availableThisYear?.source === 'user')
-      return meterReading.availableThisYear
-    else
+    if (meterReading.availableThisYear?.source === 'user') {
+      return {
+        ...meterReading.availableThisYear,
+      }
+    }
+    else {
       return
+    }
   }
 
-  const shouldBe = 
-    pumpingLimitThisYear 
-    ? parseFloat((pumpingLimitThisYear - meterReading.pumpedYearToDate.value).toFixed(2))
-    : parseFloat(
-      ((prevValue?.value ?? 0) - (meterReading.pumpedThisPeriod?.value ?? 0)).toFixed(2)
-    )
-  
+  const shouldBe =
+    pumpingLimitThisYear
+      ? parseFloat((pumpingLimitThisYear - meterReading.pumpedYearToDate.value).toFixed(2))
+      : parseFloat(
+        ((prevValue?.value ?? 0) - (meterReading.pumpedThisPeriod?.value ?? 0)).toFixed(2)
+      )
+
   const updatedValue: CalculatedValue = {
     ...meterReading.availableThisYear,
     value: shouldBe
@@ -49,7 +51,6 @@ const verifyAvailableThisYear = (
       delete updatedValue.shouldBe
       delete updatedValue.calculationState
       delete updatedValue.calculationMessage
-      delete updatedValue.source
     }
   }
 

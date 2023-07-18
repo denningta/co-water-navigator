@@ -52,9 +52,6 @@ const RolesManager = ({ }: Props) => {
     setAvailableRoles(roles)
   }, [data])
 
-  console.log(availableRoles)
-
-
 
   const handleRoleChange = async ({ target }: React.ChangeEvent<HTMLInputElement>, role: Role, index: number) => {
     if (!user || !user.user_id) {

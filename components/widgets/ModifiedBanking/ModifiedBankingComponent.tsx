@@ -22,8 +22,6 @@ const ModifiedBankingComponent = ({
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
-  console.log('data', data)
-
   useEffect(() => {
     if (!year || !permitNumber) return
     setFormElements(generateFormElements(permitNumber, year))
@@ -61,7 +59,6 @@ const ModifiedBankingComponent = ({
   }
 
   const updateDatabase = async (body: any) => {
-    console.log('body', body)
     const url = `/api/v1/modified-banking/${permitNumber}/${year}`
     const res = await axios.patch(url, body)
     return res.data

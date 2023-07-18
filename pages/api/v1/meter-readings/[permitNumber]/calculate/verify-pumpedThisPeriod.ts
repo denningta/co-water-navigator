@@ -5,8 +5,6 @@ const verifyPumpedThisPeriod = (
   meterReadings: MeterReading[],
   index: number
 ): CalculatedValue | undefined => {
-  console.log(meterReading)
-
   let prevValue: CalculatedValue | undefined = undefined
   let prevPowerMeter: CalculatedValue | undefined = undefined
 

@@ -5,11 +5,11 @@ import { getPrecision } from "./helpers";
 const verifyPumpedYearToDate = (
   currentRecord: MeterReading,
   currentIndex: number,
-  meterReadings: MeterReading[], 
+  meterReadings: MeterReading[],
 ): CalculatedValue | undefined => {
   const readingsThisYear = getMeterReadingsPerYear(meterReadings, currentIndex)
 
-  const shouldBe = readingsThisYear.reduce((n, {pumpedThisPeriod}) => {
+  const shouldBe = readingsThisYear.reduce((n, { pumpedThisPeriod }) => {
     if (!pumpedThisPeriod) return +n.toFixed(2)
     return +(n + pumpedThisPeriod.value).toFixed(2)
   }, 0)
@@ -29,7 +29,6 @@ const verifyPumpedYearToDate = (
       delete updatedValue.shouldBe
       delete updatedValue.calculationState
       delete updatedValue.calculationMessage
-      delete updatedValue.source
     }
   }
 
@@ -37,7 +36,7 @@ const verifyPumpedYearToDate = (
 }
 
 export const getMeterReadingsPerYear = (
-  meterReadings: MeterReading[], 
+  meterReadings: MeterReading[],
   currIndex: number
 ) => {
   if (validateDate(meterReadings[currIndex].date) === 'invalid') {
