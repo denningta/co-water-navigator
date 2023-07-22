@@ -1,8 +1,57 @@
 import _ from "lodash"
-import { ModifiedBanking } from "../../../../../interfaces/ModifiedBanking"
-import faunaClient, { q } from "../../../../../lib/fauna/faunaClient"
-import { HttpError } from "../../interfaces/HttpError"
+import { NextApiRequest, NextApiResponse } from "next";
+import { ModifiedBanking } from "../../../../../../../interfaces/ModifiedBanking"
+import faunaClient, { q } from "../../../../../../../lib/fauna/faunaClient"
+import getModifiedBankingQuery from "../../../../../../../lib/fauna/ts-queries/getModifiedBankingQuery";
 import calculationFns, { CalculationProps } from "./calculationFns"
+
+type HandlerFunctions = {
+  [key: string]: (req: NextApiRequest) => Promise<ModifiedBanking | undefined>
+};
+
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  try {
+    if (!req || !req.method) {
+      throw new Error('Invalid request')
+    }
+
+    const handlers: HandlerFunctions = {
+      POST: runCalculationsExternal,
+    }
+
+    const data = await handlers[req.method](req)
+    console.log('handler', data)
+    res.status(200).json(data)
+
+  } catch (error: any) {
+    res.status(500).json(error)
+  }
+
+}
+export const runCalculationsExternal = async (req: NextApiRequest): Promise<ModifiedBanking | undefined> => {
+  try {
+    const { permitNumber, year } = req.query
+
+    if (!permitNumber || Array.isArray(permitNumber)) throw new Error('Invalid permitNumber')
+    if (!year || Array.isArray(year)) throw new Error('Invalid year')
+
+    const modifiedBankingData: ModifiedBanking = await faunaClient.query(getModifiedBankingQuery(permitNumber, year))
+
+    const data = await runCalculationsInternal(modifiedBankingData, permitNumber, year)
+
+    return data
+
+  } catch (error: any) {
+    throw new Error(error)
+  }
+
+}
+
+
 
 export const runCalculationsInternal = (
   modifiedBankingData: ModifiedBanking,
@@ -16,11 +65,10 @@ export const runCalculationsInternal = (
         .catch(error => reject(error))
 
     if (!dependencies) {
-      reject(new HttpError(
-        'Modified banking calculations failed: Missing dependencies',
+      reject(new Error(
+        'Modified banking calculations failed: Missing dependencies' +
         `No data found matching the query paramters: ` +
-        `'permitNumber': ${permitNumber}, year: ${year}`,
-        404
+        `'permitNumber': ${permitNumber}, year: ${year}`
       ))
       return
     }

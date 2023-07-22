@@ -1,5 +1,5 @@
-import { CalculatedValue } from "../../../../../interfaces/MeterReading";
-import { ModifiedBanking, ModifiedBankingCalculatedFields } from "../../../../../interfaces/ModifiedBanking";
+import { CalculatedValue } from "../../../../../../../interfaces/MeterReading"
+import { ModifiedBanking, ModifiedBankingCalculatedFields } from "../../../../../../../interfaces/ModifiedBanking"
 
 export interface CalculationProps {
   data: ModifiedBanking
@@ -24,6 +24,7 @@ const abstractCalculationFn = (
     ...data[field],
     value: +shouldBe.toFixed(2)
   }
+
   if (data[field]?.source === 'user') {
     const userVal = data[field]
     if (!userVal) return
@@ -36,9 +37,9 @@ const abstractCalculationFn = (
       delete updatedValue.shouldBe
       delete updatedValue.calculationState
       delete updatedValue.calculationMessage
-      delete updatedValue.source
     }
   }
+
   return updatedValue
 }
 
@@ -46,9 +47,9 @@ const calculationFns: CalculationFns = {
   originalAppropriation: ({ data, dataLastYear }) => {
     if (!dataLastYear) {
       if (!data.originalAppropriation) return
-      return { value: data.originalAppropriation.value }
+      return data.originalAppropriation
     }
-    if (!dataLastYear.originalAppropriation) return
+    if (!dataLastYear.originalAppropriation) return data.originalAppropriation
     const shouldBe = dataLastYear.originalAppropriation.value
     const update = abstractCalculationFn('originalAppropriation', data, shouldBe)
     return update
@@ -57,9 +58,9 @@ const calculationFns: CalculationFns = {
   allowedAppropriation: ({ data, dataLastYear }) => {
     if (!dataLastYear) {
       if (!data.allowedAppropriation) return
-      return { value: data.allowedAppropriation.value }
+      return data.allowedAppropriation
     }
-    if (!dataLastYear.allowedAppropriation) return
+    if (!dataLastYear.allowedAppropriation) return data.allowedAppropriation
     const shouldBe = dataLastYear.allowedAppropriation.value
     return abstractCalculationFn('allowedAppropriation', data, shouldBe)
   },

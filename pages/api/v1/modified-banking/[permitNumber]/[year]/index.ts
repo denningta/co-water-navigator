@@ -1,43 +1,42 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
-import { HttpError } from "../../../interfaces/HttpError";
 import createModifiedBanking from "./create";
 import deleteModifiedBanking from "./delete";
 import listModifiedBanking from "./list";
 import updateModifiedBanking from "./update";
 
-type HandlerFunctions = { 
-  [key: string]: (req: NextApiRequest) => Promise<ModifiedBanking> 
+type HandlerFunctions = {
+  [key: string]: (req: NextApiRequest, res: NextApiResponse) => Promise<ModifiedBanking>
 };
 
-function handler(
-  req: NextApiRequest, 
+async function handler(
+  req: NextApiRequest,
   res: NextApiResponse
-): Promise<ModifiedBanking | HttpError> {
+) {
+  try {
+
     if (!req || !req.method) {
-      return Promise.reject(new HttpError(
-        'No Request or Invalid Request Method',
-        'No request or an invalid request method was sent to the server',
-        400
-      ));
+      throw new Error('Invalid request or request method')
     }
-  
+
     const handlers: HandlerFunctions = {
       GET: listModifiedBanking,
       POST: createModifiedBanking,
       PATCH: updateModifiedBanking,
       DELETE: deleteModifiedBanking
     }
-  
-    return handlers[req.method](req)
-      .then((response) => {
-        res.status(200).json(response);
-        return response
-      })
-      .catch((errors: any) => {
-        res.status(errors[0].status || 500).json({errors: errors})
-        return errors
-      });
+
+    const data = await handlers[req.method](req, res)
+    console.log('handler data', req.method, data)
+    res.status(200).json(data)
+    return data
+
+  } catch (error: any) {
+    res.status(500).json(error)
+    return error
+
+  }
+
 }
 
 export default handler;

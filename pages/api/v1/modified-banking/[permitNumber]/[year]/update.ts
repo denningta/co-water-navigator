@@ -1,82 +1,44 @@
-import { NextApiRequest } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
-import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
-import { HttpError } from "../../../interfaces/HttpError";
-import validateQuery from "../../../validatorFunctions";
-import { runCalculationsInternal } from "../../calculate";
+import faunaClient from "../../../../../../lib/fauna/faunaClient";
+import upsertModifiedBanking from "../../../../../../lib/fauna/ts-queries/upsertModifiedBanking";
+import { runCalculationsInternal } from "./calculate";
 
-function updateModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
-  return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'bodyExists',
-      'queryExists',
-      'permitNumberRequired',
-      'yearRequired'
-    ]);
-
-    if (errors.length) return reject(errors);
-
+async function updateModifiedBankingHandler(req: NextApiRequest, res: NextApiResponse): Promise<ModifiedBanking> {
+  try {
     const { permitNumber, year } = req.query;
+
     if (!permitNumber || Array.isArray(permitNumber)) {
-      return reject('permitNumber does not exist or is an array')
+      throw new Error('permitNumber does not exist or is an array')
     }
     if (!year || Array.isArray(year)) {
-      return reject('year does not exist or is an array')
+      throw new Error('year does not exist or is an array')
     }
+    if (!req.body) throw new Error('body was missing or undefined in the request')
 
-    const calculationUpdates = await runCalculationsInternal(req.body, permitNumber, year)
-    const updateData = calculationUpdates ? { ...calculationUpdates } : req.body
+    const data = updateModifiedBanking(permitNumber, year, req.body)
+    return data
 
-    const response: any = await faunaClient.query(
-      q.Let(
-        {
-          match: q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])
-        },
-        q.If(
-          q.Exists(q.Var('match')),
-          q.Replace(
-            q.Select(['ref'], q.Get(
-              q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])
-            )),
-            { data:
-              { 
-                ...updateData, 
-                permitNumber: permitNumber, 
-                year: year 
-              } 
-            }
-          ),
-          q.Create(
-            q.Collection('administrativeReports'), 
-            { data: 
-              { 
-                ...updateData, 
-                permitNumber: permitNumber, 
-                year: year 
-              } 
-            }
-          )
-        )
-      )
-    ).catch(err => {
-      errors.push({
-        ...err, 
-        status: err.requestResult.statusCode
-      });
-      return reject(errors);
-    })
+  } catch (error: any) {
+    return error
+  }
 
-    if (!response || !response.data) {
-      errors.push(new HttpError(
-        'Record Update Failed',
-        `Creation failed for meter reading for permit: ${permitNumber} and year: ${year}`,
-        500
-      ));
-      return reject(errors);
-    }
-
-    return resolve(response.data);
-  });
 }
 
-export default updateModifiedBanking;
+
+export const updateModifiedBanking = async (permitNumber: string, year: string, data: ModifiedBanking) => {
+  try {
+    const calculationUpdates = await runCalculationsInternal(data, permitNumber, year)
+    const updateData = calculationUpdates ? { ...calculationUpdates } : data
+
+    const response: any = await faunaClient.query(
+      upsertModifiedBanking(permitNumber, year, updateData)
+    )
+    return response.data
+
+  } catch (error) {
+    return error
+  }
+}
+
+export default updateModifiedBankingHandler

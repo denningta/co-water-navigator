@@ -1,8 +1,8 @@
 import { CalculatedValue } from "./MeterReading"
 
 export interface ModifiedBanking {
-  permitNumber: string,
-  year: string,
+  permitNumber?: string,
+  year?: string,
   allowedAppropriation?: CalculatedValue
   bankingReserveLastYear?: CalculatedValue
   bankingReserveThisYear?: CalculatedValue

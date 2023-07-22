@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useSnackbar } from "notistack"
 import { useEffect, useState } from "react"
+import { MdRefresh } from "react-icons/md"
 import useModifiedBanking from "../../../hooks/useModifiedBanking"
 import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
 import FormWithCells, { CellValueChangedEvent, FormElement } from "./FormWithCells"
@@ -19,8 +20,9 @@ const ModifiedBankingComponent = ({
 }: Props) => {
   const { data, mutate } = useModifiedBanking(permitNumber, year)
   const [formElements, setFormElements] = useState<FormElement[]>([])
-  const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
+
+  console.log(data)
 
   useEffect(() => {
     if (!year || !permitNumber) return
@@ -32,15 +34,12 @@ const ModifiedBankingComponent = ({
   ) => {
     try {
       onCalculating(true)
-      setLoading(true)
       await mutate(updateDatabase(event.data), {
         rollbackOnError: true,
         revalidate: true
       })
-      setLoading(false)
       onCalculating(false)
     } catch (error: any) {
-      setLoading(false)
       onCalculating(undefined)
       enqueueSnackbar('Something went wrong', { variant: 'error' })
     }
@@ -64,11 +63,45 @@ const ModifiedBankingComponent = ({
     return res.data
   }
 
+  const refreshCalculations = async () => {
+    const url = `/api/v1/modified-banking/${permitNumber}/${year}/calculate`
+    try {
+      const res = await axios.post(url)
+      console.log(res.data)
+      return res.data
+    } catch (error) {
+      return error
+    }
+  }
+
+  const handleRefreshCalculations = async () => {
+    onCalculating(true)
+    try {
+      await mutate(refreshCalculations(),
+        {
+          rollbackOnError: true,
+          revalidate: true
+        }
+      )
+      onCalculating(false)
+    } catch (error) {
+      enqueueSnackbar('Something went wrong', { variant: 'error' })
+      onCalculating(false)
+    }
+
+  }
+
   return (
     <div>
       <div className="md:flex items-center font-bold text-2xl mb-4">
         <div>Three Year Modified Banking (DBB-013)</div>
         <div className="md:grow"><span className="md:ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>
+
+        <div className="mr-6">
+          <button className="btn-round" onClick={handleRefreshCalculations}>
+            <MdRefresh size={25} />
+          </button>
+        </div>
       </div>
       {year &&
         <FormWithCells

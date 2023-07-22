@@ -1,5 +1,5 @@
 import useSWR from "swr"
-
+import { ModifiedBanking } from "../interfaces/ModifiedBanking"
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
@@ -11,8 +11,11 @@ const fetcher = async (url: string) => {
   return res.json()
 }
 
-const useModifiedBanking = (permitNumber: string | undefined, year: string | undefined) => {
-  const { data, mutate } = useSWR(
+const useModifiedBanking = (
+  permitNumber: string | undefined,
+  year: string | undefined,
+): UseSWR => {
+  const { data, mutate, isValidating } = useSWR<ModifiedBanking>(
     (permitNumber && year)
       ? `/api/v1/modified-banking/${permitNumber}/${year}`
       : null,
@@ -21,8 +24,11 @@ const useModifiedBanking = (permitNumber: string | undefined, year: string | und
 
   return {
     data: data ?? {},
-    mutate: mutate
+    mutate: mutate,
+    isValidating: isValidating
   }
 }
 
 export default useModifiedBanking
+
+type UseSWR = ReturnType<typeof useSWR<ModifiedBanking>>

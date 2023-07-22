@@ -1,9 +1,11 @@
 import { ColDef, ICellRendererParams, IHeaderParams, ValueSetterParams } from "ag-grid-community";
+import { IHeaderReactComp } from "ag-grid-react";
 import CalcValueCellRenderer from "./CalcValueCellRenderer";
+import CustomHeaderRenderer from "./CalcValueHeaderRenderer";
 import CalcValueHeaderRenderer from "./CalcValueHeaderRenderer";
 import { calculatedValueGetter, calculatedValueSetter, dateFormatter, getCellClassRules } from "./helpers";
 
-export const readingsGridDefaultColDef = {
+export const readingsGridDefaultColDef: ColDef = {
   resizable: true,
   editable: true,
   sortable: false,
@@ -11,6 +13,7 @@ export const readingsGridDefaultColDef = {
   autoHeaderHeight: true,
   wrapHeaderText: true,
   minWidth: 120,
+  headerComponent: (params: IHeaderParams) => CustomHeaderRenderer(params)
 }
 
 export const createCalculatedValueColDef = (field: string, validatorFn: (params: ValueSetterParams) => boolean): ColDef => {

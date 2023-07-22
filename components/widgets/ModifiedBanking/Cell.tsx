@@ -24,19 +24,19 @@ interface Props {
 }
 
 const Cell = forwardRef((
-  { 
-    value = undefined, 
+  {
+    value = undefined,
     focus = false,
     editing = false,
     className = '',
     label,
     errorMessage,
-    onChange = () => {},
-    onClick = () => {},
-    onFocusClick = () => {},
-    onCellValueChanged = () => {},
-    cellRendererComponent = () => {},
-  }: Props, 
+    onChange = () => { },
+    onClick = () => { },
+    onFocusClick = () => { },
+    onCellValueChanged = () => { },
+    cellRendererComponent = () => { },
+  }: Props,
   ref: React.ForwardedRef<CellApi>
 ) => {
   const cellRef = useRef<HTMLDivElement>(null)
@@ -100,21 +100,21 @@ const Cell = forwardRef((
 
   return (
     <div>
-      {label && 
+      {label &&
         <div>
-          { label }
+          {label}
         </div>
       }
       <div
         ref={cellRef}
         onClick={handleClick}
         className={`h-[38px] w-full bg-white hover:bg-primary-500 hover:bg-opacity-10 ${focus ? 'outline outline-primary-500' : 'outline-none'} ${editing ? 'drop-shadow-lg' : 'drop-shadow-none'}`}>
-        { !editing &&
+        {!editing &&
           <div className={`w-full h-full px-3 flex items-center select-none ${className}`}>
-            { cellRendererComponent({ value: newValue }) ?? newValue }
+            {cellRendererComponent({ value: newValue }) ?? newValue}
           </div>
         }
-        { editing &&
+        {editing &&
           <input
             ref={inputRef}
             value={newValue ?? ''}
@@ -124,7 +124,7 @@ const Cell = forwardRef((
           />
         }
       </div>
-      {errorMessage && 
+      {errorMessage &&
         <div>
           {errorMessage}
         </div>

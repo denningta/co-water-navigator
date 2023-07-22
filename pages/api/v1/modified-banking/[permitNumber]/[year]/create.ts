@@ -1,12 +1,10 @@
-import { Get, Lambda } from "faunadb";
-import { NextApiRequest } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
-import MeterReading from "../../../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
 
-async function createModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
+async function createModifiedBanking(req: NextApiRequest, res: NextApiResponse): Promise<ModifiedBanking> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
@@ -21,9 +19,9 @@ async function createModifiedBanking(req: NextApiRequest): Promise<ModifiedBanki
     const adminReport = req.body;
     adminReport.permitNumber = permitNumber;
     adminReport.year = year;
-    
+
     const response: any = await faunaClient.query(
-      q.Create(q.Collection('administrativeReports'), 
+      q.Create(q.Collection('administrativeReports'),
         { data: adminReport }
       )
     ).catch(err => {
@@ -35,7 +33,7 @@ async function createModifiedBanking(req: NextApiRequest): Promise<ModifiedBanki
         ));
       } else {
         errors.push({
-          ...err, 
+          ...err,
           status: err.requestResult.statusCode
         });
       }

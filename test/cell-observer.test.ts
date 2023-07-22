@@ -42,7 +42,6 @@ describe('Table', () => {
     )
 
 
-    console.log(table)
 
     const cell = table.getCell(2, 5)
     cell.setFormula((thisCell, refCells) => {
@@ -53,7 +52,6 @@ describe('Table', () => {
     })
 
 
-    console.log('Cell: ', cell)
 
   })
 

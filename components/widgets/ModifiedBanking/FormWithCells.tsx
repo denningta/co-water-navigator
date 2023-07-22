@@ -1,10 +1,12 @@
-import { CellRendererComponent } from "ag-grid-community/dist/lib/components/framework/componentTypes"
-import React, { useEffect, useMemo, useRef } from "react"
+import React, { ReactNode, useEffect, useMemo, useRef } from "react"
 import useCellNavigation from "../../../hooks/useCellNavigation"
 import AddCommentButton from "./AddCommentButton"
 import Cell, { CellApi } from "./Cell"
 import Form from "./Form"
-import { FormMetaData, generateformMetaData } from "./generatre-form-elements"
+import { FormMetaData } from "./generatre-form-elements"
+import { BsCalculatorFill } from "react-icons/bs"
+import { FaUser } from "react-icons/fa"
+import { Tooltip } from "@mui/material"
 
 export type CellValueChangedEvent = {
   formControl: string
@@ -147,7 +149,7 @@ const FormWithCells = ({
               <Cell
                 ref={(el: CellApi) => cellRefs.current[i] = el}
                 value={valueGetter ? valueGetter({ data, formControl }) : data[formControl]}
-                label={<CellLabel label={cellLabel ?? ''} />}
+                label={<CellLabel label={cellLabel ?? ''} formControl={formControl} />}
                 errorMessage={<ErrorMessage message={(data && data[formControl]?.calculationMessage) ?? ''} />}
                 className={cellClass ? cellClass({ data, formControl }) : ''}
                 focus={focusIndex === i}
@@ -172,8 +174,37 @@ const FormWithCells = ({
 
 }
 
-const CellLabel = ({ label }: { label: string }) => {
-  return <span className="font-thin text-sm mb-1">{label}</span>
+const CellLabel = ({ label, formControl }: { label: string, formControl: string }) => {
+  let icon: ReactNode = undefined
+  let iconTooltip: ReactNode | string = ''
+
+
+
+  if (['originalAppropriation'].includes(formControl)) {
+    icon = <BsCalculatorFill />
+    iconTooltip = (
+      <>
+        <div>Calculated field</div>
+        <div className="mt-1">This field references 'Original Max Appropriation' from the previous year</div>
+      </>
+    )
+
+
+  }
+
+
+  return (
+    <div className="flex">
+      <div className="font-thin text-sm mb-1">{label}</div>
+      {icon &&
+        <div className="grow flex items-center justify-end">
+          <Tooltip title={iconTooltip}>
+            <div>{icon}</div>
+          </Tooltip>
+        </div>
+      }
+    </div>
+  )
 }
 
 const ErrorMessage = ({ message }: { message: string }) => {

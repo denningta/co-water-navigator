@@ -1,10 +1,10 @@
-import { NextApiRequest } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import { HttpError } from "../../../interfaces/HttpError";
 import validateQuery from "../../../validatorFunctions";
 
-async function deleteModifiedBanking(req: NextApiRequest): Promise<ModifiedBanking> {
+async function deleteModifiedBanking(req: NextApiRequest, res: NextApiResponse): Promise<ModifiedBanking> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
@@ -22,7 +22,7 @@ async function deleteModifiedBanking(req: NextApiRequest): Promise<ModifiedBanki
       )))
     ).catch(err => {
       errors.push({
-        ...err, 
+        ...err,
         status: err.requestResult.statusCode
       });
       return reject(errors);
@@ -32,7 +32,7 @@ async function deleteModifiedBanking(req: NextApiRequest): Promise<ModifiedBanki
       errors.push(
         new HttpError(
           'No Data',
-          `No data found matching the query paramters:` + 
+          `No data found matching the query paramters:` +
           `'permitNumber': ${permitNumber} and 'year': ${year}`,
           404
         )

@@ -78,7 +78,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) 
   const [columnDefs] = useState<ColDef[]>([
     {
       field: 'date',
-      minWidth: 150,
+      minWidth: 120,
       editable: false,
       sort: 'asc',
       valueFormatter: dateFormatter,
@@ -86,7 +86,11 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) 
     },
     createCalculatedValueColDef('flowMeter', numberValidator),
     createCalculatedValueColDef('powerMeter', numberValidator),
-    createCalculatedValueColDef('powerConsumptionCoef', numberValidator),
+    {
+      ...createCalculatedValueColDef('powerConsumptionCoef', numberValidator),
+      headerName: "Power Coefficient",
+      minWidth: 134
+    },
     createCalculatedValueColDef('pumpedThisPeriod', numberValidator),
     createCalculatedValueColDef('pumpedYearToDate', numberValidator),
     createCalculatedValueColDef('availableThisYear', numberValidator),
@@ -101,7 +105,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) 
         }
       }
     },
-    { field: 'comments' },
+    { field: 'comments', minWidth: 127 },
     {
       field: 'updatedBy',
       editable: false,
