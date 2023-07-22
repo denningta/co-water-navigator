@@ -2,6 +2,7 @@ import _ from "lodash"
 import { NextApiRequest, NextApiResponse } from "next";
 import { ModifiedBanking } from "../../../../../../../interfaces/ModifiedBanking"
 import faunaClient, { q } from "../../../../../../../lib/fauna/faunaClient"
+import getModifiedBankingDependencies from "../../../../../../../lib/fauna/ts-queries/getModifiedBankingDependencies";
 import getModifiedBankingQuery from "../../../../../../../lib/fauna/ts-queries/getModifiedBankingQuery";
 import calculationFns, { CalculationProps } from "./calculationFns"
 
@@ -24,7 +25,6 @@ export default async function handler(
     }
 
     const data = await handlers[req.method](req)
-    console.log('handler', data)
     res.status(200).json(data)
 
   } catch (error: any) {
@@ -53,25 +53,16 @@ export const runCalculationsExternal = async (req: NextApiRequest): Promise<Modi
 
 
 
-export const runCalculationsInternal = (
+export const runCalculationsInternal = async (
   modifiedBankingData: ModifiedBanking,
   permitNumber: string,
   year: string
-): Promise<ModifiedBanking | undefined> => {
-  return new Promise(async (resolve, reject) => {
+) => {
+  try {
     const dependencies: Omit<CalculationProps, 'data'> | void =
       await queryDependencies(permitNumber, year)
-        .then(res => res)
-        .catch(error => reject(error))
 
-    if (!dependencies) {
-      reject(new Error(
-        'Modified banking calculations failed: Missing dependencies' +
-        `No data found matching the query paramters: ` +
-        `'permitNumber': ${permitNumber}, year: ${year}`
-      ))
-      return
-    }
+    if (!dependencies) throw new Error('Modified banking calculations failed: Missing dependencies')
 
     const props: CalculationProps = {
       data: modifiedBankingData,
@@ -80,86 +71,27 @@ export const runCalculationsInternal = (
       totalPumpedThisYear: dependencies.totalPumpedThisYear
     }
 
-    resolve(calculate(props))
-  })
+    const updatedData = calculate(props)
+    return updatedData
+
+  } catch (error: any) {
+    return error
+  }
 }
 
-export const queryDependencies = (
+
+
+export const queryDependencies = async (
   permitNumber: string, year: string
-): Promise<Omit<CalculationProps, 'data'>> => {
-  return new Promise(async (resolve, reject) => {
-    const totalPumpedThisYearQuery =
-      q.Let(
-        {
-          pumpedYearToDateArray: q.Map(
-            q.Filter(
-              q.Map(
-                q.Paginate(
-                  q.Join(
-                    q.Match(q.Index('meter-readings-by-permitNumber-year'), [permitNumber, year]),
-                    q.Index('meter-readings-sort-by-date-asc')
-                  )
-                ),
-                q.Lambda(
-                  ['date', 'ref'],
-                  q.Select(['data'], q.Get(q.Var('ref')))
-                )
-              ),
-              q.Lambda(
-                'ref',
-                q.ContainsPath(['pumpedYearToDate', 'value'], q.Var('ref'))
-              )
-            ),
-            q.Lambda(
-              'ref',
-              q.Select(['pumpedYearToDate', 'value'], q.Var('ref'))
-            )
-          )
-        },
-        q.If(
-          q.IsEmpty(q.Select(['data'], q.Var('pumpedYearToDateArray'))),
-          null,
-          q.Select(0, q.Max(q.Var('pumpedYearToDateArray'))),
-        )
-      )
+) => {
+  try {
+    const response = faunaClient.query(getModifiedBankingDependencies(permitNumber, year))
+    return response
 
-    const dataLastYearQuery =
-      q.Let({
-        data: q.Map(
-          q.Paginate(
-            q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, (+year - 1).toString()])
-          ),
-          q.Lambda(
-            'ref',
-            q.Select(['data'], q.Get(q.Var('ref')))
-          )
-        )
-      },
-        q.If(
-          q.ContainsPath(['data', 0], q.Var('data')),
-          q.Select(['data', 0], q.Var('data')),
-          null
-        )
-      )
+  } catch (error: any) {
+    return error
+  }
 
-    const response: any = await faunaClient.query(
-      q.Let({ dataLastYear: dataLastYearQuery },
-        {
-          dataLastYear: q.Var('dataLastYear'),
-          bankingReserveLastYear:
-            q.If(
-              q.ContainsPath(['bankingReserveThisYear', 'value'], q.Var('dataLastYear')),
-              q.Select(['bankingReserveThisYear', 'value'], q.Var('dataLastYear')),
-              null
-            ),
-          totalPumpedThisYear: totalPumpedThisYearQuery
-        }
-      )
-    ).catch(error => reject(error))
-
-    const result: Omit<CalculationProps, 'data'> = { ...response }
-    resolve(result)
-  })
 
 }
 

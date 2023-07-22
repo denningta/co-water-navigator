@@ -27,7 +27,6 @@ async function handler(
     }
 
     const data = await handlers[req.method](req, res)
-    console.log('handler data', req.method, data)
     res.status(200).json(data)
     return data
 

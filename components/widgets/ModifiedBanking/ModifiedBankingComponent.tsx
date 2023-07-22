@@ -22,7 +22,6 @@ const ModifiedBankingComponent = ({
   const [formElements, setFormElements] = useState<FormElement[]>([])
   const { enqueueSnackbar } = useSnackbar()
 
-  console.log(data)
 
   useEffect(() => {
     if (!year || !permitNumber) return
@@ -67,7 +66,6 @@ const ModifiedBankingComponent = ({
     const url = `/api/v1/modified-banking/${permitNumber}/${year}/calculate`
     try {
       const res = await axios.post(url)
-      console.log(res.data)
       return res.data
     } catch (error) {
       return error
