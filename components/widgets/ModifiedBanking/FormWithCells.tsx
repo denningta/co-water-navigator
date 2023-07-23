@@ -185,7 +185,7 @@ const CellLabel = ({ label, formControl }: { label: string, formControl: string 
     iconTooltip = (
       <>
         <div>Calculated field</div>
-        <div className="mt-1">This field references 'Original Max Appropriation' from the previous year</div>
+        <div className="mt-1">This field references Original Max Appropriation from the previous year</div>
       </>
     )
 
