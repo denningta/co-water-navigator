@@ -9,8 +9,8 @@ import getWellPermitRecord from "../../../../../lib/fauna/ts-queries/getWellPerm
 import fields from "./dbb013-fields"
 
 const addDbb013 = async (
-  data: ModifiedBanking[], 
-  agentInfo: AgentInfo, 
+  data: ModifiedBanking[],
+  agentInfo: AgentInfo,
   wellUsage: WellUsage,
   debug: boolean = false
 ) => {
@@ -27,14 +27,14 @@ const addDbb013 = async (
   const page = document.getPage(0)
 
   const permitNumber = data[0].permitNumber
-  const { 
-    q40, 
-    q160, 
-    section, 
-    township, 
-    range, 
-    contactName 
-  }: WellPermit = await faunaClient.query(getWellPermitRecord(permitNumber))
+  const {
+    q40,
+    q160,
+    section,
+    township,
+    range,
+    contactName
+  }: WellPermit = await faunaClient.query(getWellPermitRecord(permitNumber ?? ''))
 
 
   const tableData = {
@@ -76,7 +76,7 @@ const addDbb013 = async (
       formField.addToPage(page, {
         ...box,
         borderWidth: 1,
-        borderColor: rgb(0,0,0)
+        borderColor: rgb(0, 0, 0)
       })
     }
   })
