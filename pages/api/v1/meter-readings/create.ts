@@ -1,11 +1,10 @@
 import { NextApiRequest } from "next";
-import { resolve } from "path";
 import MeterReading from "../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
-import { HttpError } from "../interfaces/HttpError";
+import faunaClient from "../../../../lib/fauna/faunaClient";
 import validateQuery from "../validatorFunctions";
+import createMeterReadingsFauna from "../../../../lib/fauna/ts-queries/createMeterReadings";
 
-function createMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {  
+function createMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
@@ -16,18 +15,12 @@ function createMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
     if (errors.length) return reject(errors);
 
     const response: any = await faunaClient.query(
-      q.Map(req.body,
-        (meterReading) => {
-          return q.Create(q.Collection('meterReadings'),
-            { data: meterReading }
-          )
-        }
-      )
+      createMeterReadingsFauna(req.body)
     ).catch(err => {
-        errors.push({
-          ...err, 
-          status: err.requestResult.statusCode
-        });
+      errors.push({
+        ...err,
+        status: err.requestResult.statusCode
+      });
       return reject(errors);
     });
 

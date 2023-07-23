@@ -1,9 +1,10 @@
 import { NextApiRequest } from "next";
 import MeterReading from "../../../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
+import faunaClient from "../../../../../../lib/fauna/faunaClient";
+import deleteMeterReading from "../../../../../../lib/fauna/ts-queries/deleteMeterReading";
 import validateQuery from "../../../validatorFunctions";
 
-async function deleteMeterReading(req: NextApiRequest): Promise<MeterReading> {
+async function deleteMeterReadingHandler(req: NextApiRequest): Promise<MeterReading> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
@@ -16,13 +17,17 @@ async function deleteMeterReading(req: NextApiRequest): Promise<MeterReading> {
 
     const { permitNumber, date } = req.query;
 
+    if (!permitNumber || Array.isArray(permitNumber))
+      throw new Error('Invalid permitNumber query')
+
+    if (!date || Array.isArray(date))
+      throw new Error('Invalid date query')
+
     const response: any = await faunaClient.query(
-      q.Delete(q.Select(['ref'], q.Get(
-        q.Match(q.Index('meter-readings-by-permitnumber-date'), [permitNumber, date])
-      )))
+      deleteMeterReading(permitNumber, date)
     ).catch(err => {
       errors.push({
-        ...err, 
+        ...err,
         status: err.requestResult.statusCode
       });
       return reject(errors);
@@ -34,4 +39,4 @@ async function deleteMeterReading(req: NextApiRequest): Promise<MeterReading> {
 
 }
 
-export default deleteMeterReading;
+export default deleteMeterReadingHandler;
