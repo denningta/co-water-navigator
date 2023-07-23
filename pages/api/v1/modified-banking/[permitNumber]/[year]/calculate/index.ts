@@ -4,6 +4,7 @@ import { ModifiedBanking } from "../../../../../../../interfaces/ModifiedBanking
 import faunaClient, { q } from "../../../../../../../lib/fauna/faunaClient"
 import getModifiedBankingDependencies from "../../../../../../../lib/fauna/ts-queries/getModifiedBankingDependencies";
 import getModifiedBankingQuery from "../../../../../../../lib/fauna/ts-queries/getModifiedBankingQuery";
+import { updateModifiedBanking } from "../update";
 import calculationFns, { CalculationProps } from "./calculationFns"
 
 type HandlerFunctions = {
@@ -30,8 +31,9 @@ export default async function handler(
   } catch (error: any) {
     res.status(500).json(error)
   }
-
 }
+
+
 export const runCalculationsExternal = async (req: NextApiRequest): Promise<ModifiedBanking | undefined> => {
   try {
     const { permitNumber, year } = req.query
@@ -43,14 +45,16 @@ export const runCalculationsExternal = async (req: NextApiRequest): Promise<Modi
 
     const data = await runCalculationsInternal(modifiedBankingData, permitNumber, year)
 
-    return data
+    if (data) {
+      const updateRes = await updateModifiedBanking(permitNumber, year, data)
+      return updateRes
+    }
 
   } catch (error: any) {
     throw new Error(error)
   }
 
 }
-
 
 
 export const runCalculationsInternal = async (
@@ -66,9 +70,7 @@ export const runCalculationsInternal = async (
 
     const props: CalculationProps = {
       data: modifiedBankingData,
-      dataLastYear: dependencies.dataLastYear,
-      bankingReserveLastYear: dependencies.bankingReserveLastYear,
-      totalPumpedThisYear: dependencies.totalPumpedThisYear
+      ...dependencies
     }
 
     const updatedData = calculate(props)
@@ -91,8 +93,6 @@ export const queryDependencies = async (
   } catch (error: any) {
     return error
   }
-
-
 }
 
 export const calculate = (
@@ -103,6 +103,8 @@ export const calculate = (
   const refRecord = {
     ...data
   }
+
+  console.log('refRecord', refRecord)
 
   const calculatedFields = Object.keys(calculationFns) as (keyof typeof calculationFns)[]
 

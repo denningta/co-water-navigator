@@ -105,8 +105,8 @@ const calculationFns: CalculationFns = {
   },
 
   totalPumpedThisYear: ({ data, totalPumpedThisYear }) => {
-    if (!totalPumpedThisYear && !data.totalPumpedThisYear?.value === undefined) return
-    if (totalPumpedThisYear)
+    if (totalPumpedThisYear === undefined || !data.totalPumpedThisYear?.value === undefined) return
+    if (totalPumpedThisYear === 0 || totalPumpedThisYear)
       return abstractCalculationFn('totalPumpedThisYear', data, totalPumpedThisYear)
     if (data.totalPumpedThisYear?.value !== undefined)
       return abstractCalculationFn('totalPumpedThisYear', data, data.totalPumpedThisYear.value)
