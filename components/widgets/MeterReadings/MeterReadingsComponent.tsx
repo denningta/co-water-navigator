@@ -7,6 +7,7 @@ import { MdArrowDropUp, MdRefresh } from 'react-icons/md'
 import MeterReadingsInfoDialog from "./MeterReadingsInfoDialog"
 import axios from "axios"
 import { useSnackbar } from "notistack"
+import { Tooltip } from "@mui/material"
 
 interface Props {
   permitNumber: string | undefined
@@ -30,7 +31,6 @@ const MeterReadingsComponent = ({ permitNumber, year, onCalculating = () => { } 
     onCalculating(true)
     try {
       await axios.post(`/api/v1/meter-readings/${permitNumber}/calculate`)
-      await axios.post(``)
       onCalculating(false)
     } catch (error) {
       enqueueSnackbar('Something went wrong', { variant: 'error' })
@@ -41,9 +41,11 @@ const MeterReadingsComponent = ({ permitNumber, year, onCalculating = () => { } 
     <div className="grid grid-cols-3 gap-3">
       <div className="relative col-span-3 font-bold text-2xl md:flex md:items-center">
         <div className="absolute top-0 right-16">
-          <button className="btn-round" onClick={refreshCalculations}>
-            <MdRefresh size={25} />
-          </button>
+          <Tooltip title="Re-calculate">
+            <button className="btn-round" onClick={refreshCalculations}>
+              <MdRefresh size={25} />
+            </button>
+          </Tooltip>
         </div>
         <div>Meter Readings (DBB-004)</div>
         <div className="md:grow"><span className="md:ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>

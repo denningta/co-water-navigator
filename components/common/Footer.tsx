@@ -2,7 +2,7 @@ import { CircularProgress } from "@mui/material"
 import BreadcrumbsRouter from "./BreadcrumbsRouter"
 import Button from "./Button"
 import { TiExport } from 'react-icons/ti'
-import useTailwindBreakpoints from "../../hooks/useTailwindBreakpoints"
+import useDataSummaryByPermit from "../../hooks/useDataSummaryByPermit"
 
 interface Props {
   permitNumber?: string
@@ -10,6 +10,7 @@ interface Props {
 }
 
 const Footer = ({ permitNumber, loading }: Props) => {
+  const { data } = useDataSummaryByPermit(permitNumber)
 
   return (
     <div

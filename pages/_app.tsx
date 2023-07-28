@@ -5,6 +5,7 @@ import { NextPage } from 'next'
 import { ReactElement, ReactNode } from 'react'
 import { SnackbarProvider } from 'notistack'
 import ConfirmationDialogProvider from '../components/common/ConfirmationDialogProvider'
+import { SWRConfig } from 'swr'
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -18,15 +19,17 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page)
 
   return getLayout(
-    <UserProvider>
-      <SnackbarProvider
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      >
-        <ConfirmationDialogProvider>
-          <Component {...pageProps} />
-        </ConfirmationDialogProvider>
-      </SnackbarProvider>
-    </UserProvider>
+    <SWRConfig>
+      <UserProvider>
+        <SnackbarProvider
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
+          <ConfirmationDialogProvider>
+            <Component {...pageProps} />
+          </ConfirmationDialogProvider>
+        </SnackbarProvider>
+      </UserProvider>
+    </SWRConfig>
   )
 }
 

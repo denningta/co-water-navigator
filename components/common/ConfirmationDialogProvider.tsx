@@ -108,7 +108,11 @@ const ConfirmationDialogProvider = ({ children }: ConfirmationDialogProviderProp
             <div onClick={onConfirm}>
               <Button
                 title='Proceed'
-                disabled={!(confirmationMessage && dialogConfig.confirmationMessage === confirmationMessage)}
+                disabled={
+                  dialogConfig.confirmationMessage
+                    ? !(confirmationMessage && dialogConfig.confirmationMessage === confirmationMessage)
+                    : false
+                }
                 {...dialogConfig.confirmConfig}
               />
             </div>

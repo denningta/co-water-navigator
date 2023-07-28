@@ -13,6 +13,8 @@ import ShowExistingData from "./ShowExistingData"
 import { yearSelectorColDefs, yearSelectorDefaultColDef } from "./calendar-year-selector-coldefs"
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
+import InitializeWellWizard from "../../common/InitializeWellWizard"
+import useConfirmationDialog from "../../../hooks/useConfirmationDialog"
 
 export interface CalendarYearSelectorData {
   year: string
@@ -31,15 +33,15 @@ interface Props {
   onSelectionChanged?: (event: SelectionChangedEvent<any>) => void
 }
 
-const CalendarYearSelector = ({ 
+const CalendarYearSelector = ({
   permitNumber,
-  year, 
+  year,
   columnDefs = yearSelectorColDefs,
   defaultColDef = yearSelectorDefaultColDef,
   rowSelection = 'single',
   onlyDataFilterDefault = false,
-  onYearChanged = () => {} ,
-  onSelectionChanged = () => {}
+  onYearChanged = () => { },
+  onSelectionChanged = () => { }
 }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
   const { data, mutate } = useDataSummary(permitNumber)
@@ -47,11 +49,16 @@ const CalendarYearSelector = ({
   const [columnApi, setColumnApi] = useState<ColumnApi | undefined>(undefined)
   const [rowData, setRowData] = useState<CalendarYearSelectorData[] | undefined>(undefined)
   const [onlyDataFilter, setOnlyDataFilter] = useState<boolean>(onlyDataFilterDefault)
+  const [wizardOpen, setWizardOpen] = useState(false)
+  const { getConfirmation } = useConfirmationDialog()
 
   useEffect(() => {
+    if (data?.length === 0) {
+      setWizardOpen(true)
+    }
     if (!year || !data) return
-    if (!onlyDataFilter) {      
-      const rowData = initCalendarYearPlaceholderData(year, 5).map(record => 
+    if (!onlyDataFilter) {
+      const rowData = initCalendarYearPlaceholderData(year, 5).map(record =>
         data.find((el: any) => record.year === el.year) ?? record
       )
       setRowData(rowData)
@@ -76,7 +83,7 @@ const CalendarYearSelector = ({
     }
   }, [api, year])
 
-  const getRowId = (params: any) => params.data.year 
+  const getRowId = (params: any) => params.data.year
 
   const handleRowClick = ({ data }: RowClickedEvent) => {
     onYearChanged(data.year)
@@ -93,6 +100,7 @@ const CalendarYearSelector = ({
   const handleSelectionChange = (event: SelectionChangedEvent<any>) => {
     onSelectionChanged(event)
   }
+
 
   return (
     <div>
@@ -123,6 +131,7 @@ const CalendarYearSelector = ({
           </div>
         </div>
       </div>
+
     </div>
   )
 }

@@ -32,7 +32,7 @@ const WellPermit: NextPageWithLayout = () => {
   const [permitNumber, setPermitNumber] = useState<string | undefined>(undefined)
   const [calculating, setCalculating] = useState<boolean | undefined>(undefined)
 
-  useEffect(() => {    
+  useEffect(() => {
     if (router.isReady) {
       setPermitNumber(Array.isArray(query.permitNumber) ? query.permitNumber[0] : query.permitNumber)
       setYear(Array.isArray(query.year) ? query.year[0] : query.year ?? new Date().getFullYear().toString())
@@ -45,34 +45,34 @@ const WellPermit: NextPageWithLayout = () => {
   }
 
   const widgets: Widget[] = [
-    { 
-      component: <MeterReadingsHeader 
+    {
+      component: <MeterReadingsHeader
         permitNumber={permitNumber}
         year={year}
-      />, 
+      />,
       colspan: 3
     },
     {
-      component: 
-        <CalendarYearSelector 
+      component:
+        <CalendarYearSelector
           permitNumber={permitNumber}
-          year={year} 
-          onYearChanged={handleYearChanged} 
+          year={year}
+          onYearChanged={handleYearChanged}
         />,
       colspan: 3
     },
     {
-      component: <MeterReadingsComponent 
-        permitNumber={permitNumber} 
-        year={year}   
+      component: <MeterReadingsComponent
+        permitNumber={permitNumber}
+        year={year}
         onCalculating={setCalculating}
       />,
       colspan: 3
     },
     {
-      component: <ModifiedBankingComponent 
-        permitNumber={permitNumber} 
-        year={year} 
+      component: <ModifiedBankingComponent
+        permitNumber={permitNumber}
+        year={year}
         onCalculating={setCalculating}
       />,
       colspan: 3
@@ -91,9 +91,9 @@ const WellPermit: NextPageWithLayout = () => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(async ({ query, req, res}) => {
+export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(async ({ query, req, res }) => {
   const session = getSession(req, res)
-  
+
   if (!query.permitNumber) return {
     redirect: { destination: '/500' },
     props: {}
@@ -102,30 +102,30 @@ export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(
   const permitQuery = Array.isArray(query.permitNumber) ? query.permitNumber[0] : query.permitNumber
   const permitRefs: PermitRef[] | undefined = session?.user?.app_metadata?.permitRefs
 
-  if (!session) 
-    return { 
-      redirect: { destination: '/api/auth/login' }, 
-      props: {} 
+  if (!session)
+    return {
+      redirect: { destination: '/api/auth/login' },
+      props: {}
     }
 
-  if (!permitRefs) 
+  if (!permitRefs)
     return {
       redirect: { destination: '/well-permits/not-authorized' },
       props: {}
     }
 
   if (
-    permitRefs.findIndex((permitRef) => 
+    permitRefs.findIndex((permitRef) =>
       permitRef.permit === permitQuery
       && permitRef.status === 'approved'
     ) === -1
-  ) 
+  )
     return {
       redirect: { destination: '/well-permits/not-authorized' },
       props: {
         test: 'test'
       }
-    }  
+    }
 
   return {
     props: {}

@@ -1,3 +1,4 @@
+import { Tooltip } from "@mui/material"
 import axios from "axios"
 import { useSnackbar } from "notistack"
 import { useEffect, useState } from "react"
@@ -97,9 +98,11 @@ const ModifiedBankingComponent = ({
         <div className="md:grow"><span className="md:ml-8 mr-2 font-thin text-xl">CALENDAR YEAR</span> {year}</div>
 
         <div className="mr-6">
-          <button className="btn-round" onClick={handleRefreshCalculations}>
-            <MdRefresh size={25} />
-          </button>
+          <Tooltip title="Re-calculate">
+            <button className="btn-round" onClick={handleRefreshCalculations}>
+              <MdRefresh size={25} />
+            </button>
+          </Tooltip>
         </div>
       </div>
       {year &&

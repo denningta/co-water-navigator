@@ -3,9 +3,9 @@ import { ModifiedBanking, ModifiedBankingCalculatedFields } from "../../../../..
 
 export interface CalculationProps {
   data: ModifiedBanking
-  dataLastYear: ModifiedBanking | undefined
-  bankingReserveLastYear: number | undefined
-  totalPumpedThisYear: number | undefined
+  dataLastYear?: ModifiedBanking
+  bankingReserveLastYear?: number
+  totalPumpedThisYear?: number
 }
 
 type CalculationFn = (props: CalculationProps) => CalculatedValue | undefined
@@ -138,8 +138,15 @@ const calculationFns: CalculationFns = {
   },
 
   pumpingLimitNextYear: ({ data }) => {
-    if (!data.originalAppropriation || !data.line10) return
-    const shouldBe = Math.min(data.originalAppropriation.value, data.line10.value)
+    const { pumpingLimitNextYear, originalAppropriation, line10 } = data
+    let shouldBe: number | undefined = pumpingLimitNextYear?.value
+
+    if (originalAppropriation && originalAppropriation.value && line10 && line10.value) {
+      shouldBe = Math.min(originalAppropriation.value, line10.value)
+    }
+
+    if (!shouldBe) return
+
     return abstractCalculationFn('pumpingLimitNextYear', data, shouldBe)
   },
 

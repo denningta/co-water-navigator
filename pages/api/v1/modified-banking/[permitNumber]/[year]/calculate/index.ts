@@ -104,12 +104,11 @@ export const calculate = (
     ...data
   }
 
-  console.log('refRecord', refRecord)
-
   const calculatedFields = Object.keys(calculationFns) as (keyof typeof calculationFns)[]
 
   calculatedFields.forEach(field => {
     refRecord[field] = calculationFns[field]({ ...props, data: refRecord })
+    if (field === 'pumpingLimitNextYear') console.log(refRecord[field])
   })
 
   let updateRecord = false
