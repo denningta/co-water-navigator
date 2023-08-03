@@ -165,7 +165,7 @@ const InitializeWellWizard = ({ dialogProps, permitnumber, year, onFormSubmit, i
                         It looks like there is no data associated with well permit {permitnumber}
                       </p>
                       <p>
-                        Let's get you up and running by answering a few questions:
+                        Lets get you up and running by answering a few questions:
                       </p>
                     </div>
                     <div>
