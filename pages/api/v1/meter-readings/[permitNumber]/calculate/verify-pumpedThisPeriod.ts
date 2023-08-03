@@ -9,14 +9,14 @@ const verifyPumpedThisPeriod = (
   let prevPowerMeter: CalculatedValue | undefined = undefined
 
   for (let i = index - 1; i >= 0; i--) {
-    if (meterReadings[i].flowMeter) {
+    if (meterReadings[i] && meterReadings[i].flowMeter) {
       prevValue = meterReadings[i].flowMeter
       break
     }
   }
 
   for (let i = index - 1; i >= 0; i--) {
-    if (meterReadings[i].powerMeter) {
+    if (meterReadings[i] && meterReadings[i].powerMeter) {
       prevPowerMeter = meterReadings[i].powerMeter
       break
     }

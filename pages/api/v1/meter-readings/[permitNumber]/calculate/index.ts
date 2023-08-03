@@ -103,6 +103,13 @@ const getMeterReadings = (permitNumber: string | string[]): Promise<MeterReading
   })
 }
 
+export type CalculatedField =
+  'flowMeter' |
+  'powerMeter' |
+  'powerConsumptionCoef' |
+  'pumpedThisPeriod' |
+  'pumpedYearToDate' |
+  'availableThisYear'
 
 const calculatedFields = [
   'flowMeter',
@@ -113,10 +120,6 @@ const calculatedFields = [
   'availableThisYear'
 ]
 
-const calcValue: any = {
-  value: 0
-}
-
 export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
   const updatedMeterReadings: MeterReading[] = []
   const refMeterReadings: MeterReading[] = [meterReadings[0]]
@@ -124,7 +127,6 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
   const pumpingLimitThisYear = undefined
 
   meterReadings.forEach((meterReading, index, meterReadings) => {
-    const prevRecord = meterReadings[index - 1];
 
     const refRecord = {
       ...meterReading

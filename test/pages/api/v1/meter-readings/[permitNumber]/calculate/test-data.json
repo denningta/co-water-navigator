@@ -1,0 +1,393 @@
+[
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2022-12",
+    "flowMeter": {
+      "value": 456.56,
+      "source": "user"
+    },
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "pumpedThisPeriod": {
+      "value": 0
+    },
+    "pumpedYearToDate": {
+      "value": 0
+    },
+    "readBy": "TD",
+    "availableThisYear": {
+      "value": 250
+    },
+    "powerMeter": {
+      "value": 1256,
+      "source": "user"
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    }
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-01",
+    "flowMeter": {
+      "value": 456.56,
+      "source": "user"
+    },
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "pumpedThisPeriod": {
+      "value": 0
+    },
+    "pumpedYearToDate": {
+      "value": 0
+    },
+    "availableThisYear": {
+      "value": 250
+    },
+    "readBy": "TD",
+    "powerMeter": {
+      "value": 1256,
+      "source": "user"
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    }
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-02",
+    "flowMeter": {
+      "value": 456.56,
+      "source": "user"
+    },
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "pumpedThisPeriod": {
+      "value": 0
+    },
+    "pumpedYearToDate": {
+      "value": 0
+    },
+    "availableThisYear": {
+      "value": 250
+    },
+    "readBy": "TD",
+    "powerMeter": {
+      "value": 1256,
+      "source": "user"
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    }
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-03",
+    "flowMeter": {
+      "value": 456.56,
+      "source": "user"
+    },
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "pumpedThisPeriod": {
+      "value": 0
+    },
+    "pumpedYearToDate": {
+      "value": 0
+    },
+    "availableThisYear": {
+      "value": 250
+    },
+    "readBy": "TD",
+    "powerMeter": {
+      "value": 1256,
+      "source": "user"
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    }
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-04",
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "readBy": "TD",
+    "flowMeter": {
+      "value": 467.82,
+      "source": "user"
+    },
+    "pumpedYearToDate": {
+      "value": 11.26
+    },
+    "availableThisYear": {
+      "value": 238.74
+    },
+    "pumpedThisPeriod": {
+      "value": 11.26
+    },
+    "powerMeter": {
+      "value": 1482,
+      "source": "user"
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    }
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-05",
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "readBy": "TD",
+    "flowMeter": {
+      "value": 472.51,
+      "source": "user"
+    },
+    "pumpedThisPeriod": {
+      "value": 4.69
+    },
+    "pumpedYearToDate": {
+      "value": 15.95
+    },
+    "availableThisYear": {
+      "value": 234.01
+    },
+    "powerMeter": {
+      "value": 1573,
+      "source": "user"
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    }
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-06",
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    },
+    "readBy": "TD",
+    "flowMeter": {
+      "value": 480.32,
+      "source": "user"
+    },
+    "pumpedThisPeriod": {
+      "value": 7.81
+    },
+    "pumpedYearToDate": {
+      "value": 23.76
+    },
+    "availableThisYear": {
+      "value": 226.24
+    },
+    "powerMeter": {
+      "value": 1725,
+      "source": "user"
+    }
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-07",
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "readBy": "TD",
+    "flowMeter": {
+      "value": 501.08,
+      "source": "user"
+    },
+    "pumpedThisPeriod": {
+      "value": 20.76
+    },
+    "pumpedYearToDate": {
+      "value": 44.52
+    },
+    "availableThisYear": {
+      "value": 205.44
+    },
+    "powerMeter": {
+      "value": 2150,
+      "source": "user"
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    }
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-08",
+    "flowMeter": {
+      "value": 532.91,
+      "source": "user"
+    },
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "pumpedThisPeriod": {
+      "value": 31.83
+    },
+    "pumpedYearToDate": {
+      "value": 76.35
+    },
+    "availableThisYear": {
+      "value": 173.65
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    },
+    "powerMeter": {
+      "value": 2801,
+      "source": "user"
+    },
+    "readBy": "TD"
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-09",
+    "flowMeter": {
+      "value": 546.29,
+      "source": "user"
+    },
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "pumpedThisPeriod": {
+      "value": 13.38
+    },
+    "pumpedYearToDate": {
+      "value": 89.73
+    },
+    "availableThisYear": {
+      "value": 160.23
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    },
+    "powerMeter": {
+      "value": 3062,
+      "source": "user"
+    },
+    "readBy": "TD"
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-10",
+    "flowMeter": {
+      "value": 551.5,
+      "source": "user"
+    },
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "pumpedThisPeriod": {
+      "value": 5.21
+    },
+    "pumpedYearToDate": {
+      "value": 94.94
+    },
+    "availableThisYear": {
+      "value": 155.06
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    },
+    "readBy": "TD",
+    "powerMeter": {
+      "value": 3164,
+      "source": "user"
+    }
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-11",
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "flowMeter": {
+      "value": 551.5,
+      "source": "user"
+    },
+    "pumpedThisPeriod": {
+      "value": 0
+    },
+    "pumpedYearToDate": {
+      "value": 94.94
+    },
+    "availableThisYear": {
+      "value": 155.06
+    },
+    "powerMeter": {
+      "value": 3164,
+      "source": "user"
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    },
+    "readBy": "TD",
+    "comments": ""
+  },
+  {
+    "permitNumber": "14860-RFP",
+    "date": "2023-12",
+    "flowMeter": {
+      "value": 551.5,
+      "source": "user"
+    },
+    "updatedBy": {
+      "name": "Timothy Denning",
+      "user_id": "google-oauth2|107076140906727245765"
+    },
+    "pumpedThisPeriod": {
+      "value": 0
+    },
+    "pumpedYearToDate": {
+      "value": 94.94
+    },
+    "availableThisYear": {
+      "value": 155.2
+    },
+    "powerMeter": {
+      "value": 3164,
+      "source": "user"
+    },
+    "powerConsumptionCoef": {
+      "value": 0.05,
+      "source": "user"
+    },
+    "readBy": "TD"
+  }
+]

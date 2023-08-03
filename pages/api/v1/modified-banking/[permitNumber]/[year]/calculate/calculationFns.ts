@@ -1,3 +1,4 @@
+import { should } from "chai"
 import { CalculatedValue } from "../../../../../../../interfaces/MeterReading"
 import { ModifiedBanking, ModifiedBankingCalculatedFields } from "../../../../../../../interfaces/ModifiedBanking"
 
@@ -45,111 +46,197 @@ const abstractCalculationFn = (
 
 const calculationFns: CalculationFns = {
   originalAppropriation: ({ data, dataLastYear }) => {
-    if (!dataLastYear) {
-      if (!data.originalAppropriation) return
-      return data.originalAppropriation
+    const { originalAppropriation } = data
+
+    let shouldBe: number | undefined = originalAppropriation?.value
+
+    if (dataLastYear?.originalAppropriation) {
+      shouldBe = dataLastYear.originalAppropriation.value
     }
-    if (!dataLastYear.originalAppropriation) return data.originalAppropriation
-    const shouldBe = dataLastYear.originalAppropriation.value
-    const update = abstractCalculationFn('originalAppropriation', data, shouldBe)
-    return update
+
+    if (!isDefined(shouldBe)) return
+
+    return abstractCalculationFn('originalAppropriation', data, shouldBe as number)
   },
 
   allowedAppropriation: ({ data, dataLastYear }) => {
-    if (!dataLastYear) {
-      if (!data.allowedAppropriation) return
-      return data.allowedAppropriation
+    const { allowedAppropriation } = data
+
+    let shouldBe: number | undefined = allowedAppropriation?.value
+
+    if (dataLastYear?.allowedAppropriation) {
+      shouldBe = dataLastYear.allowedAppropriation.value
     }
-    if (!dataLastYear.allowedAppropriation) return data.allowedAppropriation
-    const shouldBe = dataLastYear.allowedAppropriation.value
-    return abstractCalculationFn('allowedAppropriation', data, shouldBe)
+
+    if (!isDefined(shouldBe)) return
+
+    return abstractCalculationFn('allowedAppropriation', data, shouldBe as number)
   },
 
   line3: ({ data }) => {
-    if (!data.allowedAppropriation || !data.originalAppropriation) return
-    const shouldBe = data.originalAppropriation.value - data.allowedAppropriation.value
+    const { allowedAppropriation, originalAppropriation, line3 } = data
+
+    let shouldBe: number | undefined = line3?.value
+
+    if (allowedAppropriation?.value && originalAppropriation?.value) {
+      shouldBe = originalAppropriation.value - allowedAppropriation.value
+    }
+
+    if (shouldBe === undefined) return
+
     return abstractCalculationFn('line3', data, shouldBe)
   },
 
   maxBankingReserve: ({ data }) => {
-    if (!data.allowedAppropriation || !data.originalAppropriation) return
-    const shouldBe = 3 * (data.originalAppropriation.value - data.allowedAppropriation.value)
+    const { allowedAppropriation, originalAppropriation, maxBankingReserve, line3 } = data
+
+    let shouldBe: number | undefined = maxBankingReserve?.value
+
+    if (allowedAppropriation && originalAppropriation) {
+      shouldBe = (originalAppropriation.value - allowedAppropriation.value) * 3
+    } else if (line3) {
+      shouldBe = line3.value * 3
+    }
+
+    if (shouldBe === undefined) return
+
     return abstractCalculationFn('maxBankingReserve', data, shouldBe)
   },
 
   bankingReserveLastYear: ({ data, bankingReserveLastYear }) => {
-    if (!bankingReserveLastYear) {
-      if (data.bankingReserveLastYear) return data.bankingReserveLastYear
-      return
+    let shouldBe: number | undefined = data?.bankingReserveLastYear?.value
+
+    if (isDefined(bankingReserveLastYear)) {
+      shouldBe = bankingReserveLastYear
     }
-    const shouldBe = bankingReserveLastYear
-    return abstractCalculationFn('bankingReserveLastYear', data, shouldBe)
+
+    if (!isDefined(shouldBe)) return
+
+    return abstractCalculationFn('bankingReserveLastYear', data, shouldBe as number)
   },
 
   pumpingLimitThisYear: ({ data }) => {
+    const {
+      pumpingLimitThisYear,
+      originalAppropriation,
+      allowedAppropriation,
+      bankingReserveLastYear,
+      line6Option
+    } = data
+
+    let shouldBe: number | undefined = pumpingLimitThisYear?.value
+
     if (
-      !data.originalAppropriation
-      || !data.allowedAppropriation
-      || !data.bankingReserveLastYear
-    ) return
-    let shouldBe
-    if (data.line6Option === 'a') {
-      shouldBe = data.allowedAppropriation.value
-    } else {
-      shouldBe = Math.min(
-        data.originalAppropriation.value,
-        data.allowedAppropriation.value + data.bankingReserveLastYear.value
-      )
+      allowedAppropriation && originalAppropriation && bankingReserveLastYear
+    ) {
+      shouldBe = line6Option === 'a'
+        ? allowedAppropriation.value
+        : Math.min(
+          originalAppropriation.value as number,
+          allowedAppropriation.value + bankingReserveLastYear.value
+        )
     }
-    return abstractCalculationFn('pumpingLimitThisYear', data, shouldBe)
+
+    if (!isDefined(shouldBe)) return
+
+    return abstractCalculationFn('pumpingLimitThisYear', data, shouldBe as number)
   },
 
   totalPumpedThisYear: ({ data, totalPumpedThisYear }) => {
-    if (totalPumpedThisYear === undefined || !data.totalPumpedThisYear?.value === undefined) return
-    if (totalPumpedThisYear === 0 || totalPumpedThisYear)
-      return abstractCalculationFn('totalPumpedThisYear', data, totalPumpedThisYear)
-    if (data.totalPumpedThisYear?.value !== undefined)
-      return abstractCalculationFn('totalPumpedThisYear', data, data.totalPumpedThisYear.value)
+    let shouldBe: number | undefined = data?.totalPumpedThisYear?.value
+
+    if (isDefined(totalPumpedThisYear)) {
+      shouldBe = totalPumpedThisYear
+    }
+
+    if (!isDefined(shouldBe)) return
+
+    return abstractCalculationFn('totalPumpedThisYear', data, shouldBe as number)
   },
 
   changeInBankingReserveThisYear: ({ data }) => {
-    if (!data.allowedAppropriation || !data.totalPumpedThisYear) return
-    const shouldBe = data.allowedAppropriation.value - data.totalPumpedThisYear.value
-    return abstractCalculationFn('changeInBankingReserveThisYear', data, shouldBe)
+    const { changeInBankingReserveThisYear, allowedAppropriation, totalPumpedThisYear } = data
+
+    let shouldBe: number | undefined = changeInBankingReserveThisYear?.value
+
+    if (allowedAppropriation && totalPumpedThisYear) {
+      shouldBe = allowedAppropriation.value - totalPumpedThisYear.value
+    }
+
+    if (!isDefined(shouldBe)) return
+
+    return abstractCalculationFn('changeInBankingReserveThisYear', data, shouldBe as number)
   },
 
   bankingReserveThisYear: ({ data }) => {
+    const {
+      bankingReserveThisYear,
+      maxBankingReserve,
+      bankingReserveLastYear,
+      changeInBankingReserveThisYear
+    } = data
+
+    let shouldBe: number | undefined = bankingReserveThisYear?.value
+
     if (
-      !data.maxBankingReserve
-      || !data.bankingReserveLastYear
-      || !data.changeInBankingReserveThisYear
-    ) return
-    const shouldBe = Math.min(
-      data.maxBankingReserve.value,
-      data.bankingReserveLastYear.value + data.changeInBankingReserveThisYear.value
-    )
-    return abstractCalculationFn('bankingReserveThisYear', data, shouldBe)
+      maxBankingReserve
+      && bankingReserveLastYear
+      && changeInBankingReserveThisYear
+    ) {
+      shouldBe = Math.min(
+        maxBankingReserve.value,
+        bankingReserveLastYear.value + changeInBankingReserveThisYear.value
+      )
+    } else if (maxBankingReserve) {
+      shouldBe = maxBankingReserve.value
+    } else if (bankingReserveLastYear && changeInBankingReserveThisYear) {
+      shouldBe = bankingReserveLastYear.value + changeInBankingReserveThisYear.value
+    }
+
+    if (!isDefined(shouldBe)) return
+
+    return abstractCalculationFn('bankingReserveThisYear', data, shouldBe as number)
   },
 
   line10: ({ data }) => {
-    if (!data.allowedAppropriation || !data.bankingReserveThisYear) return
-    const shouldBe = data.allowedAppropriation.value + data.bankingReserveThisYear.value
-    return abstractCalculationFn('line10', data, shouldBe)
+    const { line10, allowedAppropriation, bankingReserveThisYear } = data
+
+    let shouldBe: number | undefined = line10?.value
+
+    if (allowedAppropriation && bankingReserveThisYear) {
+      shouldBe = allowedAppropriation.value + bankingReserveThisYear.value
+    }
+
+    if (!isDefined(shouldBe)) return
+
+    return abstractCalculationFn('line10', data, shouldBe as number)
   },
 
   pumpingLimitNextYear: ({ data }) => {
     const { pumpingLimitNextYear, originalAppropriation, line10 } = data
+
     let shouldBe: number | undefined = pumpingLimitNextYear?.value
 
-    if (originalAppropriation && originalAppropriation.value && line10 && line10.value) {
+    if (originalAppropriation && line10) {
       shouldBe = Math.min(originalAppropriation.value, line10.value)
+    } else if (originalAppropriation) {
+      shouldBe = originalAppropriation.value
+    } else if (line10) {
+      shouldBe = line10.value
     }
 
-    if (!shouldBe) return
+    if (!isDefined(shouldBe)) return
 
-    return abstractCalculationFn('pumpingLimitNextYear', data, shouldBe)
+    return abstractCalculationFn('pumpingLimitNextYear', data, shouldBe as number)
   },
 
+}
+
+const isDefined = (number: number | undefined): boolean => {
+  if (typeof number === 'undefined' || number === null) {
+    return false
+  }
+  return true
 }
 
 export default calculationFns

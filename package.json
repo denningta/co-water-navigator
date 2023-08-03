@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watchAll --verbose",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand --watch",
     "export:dev": "a0deploy export --strip --format yaml --output_folder . --config_file ./config/dev.json --secret $DEV_AUTH0_CLIENT_SECRET",
     "import:staging": "a0deploy import --input_file tenant.yaml --config_file ./config/staging.json",
     "import:prod": "a0deploy import --input_file tenant.yaml --config_file ./config/prod.json",
@@ -60,6 +61,7 @@
     "yup": "^1.2.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.0.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@types/auth0": "^2.35.3",
