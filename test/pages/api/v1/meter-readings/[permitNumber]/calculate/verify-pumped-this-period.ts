@@ -115,9 +115,30 @@ const calculationFn: CalculationFn = {
             value: 100
           })
         }
-
       })
-    }
+    },
+    () => {
+      const currentRecord: MeterReading = {
+        ...(({ permitNumber, date }) => ({ permitNumber, date }))(data[4])
+      }
+      const context: MeterReading[] = [
+        { ...(({ permitNumber, date }) => ({ permitNumber, date }))(data[3]) },
+        { ...(({ permitNumber, date }) => ({ permitNumber, date }))(data[4]), },
+      ]
+      return ({
+        test: 'return undefined -> when dependencies are undefined',
+        props: {
+          index: 1,
+          currentRecord: currentRecord,
+          context: context,
+          fields: ['pumpedThisPeriod']
+        },
+        checkResult: false,
+        expected: (result) => {
+          expect(result).toBeUndefined()
+        }
+      })
+    },
   ]
 }
 

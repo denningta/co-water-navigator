@@ -1,20 +1,15 @@
 import { ColDef, ColumnApi, GridApi, RowClickedEvent, SelectionChangedEvent } from "ag-grid-community"
 import { AgGridReact } from "ag-grid-react"
-import { useRouter } from "next/router"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import YearPicker from "./YearPicker"
 import { initCalendarYearPlaceholderData } from "./helpers"
-import useSWR from "swr"
 import MeterReading from "../../../interfaces/MeterReading"
 import { ModifiedBanking } from "../../../interfaces/ModifiedBanking"
-import DataSummaryCellRenderer from "./Dbb004HeatmapCellRenderer"
 import useDataSummary from "../../../hooks/useDataSummaryByPermit"
 import ShowExistingData from "./ShowExistingData"
 import { yearSelectorColDefs, yearSelectorDefaultColDef } from "./calendar-year-selector-coldefs"
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
-import InitializeWellWizard from "../../common/InitializeWellWizard"
-import useConfirmationDialog from "../../../hooks/useConfirmationDialog"
 
 export interface CalendarYearSelectorData {
   year: string
@@ -44,18 +39,13 @@ const CalendarYearSelector = ({
   onSelectionChanged = () => { }
 }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
-  const { data, mutate } = useDataSummary(permitNumber)
+  const { data } = useDataSummary(permitNumber)
   const [api, setApi] = useState<GridApi | undefined>(undefined)
   const [columnApi, setColumnApi] = useState<ColumnApi | undefined>(undefined)
   const [rowData, setRowData] = useState<CalendarYearSelectorData[] | undefined>(undefined)
   const [onlyDataFilter, setOnlyDataFilter] = useState<boolean>(onlyDataFilterDefault)
-  const [wizardOpen, setWizardOpen] = useState(false)
-  const { getConfirmation } = useConfirmationDialog()
 
   useEffect(() => {
-    if (data?.length === 0) {
-      setWizardOpen(true)
-    }
     if (!year || !data) return
     if (!onlyDataFilter) {
       const rowData = initCalendarYearPlaceholderData(year, 5).map(record =>
@@ -104,6 +94,11 @@ const CalendarYearSelector = ({
 
   return (
     <div>
+      <div className="text-3xl font-bold">Navigate</div>
+      <div className="text-gray-500 mb-4">
+        Click rows to navigate between calendar years
+      </div>
+
       <div className="md:flex">
         <div className="w-full ag-theme-alpine" style={{ height: 275 }}>
           <AgGridReact

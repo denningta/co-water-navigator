@@ -68,12 +68,12 @@ const WellPermitSearch = () => {
       })
     }
     searchTerms[termName] = target.value === '' ? undefined : target.value
-    setSearchTerms({...searchTerms})
+    setSearchTerms({ ...searchTerms })
   }
 
   const handleSelectChange = (termName: SearchTermName, option: SingleValue<SelectOption>) => {
     searchTerms[termName] = option?.value
-    setSearchTerms({...searchTerms})
+    setSearchTerms({ ...searchTerms })
   }
 
   const handleRowSelectionChange = (rowNodes: RowNode[]) => {
@@ -85,22 +85,26 @@ const WellPermitSearch = () => {
       setAddPermitsLoading(true)
       if (!selectedRowNodes) throw new Error('No rows selected')
 
+      const recordsWithSamePermitNumber = rowData?.filter(row =>
+        selectedRowNodes.map(rowNode => rowNode.data.permit).includes(row.permit)
+      )
+
       const url = `/api/v1/well-permits`
       const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(selectedRowNodes.map(rowNode => rowNode.data))
+        body: JSON.stringify(recordsWithSamePermitNumber)
       }).then(res => res.json())
-  
+
       if (!user) throw new Error('User not defined')
-      const permitRefs = res.map((el: any) => ({ 
-        document_id: el.document_id, 
-        permit: el.permit, 
+      const permitRefs = res.map((el: any) => ({
+        document_id: el.document_id,
+        permit: el.permit,
         status: 'requested'
       }))
-  
+
       const appMetaDataRes = await fetch('/api/auth/user/update-app-meta-data', {
         method: 'POST',
         headers: {
@@ -118,8 +122,8 @@ const WellPermitSearch = () => {
 
       if (appMetaDataRes.updates) enqueueSnackbar(successMsg(appMetaDataRes.updates), { variant: 'success' })
       if (appMetaDataRes.warnings.length > 0) {
-        appMetaDataRes.warnings.forEach((warning: string, index: number) => 
-          index < 4 && enqueueSnackbar(warning)  
+        appMetaDataRes.warnings.forEach((warning: string, index: number) =>
+          index < 4 && enqueueSnackbar(warning)
         )
       }
       setAddPermitsLoading(false)
@@ -171,10 +175,10 @@ const WellPermitSearch = () => {
           isLoading={addPermitsLoading}
         />
       </div>
-      <WellPermitTable 
+      <WellPermitTable
         defaultColDef={defaultColDef}
-        columnDefs={wellPermitColumnDefs} 
-        rowData={rowData} 
+        columnDefs={wellPermitColumnDefs}
+        rowData={rowData}
         filterModel={filterModel}
         onRowSelectionChanged={handleRowSelectionChange}
         paginationPageSize={20}

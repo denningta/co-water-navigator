@@ -1,27 +1,25 @@
 import { Dialog, DialogActions, DialogContent, DialogProps, DialogTitle, Step, StepButton, Stepper, useMediaQuery, useTheme } from "@mui/material"
-import { Field, Form, Formik, FormikErrors, FormikHelpers, FormikValues } from "formik"
-import { useEffect, useState } from "react"
+import { Field, Form, Formik, FormikErrors, FormikHelpers } from "formik"
+import { useState } from "react"
 import { FaCheck } from "react-icons/fa"
 import Button from "./Button"
 import * as Yup from 'yup'
 import { IoClose } from "react-icons/io5"
-import axios from "axios"
-import { ModifiedBanking } from "../../interfaces/ModifiedBanking"
 
-const steps = [
+const steps = (year: string | undefined) => ([
   {
     label: 'Starting Year',
     fields: ['year']
   },
   {
-    label: 'Allowed Appropriation',
+    label: `${year && +year && +year} DBB-013`,
     fields: ['originalAppropriation', 'allowedAppropriation', 'bankingReserveLastYear']
   },
   {
-    label: 'Pumping Limit',
-    fields: ['pumpingLimitLastYear']
+    label: 'Permit Data',
+    fields: ['permitData']
   },
-]
+])
 
 const getInitialValues = (permitNumber: string | undefined, year: string | undefined) => {
   return {
@@ -30,7 +28,7 @@ const getInitialValues = (permitNumber: string | undefined, year: string | undef
     originalAppropriation: '',
     allowedAppropriation: '',
     bankingReserveLastYear: '',
-    pumpingLimitNextYear: ''
+    totalPumpedThisYear: ''
   }
 }
 
@@ -48,16 +46,16 @@ const ValidationSchema = Yup.object().shape({
     .max(new Date().getFullYear(), `Enter a year in the past`),
   originalAppropriation: Yup.number()
     .required('Required')
-    .typeError('Enter a valid 4 digit year'),
+    .typeError('Value must be a number'),
   allowedAppropriation: Yup.number()
     .required('Required')
-    .typeError('Enter a valid 4 digit year'),
+    .typeError('Value must be a number'),
   bankingReserveLastYear: Yup.number()
     .required('Required')
-    .typeError('Enter a valid 4 digit year'),
+    .typeError('Value must be a number'),
   pumpingLimitNextYear: Yup.number()
     .required('Required')
-    .typeError('Enter a valid 4 digit year')
+    .typeError('Value must be a number'),
 })
 
 export type InitializeWellWizardProps = {
@@ -79,7 +77,7 @@ const InitializeWellWizard = ({ dialogProps, permitnumber, year, onFormSubmit, i
   }
 
   const totalSteps = () => {
-    return steps.length
+    return steps(year).length
   }
 
   const completedSteps = () => {
@@ -96,7 +94,7 @@ const InitializeWellWizard = ({ dialogProps, permitnumber, year, onFormSubmit, i
 
   const handleComplete = (errors: FormikErrors<ReturnType<typeof getInitialValues>>) => {
     const newCompleted = completed
-    const errorFields = Object.keys(errors).filter(value => steps[activeStep].fields?.includes(value))
+    const errorFields = Object.keys(errors).filter(value => steps(year)[activeStep].fields?.includes(value))
     if (!errorFields.length) {
       newCompleted[activeStep] = true
       setCompleted(newCompleted)
@@ -109,7 +107,7 @@ const InitializeWellWizard = ({ dialogProps, permitnumber, year, onFormSubmit, i
     handleComplete(errors)
     const newActiveStep =
       isLastStep() && !allStepsCompleted()
-        ? steps.findIndex((step, i) => !(i in completed))
+        ? steps(year).findIndex((step, i) => !(i in completed))
         : activeStep + 1
     setActiveStep(newActiveStep)
   }
@@ -132,180 +130,182 @@ const InitializeWellWizard = ({ dialogProps, permitnumber, year, onFormSubmit, i
         validateOnMount={true}
         onSubmit={onFormSubmit ?? (() => { })}
       >
-        {({ values, errors, touched }) => (
+        {({ values, errors, touched }) => {
+          const thisYear = () => (!!(+values.year) ? +values.year : 'this year').toString()
+          const lastYear = () => (!!(+values.year) ? +values.year - 1 : 'previous year').toString()
 
-          <Form>
-            <div className="flex flex-col justify-center relative">
-              <button
-                className="absolute top-5 right-5"
-                onClick={(e) => dialogProps.onClose && dialogProps.onClose(e, "escapeKeyDown")}
-              >
-                <IoClose size={25} />
-              </button>
-              <DialogTitle>
-                <div className="mb-6 text-2xl font-bold">Set up well {permitnumber}</div>
-                <Stepper nonLinear activeStep={activeStep}>
-                  {steps.map(({ label }, index) => (
-                    <Step key={label} completed={completed[index]}>
-                      <StepButton disableRipple color="inherit" onClick={handleStep(index)}>
-                        {label}
-                      </StepButton>
-                    </Step>
-                  ))}
-                </Stepper>
-              </DialogTitle>
+          return (
 
-              <DialogContent className="grow mt-6">
+            <Form>
+              <div className="flex flex-col justify-center relative">
+                <button
+                  className="absolute top-5 right-5"
+                  onClick={(e) => dialogProps.onClose && dialogProps.onClose(e, "escapeKeyDown")}
+                >
+                  <IoClose size={25} />
+                </button>
+                <DialogTitle>
+                  <div className="mb-6 text-2xl font-bold">Set up well {permitnumber}</div>
+                  <Stepper nonLinear activeStep={activeStep}>
+                    {steps(year).map(({ label }, index) => (
+                      <Step key={label} completed={completed[index]}>
+                        <StepButton disableRipple color="inherit" onClick={handleStep(index)}>
+                          {label}
+                        </StepButton>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </DialogTitle>
+
+                <DialogContent className="grow mt-6">
 
 
-                {activeStep === 0 &&
-                  <div className="space-y-8">
+                  {activeStep === 0 &&
+                    <div className="space-y-8">
+                      <div className="space-y-2">
+                        <p>
+                          It looks like there is no data associated with well permit {permitnumber}
+                        </p>
+                        <p>
+                          Lets get you up and running by answering a few questions:
+                        </p>
+                      </div>
+                      <div>
+                        <div>What year would you like to begin recording meter readings for this well?</div>
+                        <div className="text-sm text-gray-500">(Earlier data can always be entered at a later time)</div>
+
+                        <div className="flex items-center space-x-4">
+                          <Field
+                            id={'year'}
+                            name={'year'}
+                            className={`${inputClass} mt-2`}
+                            placeholder={'Starting year'}
+                          />
+                          {values.year && !errors.year && <FaCheck className="text-success-600" />}
+                        </div>
+                        <div className="h-[20px] text-error-500 text-sm">
+                          {errors.year && touched.year && errors.year}
+                        </div>
+                      </div>
+                    </div>
+                  }
+
+                  {activeStep === 1 &&
+
                     <div className="space-y-2">
-                      <p>
-                        It looks like there is no data associated with well permit {permitnumber}
-                      </p>
-                      <p>
-                        Lets get you up and running by answering a few questions:
-                      </p>
+                      <div className="mb-6">
+                        Enter the following data from the
+                        <span className="font-extrabold text-xl"> {lastYear()} DBB-013 </span>
+                        form for this well.
+                      </div>
+                      <div>
+                        <div>Line 1: Original maximum annual appropriation</div>
+                        <div className="flex items-center space-x-4">
+                          <Field
+                            id={'originalAppropriation'}
+                            name={'originalAppropriation'}
+                            className={`${inputClass} mt-2 min-w-[300px] md:min-w-[400px]`}
+                            placeholder={'Original Annual Appropration'}
+                          />
+                          {values.originalAppropriation && !errors.originalAppropriation && <FaCheck className="text-success-600" />}
+                        </div>
+                        <div className="h-[20px] text-error-500 text-sm">
+                          {errors.originalAppropriation && touched.originalAppropriation &&
+                            errors.originalAppropriation
+                          }
+                        </div>
+                      </div>
+                      <div>
+                        <div>Line 2: Allowed annual appropriation under the expanded acres or change of use approval</div>
+                        <div className="flex items-center space-x-4">
+                          <Field
+                            id={'allowedAppropriation'}
+                            name={'allowedAppropriation'}
+                            className={`${inputClass} mt-2 min-w-[300px] md:min-w-[400px]`}
+                            placeholder={'Expanded Acres/Change-of-use Appropriation'}
+                          />
+                          {values.allowedAppropriation && !errors.allowedAppropriation && <FaCheck className="text-success-600" />}
+                        </div>
+                        <div className="h-[20px] text-error-500 text-sm">
+                          {errors.allowedAppropriation && touched.allowedAppropriation &&
+                            errors.allowedAppropriation
+                          }
+                        </div>
+                      </div>
+                      <div>
+                        <div>Line 5: Amount in banking reserve at the end of {+(lastYear()) - 1}</div>
+                        <div className="flex items-center space-x-4">
+                          <Field
+                            id={'bankingReserveLastYear'}
+                            name={'bankingReserveLastYear'}
+                            className={`${inputClass} mt-2 min-w-[300px] md:min-w-[400px]`}
+                            placeholder={`Acre-feet in banking reserve ${lastYear()}`}
+                          />
+                          {values.bankingReserveLastYear && !errors.bankingReserveLastYear && <FaCheck className="text-success-600" />}
+                        </div>
+                        <div className="h-[20px] text-error-500 text-sm">
+                          {errors.bankingReserveLastYear && touched.bankingReserveLastYear &&
+                            errors.bankingReserveLastYear
+                          }
+                        </div>
+                      </div>
+                      <div>
+                        <div>Line 7: Total amount pumped in {lastYear()}</div>
+                        <div className="flex items-center space-x-4">
+                          <Field
+                            id={'totalPumpedLastYear'}
+                            name={'totalPumpedLastYear'}
+                            className={`${inputClass} mt-2 min-w-[300px] md:min-w-[400px]`}
+                            placeholder={`Total amount pumped in ${lastYear()}`}
+                          />
+                          {values.totalPumpedThisYear && !errors.totalPumpedThisYear && <FaCheck className="text-success-600" />}
+                        </div>
+                        <div className="h-[20px] text-error-500 text-sm">
+                          {errors.totalPumpedThisYear && touched.totalPumpedThisYear &&
+                            errors.totalPumpedThisYear
+                          }
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <div>What year would you like to begin recording meter readings for this well?</div>
-                      <div className="text-sm text-gray-500">(Earlier data can always be entered at a later time)</div>
+                  }
 
-                      <div className="flex items-center space-x-4">
-                        <Field
-                          id={'year'}
-                          name={'year'}
-                          className={`${inputClass} mt-2`}
-                          placeholder={'Starting year'}
-                        />
-                        {values.year && !errors.year && <FaCheck className="text-success-600" />}
-                      </div>
-                      <div className="h-[20px] text-error-500 text-sm">
-                        {errors.year && touched.year && errors.year}
-                      </div>
+                  {activeStep === 2 &&
+                    <div className="space-y-2">
+                      step 2
                     </div>
-                  </div>
-                }
 
-                {activeStep === 1 &&
+                  }
+                </DialogContent>
 
-                  <div className="space-y-2">
-                    <div>
-                      Enter the following data from the
-                      <span className="font-extrabold text-xl"> {values.year && (+values.year)} DBB-013 </span>
-                      form for this well.
-                    </div>
-                    <div>
-                      <div>Line 1: Original maximum annual appropriation</div>
-                      <div className="flex items-center space-x-4">
-                        <Field
-                          id={'originalAppropriation'}
-                          name={'originalAppropriation'}
-                          className={`${inputClass} mt-2 min-w-[300px] md:min-w-[400px]`}
-                          placeholder={'Original Annual Appropration'}
-                        />
-                        {values.originalAppropriation && !errors.originalAppropriation && <FaCheck className="text-success-600" />}
-                      </div>
-                      <div className="h-[20px] text-error-500 text-sm">
-                        {errors.originalAppropriation && touched.originalAppropriation &&
-                          errors.originalAppropriation
-                        }
-                      </div>
-                    </div>
-                    <div>
-                      <div>Line 2: Allowed annual appropriation under the expanded acres or change of use approval</div>
-                      <div className="flex items-center space-x-4">
-                        <Field
-                          id={'allowedAppropriation'}
-                          name={'allowedAppropriation'}
-                          className={`${inputClass} mt-2 min-w-[300px] md:min-w-[400px]`}
-                          placeholder={'Expanded Acres/Change-of-use Appropriation'}
-                        />
-                        {values.allowedAppropriation && !errors.allowedAppropriation && <FaCheck className="text-success-600" />}
-                      </div>
-                      <div className="h-[20px] text-error-500 text-sm">
-                        {errors.allowedAppropriation && touched.allowedAppropriation &&
-                          errors.allowedAppropriation
-                        }
-                      </div>
-                    </div>
-                    <div>
-                      <div>Line 5: Amount in banking reserve at the end of {values.year ? 'in ' + (+values.year - 1) : 'last year'}</div>
-                      {values.year && <div className="text-sm text-gray-500">(Or line 9 of the {+values.year - 1} report)</div>}
-                      <div className="flex items-center space-x-4">
-                        <Field
-                          id={'bankingReserveLastYear'}
-                          name={'bankingReserveLastYear'}
-                          className={`${inputClass} mt-2 min-w-[300px] md:min-w-[400px]`}
-                          placeholder={`Acre-feet in banking reserve ${values.year ? 'in ' + (+values.year - 1) : 'last year'}`}
-                        />
-                        {values.bankingReserveLastYear && !errors.bankingReserveLastYear && <FaCheck className="text-success-600" />}
-                      </div>
-                      <div className="h-[20px] text-error-500 text-sm">
-                        {errors.bankingReserveLastYear && touched.bankingReserveLastYear &&
-                          errors.bankingReserveLastYear
-                        }
-                      </div>
-                    </div>
-                  </div>
-
-                }
-
-                {activeStep === 2 &&
-                  <div className="space-y-8">
-                    <div>
-                      Enter the following data from the
-                      <span className="font-extrabold text-xl"> {values.year ? (+values.year - 1) : 'last year'} DBB-013 </span>
-                      form for this well.
-                    </div>                  <div>
-                      <div>Line 11: Pumping limit for {values.year ? (+values.year) : 'this year'}</div>
-                      <div className="flex items-center space-x-4">
-                        <Field
-                          id={'pumpingLimitNextYear'}
-                          name={'pumpingLimitNextYear'}
-                          className={`${inputClass} mt-2 min-w-[300px] md:min-w-[400px]`}
-                          placeholder={`Pumping limit for ${values.year ? (+values.year) : 'this year'}`}
-                        />
-                        {values.pumpingLimitNextYear && !errors.pumpingLimitNextYear && <FaCheck className="text-success-600" />}
-                      </div>
-                      <div className="h-[20px] text-error-500 text-sm">
-                        {errors.pumpingLimitNextYear && touched.pumpingLimitNextYear &&
-                          errors.pumpingLimitNextYear
-                        }
-                      </div>
-                    </div>
-                  </div>
-                }
-              </DialogContent>
-
-              <DialogActions>
-                <Button
-                  title={'Previous'}
-                  color="secondary"
-                  onClick={() => handleBack(errors)}
-                  disabled={activeStep === 0}
-                />
-                {!isLastStep() &&
+                <DialogActions>
                   <Button
-                    title={'Next'}
-                    onClick={() => handleNext(errors)}
-                    disabled={activeStep === totalSteps() - 1}
+                    title={'Previous'}
+                    color="secondary"
+                    onClick={() => handleBack(errors)}
+                    disabled={activeStep === 0}
                   />
-                }
-                {isLastStep() &&
-                  <Button
-                    title={'Finish'}
-                    type="submit"
-                    disabled={!!(Object.keys(errors).length)}
-                    isLoading={isLoading}
-                  />
-                }
-              </DialogActions>
+                  {!isLastStep() &&
+                    <Button
+                      title={'Next'}
+                      onClick={() => handleNext(errors)}
+                      disabled={activeStep === totalSteps() - 1}
+                    />
+                  }
+                  {isLastStep() &&
+                    <Button
+                      title={'Finish'}
+                      type="submit"
+                      disabled={!!(Object.keys(errors).length)}
+                      isLoading={isLoading}
+                    />
+                  }
+                </DialogActions>
 
-            </div>
-          </Form>
-        )}
+              </div>
+            </Form>
+          )
+        }
+        }
       </Formik >
 
     </Dialog >

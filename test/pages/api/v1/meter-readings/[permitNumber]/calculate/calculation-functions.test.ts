@@ -3,7 +3,7 @@ import { CalculatedField } from "../../../../../../../pages/api/v1/meter-reading
 import testVerifyGreaterThanPrevValue from "./verify-greater-than-prev-value"
 import testVerifyEqualToPrevValue from "./verify-equal-to-prev-value"
 import testVerifyPumpedThisPeriod from "./verify-pumped-this-period"
-import * as meterReadingData from './test-data.json'
+import testVerifyPumpedYearToDate from "./verify-pumped-year-to-date"
 
 export interface TestCase {
   test: string
@@ -12,7 +12,8 @@ export interface TestCase {
     context: MeterReading[]
     fields: CalculatedField[]
     index: number
-  },
+  }
+  checkResult?: boolean
   expected: (result: CalculatedValue, field: CalculatedField) => void
 }
 
@@ -27,6 +28,7 @@ describe('Meter readings calculation functions', () => {
     testVerifyGreaterThanPrevValue,
     testVerifyEqualToPrevValue,
     testVerifyPumpedThisPeriod,
+    testVerifyPumpedYearToDate,
   ]
 
   calculationFns.forEach(({ name, fn, testCases }) => {
@@ -34,7 +36,7 @@ describe('Meter readings calculation functions', () => {
     describe(name, () => {
 
       testCases && testCases.forEach((testCase) => {
-        const { test, props, expected } = testCase()
+        const { test, props, expected, checkResult = true } = testCase()
         const { currentRecord, context, index, fields } = props
 
 
@@ -42,7 +44,7 @@ describe('Meter readings calculation functions', () => {
 
           it(`${field} -> ${test}`, () => {
             const result = fn(currentRecord, context, index, field)
-            if (!result) throw new Error('result undefined')
+            if (checkResult && !result) throw new Error('result undefined')
             expected(result, field)
           })
 

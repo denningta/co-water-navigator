@@ -62,11 +62,18 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
         },
         bankingReserveLastYear: {
           value: +values.bankingReserveLastYear
+        },
+        totalPumpedThisYear: {
+          value: +values.totalPumpedThisYear
         }
       }
-      delete modifiedBanking.pumpingLimitNextYear
 
-      const key = `/api/v1/modified-banking/${permitNumber}/${year}`
+      let lastYear: string | undefined = undefined
+      if (year && +year) {
+        lastYear = (+year - 1).toString()
+      }
+
+      const key = `/api/v1/modified-banking/${permitNumber}/${lastYear}`
       const modBankingRes = await axios.post(
         key,
         modifiedBanking
