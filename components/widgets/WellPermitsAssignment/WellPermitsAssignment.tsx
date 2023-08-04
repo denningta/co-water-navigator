@@ -15,6 +15,7 @@ interface Props {
 
 const WellPermitsAssignment = () => {
   const { user }: any = useUser()
+  console.log(user)
   const { data } = useWellPermitsByUser(user?.sub)
   const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined)
 
@@ -26,18 +27,18 @@ const WellPermitsAssignment = () => {
     <div>
       <div className="flex items-center mb-4">
         <div className="text-xl font-bold">Your Well Permits</div>
-      </div> 
+      </div>
 
       <div className="flex mb-4">
-        <QuickSearch onChange={handleChange}/>
+        <QuickSearch onChange={handleChange} />
       </div>
 
       <div className="flex">
         <div className="w-full">
-          <DataTable 
+          <DataTable
             defaultColDef={defaultColDef}
-            columnDefs={wellPermitColumnDefs} 
-            rowData={data} 
+            columnDefs={wellPermitColumnDefs}
+            rowData={data}
             suppressRowClickSelection={true}
             quickFilter={quickFilter}
             noRowsComponent={NoRowsComponent}
@@ -56,8 +57,8 @@ const NoRowsComponent = () => {
   return (
     <div className="flex flex-col items-center z-50">
       <div className="mb-4">You have not requested access to any well permits</div>
-      <Button 
-        title="Search and add well permits" 
+      <Button
+        title="Search and add well permits"
         icon={<BiPlus />}
         href="/search"
       ></Button>

@@ -4,7 +4,7 @@ import faunaClient, { q } from "../../../../../lib/fauna/faunaClient";
 import { getUser } from "../../../auth/[user_id]/get-user";
 import { HttpError } from "../../interfaces/HttpError";
 import validateQuery from "../../validatorFunctions";
-import { getWellPermits } from '../../../../../lib/fauna/ts-queries/getWellPermits' 
+import { getWellPermits } from '../../../../../lib/fauna/ts-queries/getWellPermits'
 
 function handleListWellPemitsByUser(req: NextApiRequest, res: NextApiResponse): Promise<any> {
   return new Promise(async (resolve, reject) => {
@@ -15,6 +15,7 @@ function handleListWellPemitsByUser(req: NextApiRequest, res: NextApiResponse): 
     if (errors.length) reject(errors);
 
     const { user_id } = req.query
+    console.log(user_id)
 
     if (!user_id) throw new Error('user_id was not included in the query')
     if (Array.isArray(user_id)) throw new Error('Querying by a single user_id is allowed at a time')
@@ -22,7 +23,7 @@ function handleListWellPemitsByUser(req: NextApiRequest, res: NextApiResponse): 
       .then(res => res)
       .catch(err => reject(err))
     if (!user) throw new Error(`User with user_id: ${user_id} not found`)
-    
+
     if (!user.app_metadata?.permitRefs) return resolve([])
     const permitRefs = user.app_metadata.permitRefs
     const document_ids = permitRefs.map(permitRef => permitRef.document_id)

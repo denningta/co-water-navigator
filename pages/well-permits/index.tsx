@@ -28,7 +28,7 @@ const fetcher = async (url: string, user_id: string) => {
 const WellPermits: NextPageWithLayout = () => {
   const { user }: any = useUser()
   const [permitRefs, setPermitRefs] = useState<AppMetadata['permitRefs']>()
-  // const { data } = usePermitAssignments(permitRefs)
+
 
   useEffect(() => {
     if (!user || !user.app_metadata) return
@@ -36,11 +36,11 @@ const WellPermits: NextPageWithLayout = () => {
   }, [user])
 
   const widgets: Widget[] = [
-    { 
-      component: <Header 
+    {
+      component: <Header
         title="Well Permits"
         subtitle="Manage well permits and access meter readings"
-      />, 
+      />,
       colspan: 3
     },
     { component: <WellPermitsAssignment />, colspan: 3 },

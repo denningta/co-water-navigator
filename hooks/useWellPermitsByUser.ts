@@ -1,8 +1,8 @@
 import useSWR, { KeyedMutator } from "swr"
 import { WellPermitAssignment } from "../interfaces/WellPermit"
 
-const fetcher = async (url: string, user_id: string) => {
-  const res = await fetch(url + '?user_id=' + user_id)
+const fetcher = async (url: string) => {
+  const res = await fetch(url)
   if (!res.ok) {
     const error = new Error('An error occurred while fetching the data.')
     error.message = await res.json()
