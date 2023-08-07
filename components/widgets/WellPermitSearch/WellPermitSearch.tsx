@@ -1,31 +1,21 @@
-import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react"
-import useSWRInfinite from "swr/infinite";
+import { ChangeEvent, useEffect, useState } from "react"
 import WellPermitTable from "../DataTable/DataTable";
-import Select, { SingleValue } from 'react-select'
-import searchOptions, { SearchTermName, SelectOption } from "./search-data";
+import { SingleValue } from 'react-select'
+import { SearchTermName, SelectOption } from "./search-data";
 import useSWR from "swr";
 import wellPermitColumnDefs, { defaultColDef } from "./well-permit-search-column-defs";
-import { IoAdd, IoSearchSharp } from "react-icons/io5";
+import { IoAdd } from "react-icons/io5";
 import { useUser } from "@auth0/nextjs-auth0";
-import { UserData } from "../../../interfaces/User";
-import { Alert, CircularProgress, Snackbar } from "@mui/material";
 import { RowNode } from "ag-grid-community";
 import { useSnackbar } from "notistack";
-import { WellPermit } from "../../../interfaces/WellPermit";
-import TableFilters from "../../common/TableFilterSelect";
 import TableFilter from "./TableFilter";
 import TableActionButton from "../../common/TableActionButton";
 import { tailwindColors } from "../../../lib/tailwindcss/tailwindConfig";
 import Link from "next/link";
+import axios from "axios";
 
-interface SearchTerm {
-  term: string
-  value: string
-}
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
-const PAGE_SIZE = 10
-const selectTerms = searchOptions
 const baseUrl = 'https://dwr.state.co.us/Rest/GET/api/v2/wellpermits/wellpermit/'
 
 type SearchTerms = {
@@ -42,11 +32,11 @@ const WellPermitSearch = () => {
   const [searchTerms, setSearchTerms] = useState(initialSearchTerms)
   const [rowData, setRowData] = useState<any[] | undefined>([])
   const [selectedRowNodes, setSelectedRowNodes] = useState<RowNode[] | undefined>(undefined)
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+  const { enqueueSnackbar } = useSnackbar()
   const [filterModel, setFilterModel] = useState<{}>()
   const [addPermitsLoading, setAddPermitsLoading] = useState(false)
 
-  const { data, error } = useSWR(
+  const { data } = useSWR(
     url,
     fetcher
   );
@@ -89,17 +79,13 @@ const WellPermitSearch = () => {
         selectedRowNodes.map(rowNode => rowNode.data.permit).includes(row.permit)
       )
 
-      const url = `/api/v1/well-permits`
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(recordsWithSamePermitNumber)
-      }).then(res => res.json())
+      const res = await axios.post(
+        '/api/v1/well-permits/codwr',
+        recordsWithSamePermitNumber
+      )
 
       if (!user) throw new Error('User not defined')
-      const permitRefs = res.map((el: any) => ({
+      const permitRefs = res.data.map((el: any) => ({
         document_id: el.document_id,
         permit: el.permit,
         status: 'requested'
@@ -128,6 +114,7 @@ const WellPermitSearch = () => {
       }
       setAddPermitsLoading(false)
     } catch (error: any) {
+      console.log(error)
       setAddPermitsLoading(false)
       enqueueSnackbar('Something went wrong, please try again', { variant: 'error' })
     }

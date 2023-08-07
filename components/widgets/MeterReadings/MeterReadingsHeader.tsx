@@ -27,6 +27,8 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
   const { enqueueSnackbar } = useSnackbar()
   const { mutate } = useSWRConfig()
 
+  console.log(data)
+
   useEffect(() => {
     if (!data) return
     if (data && data.length > 0) return

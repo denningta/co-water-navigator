@@ -29,7 +29,6 @@ const WellPermits: NextPageWithLayout = () => {
   const { user }: any = useUser()
   const [permitRefs, setPermitRefs] = useState<AppMetadata['permitRefs']>()
 
-
   useEffect(() => {
     if (!user || !user.app_metadata) return
     setPermitRefs(user.app_metadata.permitRefs)
