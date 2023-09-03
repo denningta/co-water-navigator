@@ -1,10 +1,9 @@
 import { withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { NextApiRequest, NextApiResponse } from "next";
-import listWellPermits from './list'
 
 
 type HandlerFunctions = {
-  [key: string]: (req: NextApiRequest, res: NextApiResponse) => Promise<any>
+  [key: string]: (req: NextApiRequest) => Promise<any>
 };
 
 async function handler(
@@ -16,11 +15,13 @@ async function handler(
   }
 
   const handlers: HandlerFunctions = {
-    GET: listWellPermits,
+    GET: listWellPermitRecords,
+    POST: createWellPermitRecords,
+    PATCH: updateWellPermitRecords
   }
 
   try {
-    const response = await handlers[req.method](req, res)
+    const response = await handlers[req.method](req)
     res.status(200).json(response);
 
   } catch (error: any) {

@@ -1,12 +1,11 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { PermitRef, WellPermit, WellPermitAssignment } from "../../../../../interfaces/WellPermit";
-import faunaClient, { q } from "../../../../../lib/fauna/faunaClient";
+import { NextApiRequest } from "next";
+import { PermitRef, WellPermitAssignment } from "../../../../../interfaces/WellPermit";
+import faunaClient from "../../../../../lib/fauna/faunaClient";
 import { getUser } from "../../../auth/[user_id]/get-user";
-import { HttpError } from "../../interfaces/HttpError";
 import validateQuery from "../../validatorFunctions";
 import { getWellPermits } from '../../../../../lib/fauna/ts-queries/getWellPermits'
 
-function handleListWellPemitsByUser(req: NextApiRequest, res: NextApiResponse): Promise<any> {
+function handleListWellPemitsByUser(req: NextApiRequest): Promise<any> {
   return new Promise(async (resolve, reject) => {
     const errors = validateQuery(req, [
       'queryExists',
@@ -15,7 +14,6 @@ function handleListWellPemitsByUser(req: NextApiRequest, res: NextApiResponse): 
     if (errors.length) reject(errors);
 
     const { user_id } = req.query
-    console.log(user_id)
 
     if (!user_id) throw new Error('user_id was not included in the query')
     if (Array.isArray(user_id)) throw new Error('Querying by a single user_id is allowed at a time')
@@ -28,7 +26,7 @@ function handleListWellPemitsByUser(req: NextApiRequest, res: NextApiResponse): 
     const permitRefs = user.app_metadata.permitRefs
     const document_ids = permitRefs.map(permitRef => permitRef.document_id)
 
-    const wellPermits = await faunaClient.query(getWellPermits(document_ids))
+    const wellPermits = await faunaClient.query(getWellPermits({ document_ids: document_ids }))
       .then(res => res)
       .catch(err => {
         errors.push(err)
@@ -52,7 +50,7 @@ function handleListWellPemitsByUser(req: NextApiRequest, res: NextApiResponse): 
 export const listWellPermitsByPermitRef = async (permitRefs: PermitRef[]): Promise<WellPermitAssignment[]> => {
   const document_ids = permitRefs.map(permitRef => permitRef.document_id)
 
-  const wellPermits = await faunaClient.query(getWellPermits(document_ids))
+  const wellPermits = await faunaClient.query(getWellPermits({ document_ids: document_ids }))
     .then(res => res)
     .catch(err => {
       return err

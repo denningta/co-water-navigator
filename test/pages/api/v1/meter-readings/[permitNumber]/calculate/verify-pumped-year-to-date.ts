@@ -3,7 +3,13 @@ import verifyPumpedYearToDate from "../../../../../../../pages/api/v1/meter-read
 import { CalculationFn } from "./calculation-functions.test"
 import * as meterReadingData from './test-data.json'
 
-const data: MeterReading[] = meterReadingData as any
+const rawData: any = meterReadingData
+delete rawData.default
+
+const data: MeterReading[] = Object.keys(rawData).map(key => rawData[key])
+
+
+debugger
 
 const calculationFn: CalculationFn = {
   name: 'verifyPumpedYearToDate',
@@ -13,17 +19,17 @@ const calculationFn: CalculationFn = {
       const currentRecord: MeterReading = {
         ...data[11],
       }
-      const context = data
+
       return ({
         test: 'passes validation: sum of pumpedThisPeriod',
         props: {
-          index: 1,
+          index: 11,
           currentRecord: currentRecord,
           context: data,
           fields: ['pumpedYearToDate'],
         },
         expected: (result) => {
-          expect(result).toEqual({ value: 10 })
+          expect(result).toEqual({ value: 94.94 })
         }
       })
 

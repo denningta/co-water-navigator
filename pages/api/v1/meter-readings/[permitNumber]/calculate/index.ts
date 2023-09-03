@@ -137,7 +137,7 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
     refRecord.powerConsumptionCoef = verifyEqualToPrevValue(refRecord, meterReadings, index, 'powerConsumptionCoef')
     refRecord.pumpedThisPeriod = verifyPumpedThisPeriod(refRecord, meterReadings, index)
     refMeterReadings[index] = refRecord
-    refRecord.pumpedYearToDate = verifyPumpedYearToDate(refRecord, index, refMeterReadings)
+    refRecord.pumpedYearToDate = verifyPumpedYearToDate(refRecord, refMeterReadings, index)
     refRecord.availableThisYear = verifyAvailableThisYear(refRecord, pumpingLimitThisYear, meterReadings, index)
 
     if (index > 0) refMeterReadings.push(refRecord)

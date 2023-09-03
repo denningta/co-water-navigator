@@ -1,4 +1,14 @@
-export interface WellPermit {
+import { Document, Module, TimeStub } from "fauna"
+
+export type WellPermitDocument = WellPermit & {
+  coll: Module | string;
+  id: string;
+  ts: TimeStub;
+  [key: string]: any;
+}
+
+export type WellPermit = {
+  id?: string
   asBuiltAquifers?: string, // As Built Aquifers
   associatedAquifers?: string, // Associated Aquifers
   associatedCaseNumbers?: string, // Water court case number(s) associated with water right
@@ -65,6 +75,7 @@ export interface WellPermit {
   wdid?: string, // DWR unique structure identifier
 }
 
+// Auth0 user metadata structure for permit refs
 export interface PermitRef {
   permit: string
   document_id: string
@@ -75,4 +86,11 @@ export interface PermitRef {
 export type WellPermitStatus = 'requested' | 'approved' | 'rejected'
 
 export type WellPermitAssignment = WellPermit & PermitRef
+
+//FaunaDB data structure
+export interface WellPermitWithRecords {
+  permit: string
+  records: WellPermit[]
+  customRecord: WellPermit // selected from records or a custom input
+}
 

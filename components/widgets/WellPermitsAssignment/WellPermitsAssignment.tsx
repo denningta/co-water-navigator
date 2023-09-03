@@ -15,7 +15,6 @@ interface Props {
 
 const WellPermitsAssignment = () => {
   const { user }: any = useUser()
-  console.log(user)
   const { data } = useWellPermitsByUser(user?.sub)
   const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined)
 

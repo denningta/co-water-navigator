@@ -1,13 +1,17 @@
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
 import { validateDate } from "../../../validatorFunctions";
-import { getPrecision } from "./helpers";
 
 const verifyPumpedYearToDate = (
   currentRecord: MeterReading,
-  currentIndex: number,
   meterReadings: MeterReading[],
+  currentIndex: number,
 ): CalculatedValue | undefined => {
-  const readingsThisYear = getMeterReadingsPerYear(meterReadings, currentIndex)
+
+  debugger
+
+  // const readingsThisYear = getMeterReadingsPerYear(meterReadings, currentIndex)
+  const readingsThisYear = getRecordsUpToDate(meterReadings, meterReadings[currentIndex].date)
+
 
   const shouldBe = readingsThisYear.reduce((n, { pumpedThisPeriod }) => {
     if (!pumpedThisPeriod) return +n.toFixed(2)
@@ -39,9 +43,10 @@ export const getMeterReadingsPerYear = (
   meterReadings: MeterReading[],
   currIndex: number
 ) => {
-  if (validateDate(meterReadings[currIndex].date) === 'invalid') {
+  if (meterReadings[currIndex]?.date && validateDate(meterReadings[currIndex].date) === 'invalid') {
     throw new Error(`Incorrect date format: ${meterReadings[currIndex].date}.  Expected YYYY-MM`)
   }
+
   const [currYear, currMonth] = meterReadings[currIndex].date.split('-')
 
   return meterReadings.filter(meterReading => {
@@ -49,8 +54,28 @@ export const getMeterReadingsPerYear = (
       throw new Error(`Incorrect date format: ${meterReading.date}.  Expected YYYY-MM`)
     }
     const [year, month] = meterReading.date.split('-')
-    return year === currYear && month <= currMonth
+    return year === currYear && +month <= +currMonth
   })
+}
+
+export function getRecordsUpToDate(data: MeterReading[], currentDateString: string) {
+  if (validateDate(currentDateString) == 'invalid') {
+    throw new Error(`Incorrect date format: ${currentDateString}.  Expected YYYY-MM`)
+  }
+
+  const currentDate = new Date(currentDateString + '-01');
+  const currentYear = currentDate.getFullYear();
+
+  const recordsUpToDate = [];
+
+  for (let i = 0; i < data.length; i++) {
+    const recordDate = new Date(data[i].date + '-01');
+    if (recordDate.getFullYear() === currentYear && recordDate <= currentDate) {
+      recordsUpToDate.push(data[i]);
+    }
+  }
+
+  return recordsUpToDate;
 }
 
 export default verifyPumpedYearToDate
