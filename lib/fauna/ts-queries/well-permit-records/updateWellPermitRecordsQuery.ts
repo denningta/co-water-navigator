@@ -18,7 +18,6 @@ const updateWellPermitRecordsQuery = (data: WellPermitDocument[]) => {
     }
   })
 
-  debugger
 
   return fql`
     ${updateData}.map(

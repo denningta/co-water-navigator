@@ -1,12 +1,16 @@
 import { withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { NextApiRequest, NextApiResponse } from "next";
+import createWellPermitRecordsHandler from "./create";
+import deleteWellPermitRecordsHandler from "./delete";
+import listWellPermitRecordsHandler from "./list";
+import updateWellPermitRecordsHandler from "./update";
 
 
 type HandlerFunctions = {
   [key: string]: (req: NextApiRequest) => Promise<any>
 };
 
-async function handler(
+async function wellPermitRecordsHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
@@ -15,9 +19,10 @@ async function handler(
   }
 
   const handlers: HandlerFunctions = {
-    GET: listWellPermitRecords,
-    POST: createWellPermitRecords,
-    PATCH: updateWellPermitRecords
+    GET: listWellPermitRecordsHandler,
+    POST: createWellPermitRecordsHandler,
+    PATCH: updateWellPermitRecordsHandler,
+    DELETE: deleteWellPermitRecordsHandler
   }
 
   try {
@@ -30,5 +35,5 @@ async function handler(
 
 }
 
-export default withApiAuthRequired(handler);
+export default withApiAuthRequired(wellPermitRecordsHandler);
 

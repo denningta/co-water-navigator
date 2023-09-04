@@ -1,6 +1,7 @@
 import { NextApiRequest } from "next";
 import { WellPermit } from "../../../../interfaces/WellPermit";
-import faunaClient from "../../../../lib/fauna/faunaClient";
+import fauna from "../../../../lib/fauna/faunaClientV10";
+import createWellPermitRecordsQuery from "../../../../lib/fauna/ts-queries/well-permit-records/createWellPermitRecordsQuery";
 
 const createWellPermitRecordsHandler = (req: NextApiRequest) => {
   const { body } = req
@@ -11,13 +12,13 @@ const createWellPermitRecordsHandler = (req: NextApiRequest) => {
 }
 
 export const createWellPermitRecords = async (data: WellPermit[]) => {
-
   try {
-    const response = await faunaClient.query()
-    return response
+    const response = await fauna.query(createWellPermitRecordsQuery(data))
+
+    return response.data
 
   } catch (error: any) {
-
+    throw new Error(error)
   }
 
 }

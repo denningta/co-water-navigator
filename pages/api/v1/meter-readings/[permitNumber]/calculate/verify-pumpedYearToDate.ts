@@ -7,7 +7,6 @@ const verifyPumpedYearToDate = (
   currentIndex: number,
 ): CalculatedValue | undefined => {
 
-  debugger
 
   // const readingsThisYear = getMeterReadingsPerYear(meterReadings, currentIndex)
   const readingsThisYear = getRecordsUpToDate(meterReadings, meterReadings[currentIndex].date)

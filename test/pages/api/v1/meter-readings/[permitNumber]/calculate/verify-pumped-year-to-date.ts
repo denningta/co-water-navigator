@@ -9,7 +9,6 @@ delete rawData.default
 const data: MeterReading[] = Object.keys(rawData).map(key => rawData[key])
 
 
-debugger
 
 const calculationFn: CalculationFn = {
   name: 'verifyPumpedYearToDate',
