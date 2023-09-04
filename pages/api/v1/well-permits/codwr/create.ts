@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 import { WellPermit } from "../../../../../interfaces/WellPermit";
 import faunaClient from "../../../../../lib/fauna/faunaClient";
-import { upsertWellPermitAndRecords } from "../../../../../lib/fauna/ts-queries/upsertWellPermitRecords";
+import { upsertWellPermitAndRecords } from "../../../../../lib/fauna/ts-queries/upsertWellPermitAndRecords";
 import { listCodwrWellPermits } from "./list";
 
 async function createWellPermits(req: NextApiRequest): Promise<WellPermit[]> {
