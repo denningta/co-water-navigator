@@ -10,7 +10,6 @@ const deleteWellPermitRecordsHandler = (req: NextApiRequest) => {
 }
 
 export const deleteWellPermitRecords = async (ids: string[]) => {
-  debugger
   try {
     const response = await fauna.query(deleteWellPermitRecordsQuery(ids))
     return response.data

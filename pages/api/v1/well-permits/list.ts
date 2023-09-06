@@ -1,33 +1,37 @@
-import { Expr } from "faunadb";
+import { QuerySuccess, QueryValue } from "fauna";
 import { NextApiRequest } from "next";
-import { WellPermitWithRecords } from "../../../../interfaces/WellPermit";
-import faunaClient from "../../../../lib/fauna/faunaClient";
-import { getWellPermits } from "../../../../lib/fauna/ts-queries/getWellPermits";
+import fauna from "../../../../lib/fauna/faunaClientV10";
+import getWellPermits, { WellPermitsQuery } from "../../../../lib/fauna/ts-queries/well-permits/getWellPermits";
 
-async function listWellPemitsHandler(req: NextApiRequest): Promise<WellPermitWithRecords[]> {
+function listWellPemitsHandler(req: NextApiRequest) {
 
-  try {
-    const response = await listWellPermits(req.query)
-    return response
+  const { query } = req
 
-  } catch (error: any) {
-    throw new Error(error)
-  }
+  const { ids, permitNumbers } = query
+
+  if (!ids?.length && !permitNumbers?.length) throw new Error('Invalid query: must include valid query parameters')
+
+  let validatedQuery: WellPermitsQuery = {}
+
+  if (ids) validatedQuery.ids = [...ids]
+  if (permitNumbers) validatedQuery.permitNumbers = [...permitNumbers]
+
+
+  const response = listWellPermits(validatedQuery)
+  return response
+
 }
 
 
-export interface WellPermitsQuery {
-  document_ids?: string[] | Expr
-  permitNumbers?: string[] | Expr
-}
 
 export async function listWellPermits(query: WellPermitsQuery) {
 
   try {
-    const response: WellPermitWithRecords[] = await faunaClient.query(getWellPermits(query))
+    const response: QuerySuccess<QueryValue[]> = await fauna.query(getWellPermits(query))
     return response
 
   } catch (error: any) {
+    console.log(error)
     throw new Error(error)
   }
 }

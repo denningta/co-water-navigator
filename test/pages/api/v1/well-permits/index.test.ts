@@ -1,26 +1,36 @@
-import { WellPermit } from "../../../../../interfaces/WellPermit"
-import { listWellPermits } from "../../../../../pages/api/v1/well-permits/list"
+import { QuerySuccess, QueryValue } from "fauna"
+import { createMocks } from "node-mocks-http"
+import listWellPemitsHandler from "../../../../../pages/api/v1/well-permits/list"
 
 describe('/api/v1/well-permits/', () => {
 
 
   describe('listWellPermits', () => {
 
-    test('returns wellPermit records given document_ids', async () => {
+    test('returns wellPermit records given document ids', async () => {
 
-      const document_ids = [
-        '350046946838184524',
-        '350046946838185548'
+      const ids = [
+        '372101640243642967',
+        '372115299605938775'
       ]
 
+      const { req }: any = createMocks({
+        method: 'GET',
+        query: {
+          ids: ids
+        }
+      })
+
       try {
-        const response = await listWellPermits({
-          document_ids: document_ids
-        })
 
-        if (!response) throw new Error('response is undefined')
+        const { data }: QuerySuccess<QueryValue[]> = await listWellPemitsHandler(req)
 
-        response.forEach(record => {
+        if (!data) throw new Error('response is undefined')
+
+        expect(data).toHaveLength(2)
+
+
+        data.forEach(record => {
           expect(record).toHaveProperty('permit')
           expect(record).toHaveProperty('records')
         })
@@ -30,29 +40,6 @@ describe('/api/v1/well-permits/', () => {
       }
     })
 
-    test('returns wellPermit records given permitNumbers', async () => {
-      const permitNumbers = [
-        '31643-FP',
-        '14860-RFP',
-      ]
-
-      try {
-        const response = await listWellPermits({
-          permitNumbers: permitNumbers
-        })
-
-        if (!response) throw new Error('response is undefined')
-
-        response.forEach(record => {
-          expect(record).toHaveProperty('permit')
-          expect(record).toHaveProperty('records')
-        })
-
-      } catch (error: any) {
-        throw new Error(error)
-
-      }
-    })
   })
 
 

@@ -1,9 +1,9 @@
 import { NextApiRequest } from "next";
-import { PermitRef, WellPermitAssignment } from "../../../../../interfaces/WellPermit";
+import { PermitRef, WellPermitAssignment, WellPermitWithRecords } from "../../../../../interfaces/WellPermit";
 import faunaClient from "../../../../../lib/fauna/faunaClient";
 import { getUser } from "../../../auth/[user_id]/get-user";
 import validateQuery from "../../validatorFunctions";
-import { getWellPermits } from '../../../../../lib/fauna/ts-queries/getWellPermits'
+import getWellPermits from '../../../../../lib/fauna/ts-queries/getWellPermits'
 
 function handleListWellPemitsByUser(req: NextApiRequest): Promise<any> {
   return new Promise(async (resolve, reject) => {
@@ -26,7 +26,7 @@ function handleListWellPemitsByUser(req: NextApiRequest): Promise<any> {
     const permitRefs = user.app_metadata.permitRefs
     const document_ids = permitRefs.map(permitRef => permitRef.document_id)
 
-    const wellPermits = await faunaClient.query(getWellPermits({ document_ids: document_ids }))
+    const wellPermits: WellPermitWithRecords[] = await faunaClient.query(getWellPermits({ document_ids: document_ids }))
       .then(res => res)
       .catch(err => {
         errors.push(err)
@@ -34,7 +34,7 @@ function handleListWellPemitsByUser(req: NextApiRequest): Promise<any> {
         return err
       })
 
-    const wellPermitAssignments = wellPermits.map((wellPermit: any) => {
+    const wellPermitAssignments: WellPermitWithRecords[] = wellPermits.map((wellPermit: any) => {
       const permitRef = permitRefs.find(permitRef => permitRef.document_id === wellPermit.document_id)
       return {
         ...wellPermit.document,

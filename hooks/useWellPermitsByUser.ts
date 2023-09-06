@@ -16,6 +16,7 @@ const useWellPermitsByUser = (
 ): { data: WellPermitAssignment[], mutate: KeyedMutator<any> } => {
   const { data, mutate } = useSWR(user_id ? `/api/v1/well-permits/${user_id}` : null, fetcher)
 
+
   return {
     data: data,
     mutate: mutate

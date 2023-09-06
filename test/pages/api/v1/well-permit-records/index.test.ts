@@ -34,7 +34,6 @@ describe('/api/v1/well-permit-records', () => {
 
       expect(response).toHaveLength(2)
 
-      debugger
 
     } catch (error: any) {
       throw new Error(error)

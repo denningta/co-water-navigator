@@ -2,7 +2,7 @@ import { Expr } from "faunadb";
 import { WellPermitsQuery } from "../../../pages/api/v1/well-permits/list";
 import { q } from "../faunaClient";
 
-export const getWellPermits = (query: WellPermitsQuery) => {
+const getWellPermits = (query: WellPermitsQuery) => {
   const { document_ids, permitNumbers } = query
 
   let faunaQuery: Expr | undefined = undefined
@@ -52,3 +52,5 @@ export const getWellPermitsByPermitNumber = (permitNumbers: string[] | Expr) =>
       )
     )
   )
+
+export default getWellPermits

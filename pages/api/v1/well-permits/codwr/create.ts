@@ -14,8 +14,6 @@ async function createWellPermits(req: NextApiRequest): Promise<WellPermit[]> {
       upsertWellPermitAndRecords(permits)
     );
 
-    console.log(response)
-
     return response
 
   } catch (error: any) {
