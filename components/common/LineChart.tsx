@@ -16,12 +16,18 @@ interface PumpedThisPeriod {
 }
 
 export interface LineChartProps {
-  data: any[]
+  data: PermitPreviewData[]
   startDate?: Date
   endDate?: Date
 }
 
-const LineChart = ({ 
+export interface PermitPreviewData {
+  permit: string
+  pumpData: PumpedThisPeriod[]
+}
+
+
+const LineChart = ({
   data,
   startDate = new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
   endDate = new Date()
@@ -49,7 +55,7 @@ const LineChart = ({
   const date = (d: PumpedThisPeriod) => d && new Date(d.date).valueOf();
   const pumpedThisPeriod = (d: PumpedThisPeriod) => d && Number(d.pumpedThisPeriod);
 
-  const rawData = data.map((record, index) => 
+  const rawData = data.map((record, index) =>
     record.pumpData.map((el: any) => ({ ...el, lineId: index, permit: record.permit }))
   ).flat(1)
 
@@ -64,7 +70,7 @@ const LineChart = ({
       startDate,
       endDate
     ],
-    range: [margin, width-margin],
+    range: [margin, width - margin],
     round: true,
   }), [startDate, endDate])
 
@@ -73,12 +79,12 @@ const LineChart = ({
 
 
 
-  const points: PointsRange[] = rawData.map((d, index) => {
+  const points: PointsRange[] = rawData.map((d) => {
     return [
-        xScale(date(d) ?? 0),
-        yScale(pumpedThisPeriod(d) ?? 0),
-        d.lineId,
-      ]
+      xScale(date(d) ?? 0),
+      yScale(pumpedThisPeriod(d) ?? 0),
+      d.lineId,
+    ]
   }, [])
 
   const voronoiLayout = useMemo(() =>
@@ -87,7 +93,7 @@ const LineChart = ({
       height: height,
       x: (d) => x(d),
       y: (d) => y(d),
-    })(points),   
+    })(points),
     [width, height, points],
   )
 
@@ -152,33 +158,33 @@ const LineChart = ({
         <AxisBottom top={height - margin} scale={xScale} numTicks={width > 520 ? 10 : 5} />
         <AxisLeft top={0} left={margin} scale={yScale} numTicks={height > 520 ? 10 : 5} />
         <text x={-80} y={margin + 15} transform="rotate(-90)" fontSize={10}>
-            Acre Feet
+          Acre Feet
         </text>
-          {data.map((record, index) => 
-            <LinePath
-              key={`linePath-${record.permit}`}
-              data={record.pumpData}
-              curve={curveMonotoneX}
-              x={(d) => xScale(date(d) ?? 0)}
-              y={(d: any) => yScale(pumpedThisPeriod(d) ?? 0)}
-              opacity={lineActive === index ? 1 : 0.4}
-              stroke={ordinalDomain.includes(record.permit) ? ordinalColorScale(record.permit) : '#3A86FF'}
-              strokeWidth={3}
-              strokeDasharray="1,2"
-            />
-          )}
+        {data.map((record, index) =>
+          <LinePath
+            key={`linePath-${record.permit}`}
+            data={record.pumpData}
+            curve={curveMonotoneX}
+            x={(d) => xScale(date(d) ?? 0)}
+            y={(d: any) => yScale(pumpedThisPeriod(d) ?? 0)}
+            opacity={lineActive === index ? 1 : 0.4}
+            stroke={ordinalDomain.includes(record.permit) ? ordinalColorScale(record.permit) : '#3A86FF'}
+            strokeWidth={3}
+            strokeDasharray="1,2"
+          />
+        )}
 
-          {points.map((point, i) => {
-            const permit = rawData.find(el => el.lineId === point[2]).permit
-            return (<Circle 
-              key={`point-${point[0]}-${i}`}
-              cx={x(point)}
-              cy={y(point)}
-              r={4}
-              fill={ordinalDomain.includes(permit) ? ordinalColorScale(permit) : '#3A86FF'}
-              opacity={pointActive === i ? 1 : 0.4}
-            />)
-          })}
+        {points.map((point, i) => {
+          const permit = rawData.find(el => el.lineId === point[2]).permit
+          return (<Circle
+            key={`point-${point[0]}-${i}`}
+            cx={x(point)}
+            cy={y(point)}
+            r={4}
+            fill={ordinalDomain.includes(permit) ? ordinalColorScale(permit) : '#3A86FF'}
+            opacity={pointActive === i ? 1 : 0.4}
+          />)
+        })}
       </svg>
       <LegendOrdinal
         scale={ordinalColorScale}
@@ -187,28 +193,29 @@ const LineChart = ({
           <div className="border w-fit py-2 px-4 rounded-lg absolute top-0 right-0 select-none">
             <div className='font-bold mb-1'>Well Permits</div>
             <div className='grid grid-cols-1 gap-x-4'>
-              {labels.map((label, i) => {
+              {labels.map((label) => {
                 const lineId = rawData.find(el => el.permit === label.datum)?.lineId
                 return (
-                <div key={lineId} 
-                  className="flex items-center"
-                  style={{ opacity: lineActive === lineId ? 1 : 0.5 }}
-                  onMouseEnter={() => handleLegendEnter(lineId)}
-                  onMouseLeave={handleLegendLeave}
-                >
-                  <div
-                    className='w-[8px] h-[8px] rounded-full bg-dark'
-                    style={{ backgroundColor: label.value }}
-                  />
-                  <div className='ml-3'>{label.datum}</div>
-                </div>
-              )})}
+                  <div key={lineId}
+                    className="flex items-center"
+                    style={{ opacity: lineActive === lineId ? 1 : 0.5 }}
+                    onMouseEnter={() => handleLegendEnter(lineId)}
+                    onMouseLeave={handleLegendLeave}
+                  >
+                    <div
+                      className='w-[8px] h-[8px] rounded-full bg-dark'
+                      style={{ backgroundColor: label.value }}
+                    />
+                    <div className='ml-3'>{label.datum}</div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
       </LegendOrdinal>
 
-      {tooltipOpen && 
+      {tooltipOpen &&
         <TooltipInPortal
           key={Math.random()}
           top={tooltipTop}

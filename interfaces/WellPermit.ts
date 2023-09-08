@@ -87,11 +87,11 @@ export type WellPermitStatus = 'requested' | 'approved' | 'rejected'
 
 export type WellPermitAssignment = WellPermit & PermitRef
 
-//FaunaDB data structure
 export interface WellPermitWithRecords {
-  document_id: string
+  id: string
   permit: string
-  records: WellPermit[]
-  selectedRecord: WellPermit // selected from records or a custom input
+  status?: WellPermitStatus
+  records?: WellPermit[]
+  selectedRecord?: WellPermit // selected from records or a custom input
 }
 

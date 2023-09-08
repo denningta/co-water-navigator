@@ -10,8 +10,8 @@ const handleUpdateAppMetaData = async (req: NextApiRequest, res: NextApiResponse
   if (!body.permitRefs) throw new Error('Bad Argument: permitRef missing from body of the request')
 
   body.permitRefs.map((permitRef: PermitRef) => {
-    if(!permitRef.hasOwnProperty('document_id')) {
-      throw new Error('Property missing: document_id missing from a record')
+    if (!permitRef.hasOwnProperty('document_id')) {
+      throw new Error('Property missing: \'id\' missing from a record')
     }
   })
 
@@ -35,7 +35,7 @@ export const updatePermitRefs = async (user_id: string, newPermitRefs: PermitRef
     let updates: number = 0;
 
     if (oldPermitRefs) {
-      newPermitRefs.forEach((newRef, newIndex) => {
+      newPermitRefs.forEach((newRef) => {
         const matchIndex = oldPermitRefs.findIndex((oldRef) => {
           return oldRef.document_id === newRef.document_id
         })
@@ -46,14 +46,14 @@ export const updatePermitRefs = async (user_id: string, newPermitRefs: PermitRef
           } else {
             oldPermitRefs.push(newRef)
             updates++
-          } 
+          }
         } else if (method === 'PATCH') {
-          if (matchIndex >= 0) { 
+          if (matchIndex >= 0) {
             oldPermitRefs[matchIndex] = newRef
           } else {
             oldPermitRefs.push(newRef)
             updates++
-          } 
+          }
         } else {
           throw new Error('Invalid request method')
         }
@@ -63,7 +63,7 @@ export const updatePermitRefs = async (user_id: string, newPermitRefs: PermitRef
     }
 
     const response = await auth0.updateAppMetadata({ id: user_id }, { permitRefs: oldPermitRefs ?? newPermitRefs })
-    return { data: response, updates: updates, warnings: warnings}
+    return { data: response, updates: updates, warnings: warnings }
 
   } catch (error: any) {
     return error

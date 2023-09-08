@@ -1,11 +1,13 @@
 import { q } from "../faunaClient"
 import getMeterReadings from "./getMeterReadings"
-import { getWellPermits } from "./getWellPermits"
+import getWellPermits from "./getWellPermits"
+
+
 
 const getPermitPreview = (document_ids: string[]) =>
   q.Let(
     {
-      permitData: getWellPermits({ document_ids: document_ids }),
+      permitData: getWellPermits({ ids: document_ids }),
       permits:
         q.Map(
           q.Var('permitData'),

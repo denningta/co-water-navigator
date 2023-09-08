@@ -3,12 +3,12 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { HttpError } from "../../interfaces/HttpError";
 import handleListWellPemitsByUser from "./list";
 
-type HandlerFunctions = { 
-  [key: string]: (req: NextApiRequest, res: NextApiResponse) => Promise<any> 
+type HandlerFunctions = {
+  [key: string]: (req: NextApiRequest, res: NextApiResponse) => Promise<any>
 };
 
 async function handler(
-  req: NextApiRequest, 
+  req: NextApiRequest,
   res: NextApiResponse
 ): Promise<any | HttpError> {
   if (!req || !req.method) {
@@ -18,20 +18,22 @@ async function handler(
       400
     ));
   }
-  
+
   const handlers: HandlerFunctions = {
     GET: handleListWellPemitsByUser,
   }
 
-  return handlers[req.method](req, res)
-  .then((response) => {
-    res.status(200).json(response);
-    return response;
-  })
-  .catch((errors) => {
-    res.status(errors[0].status || 500).json({errors: errors})
-    return errors;
-  });
+  try {
+
+    const response = await handlers[req.method](req, res)
+    res.status(200).json(response)
+
+
+
+  } catch (error: any) {
+    res.status(error?.status || 500).json(error)
+    throw new Error(error)
+  }
 
 }
 

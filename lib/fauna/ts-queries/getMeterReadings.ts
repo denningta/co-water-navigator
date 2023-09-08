@@ -2,74 +2,74 @@ import { Expr } from "faunadb"
 import { q } from "../faunaClient"
 
 
-interface GetMeterReadingProps {
-    permitNumbers?: string[] | Expr | Expr[], 
-    dates?: string[] | Expr | Expr[], 
-    years?: string[] | Expr | Expr[]
+export interface GetMeterReadingProps {
+  permitNumbers?: string[] | Expr | Expr[],
+  dates?: string[] | Expr | Expr[],
+  years?: string[] | Expr | Expr[]
 }
 
 const getMeterReadings = (
-  {  
-    permitNumbers, 
-    dates, 
+  {
+    permitNumbers,
+    dates,
     years
   }: GetMeterReadingProps
 ) => {
-  const permitNumberQuery = permitNumbers 
-  ? q.Union(
+  const permitNumberQuery = permitNumbers
+    ? q.Union(
       q.Map(permitNumbers,
         q.Lambda('permitNumber',
           q.Match(q.Index('meter-readings-by-permit-number'), q.Var('permitNumber'))
         )
       )
-  )
-  : null
+    )
+    : null
 
-  const yearQuery = years 
-  ? q.Union(
-    q.Map(years,
-      q.Lambda('year',
-      q.Union(
-        q.Match(q.Index('meter-readings-by-year'), q.Var('year')),
-        q.Match(
-          q.Index('meter-readings-by-date'), 
-          q.Concat([q.ToString(q.Subtract(q.ToNumber(q.Var('year')), 1)), '-12'])
+  const yearQuery = years
+    ? q.Union(
+      q.Map(years,
+        q.Lambda('year',
+          q.Union(
+            q.Match(q.Index('meter-readings-by-year'), q.Var('year')),
+            q.Match(
+              q.Index('meter-readings-by-date'),
+              q.Concat([q.ToString(q.Subtract(q.ToNumber(q.Var('year')), 1)), '-12'])
+            )
+          )
         )
       )
-      )  
     )
-  ) 
-  : null
+    : null
 
   const dateQuery = dates ? q.Union(
     q.Map(dates,
       q.Lambda('date',
         q.Match(q.Index('meter-readings-by-date'), q.Var('date'))
       )
-    ) 
+    )
   ) : null
-  
+
   return (
     q.Let(
       {
         preFilter: q.Map(
-        q.Paginate(
-          q.Join(
-            q.Intersection(
-              [
-                permitNumberQuery,
-                yearQuery,
-                dateQuery
-              ].filter(el => el)
-            ),
-            q.Index('meter-readings-sort-by-date-asc')
-          )
+          q.Paginate(
+            q.Join(
+              q.Intersection(
+                [
+                  permitNumberQuery,
+                  yearQuery,
+                  dateQuery
+                ].filter(el => el)
+              ),
+              q.Index('meter-readings-sort-by-date-asc')
+            )
 
-        ),
-        q.Lambda(['record', 'ref'],
-          q.Select(['data'], q.Get(q.Var('ref')))
+          ),
+          q.Lambda(['record', 'ref'],
+            q.Select(['data'], q.Get(q.Var('ref')))
+          )
         )
-      )
       },
       q.Select(['data'], q.Var('preFilter'))
     )

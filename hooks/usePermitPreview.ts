@@ -1,4 +1,5 @@
 import useSWR, { KeyedMutator } from "swr"
+import { PermitPreviewData } from "../components/common/LineChart"
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
@@ -10,10 +11,10 @@ const fetcher = async (url: string) => {
   return res.json()
 }
 
-const usePermitPreview = (): { data: any, mutate: KeyedMutator<any> } => {
+const usePermitPreview = (): { data: PermitPreviewData[], mutate: KeyedMutator<any> } => {
   const { data, mutate } = useSWR([
-      `/api/v1/data-summary/permit-preview`
-    ],
+    `/api/v1/data-summary/permit-preview`
+  ],
     fetcher
   )
 

@@ -1,14 +1,14 @@
 import { Expr } from "faunadb";
-import { WellPermitsQuery } from "../../../pages/api/v1/well-permits/list";
 import { q } from "../faunaClient";
+import { WellPermitsQuery } from "./well-permits/getWellPermits";
 
 const getWellPermits = (query: WellPermitsQuery) => {
-  const { document_ids, permitNumbers } = query
+  const { ids, permitNumbers } = query
 
   let faunaQuery: Expr | undefined = undefined
 
   if (permitNumbers) faunaQuery = getWellPermitsByPermitNumber(permitNumbers)
-  if (document_ids) faunaQuery = getWellPermitsByDocumentId(document_ids)
+  if (ids) faunaQuery = getWellPermitsByDocumentId(ids)
   if (!faunaQuery) throw new Error('Invalid query paramters')
 
   return (

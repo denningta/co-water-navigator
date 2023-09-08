@@ -14,6 +14,8 @@ const PermitPreview = () => {
   const [startDate, setStartDate] = useState(new Date(new Date().setFullYear(new Date().getFullYear() - 1)))
   const [endDate, setEndDate] = useState(new Date())
 
+  console.log(data)
+
   const handleChange = (e: any, newValue: number) => {
     setRange(newValue)
     setStartDate(new Date(new Date().setFullYear(new Date().getFullYear() - newValue)))

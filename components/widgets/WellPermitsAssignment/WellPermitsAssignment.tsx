@@ -1,22 +1,16 @@
 import { useState } from "react"
-import { MdOutlineModeEditOutline } from "react-icons/md"
 import wellPermitColumnDefs, { defaultColDef } from "./well-permit-column-defs"
 import DataTable from "../DataTable/DataTable"
-import { useRouter } from "next/router"
 import QuickSearch from "../../common/QuickSearch"
 import useWellPermitsByUser from "../../../hooks/useWellPermitsByUser"
 import { useUser } from "@auth0/nextjs-auth0"
 import Button from "../../common/Button"
 import { BiPlus } from "react-icons/bi"
 
-interface Props {
-  rowData?: any[] | undefined
-}
 
 const WellPermitsAssignment = () => {
   const { user }: any = useUser()
   const { data } = useWellPermitsByUser(user?.sub)
-  console.log(data)
   const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined)
 
   const handleChange = (value: string) => {
