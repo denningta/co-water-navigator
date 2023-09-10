@@ -36,7 +36,7 @@ const CalendarYearSelector = ({
   rowSelection = 'single',
   onlyDataFilterDefault = false,
   onYearChanged = () => { },
-  onSelectionChanged = () => { }
+  onSelectionChanged = () => { },
 }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
   const { data } = useDataSummary(permitNumber)

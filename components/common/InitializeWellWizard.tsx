@@ -5,6 +5,8 @@ import { FaCheck } from "react-icons/fa"
 import Button from "./Button"
 import * as Yup from 'yup'
 import { IoClose } from "react-icons/io5"
+import useWellPermitRecords from "../../hooks/useWellPermitRecords"
+import WellPermitsRecordsManager from "../widgets/WellPermitsRecordsManager/WellPermitRecordsManager"
 
 const steps = (year: string | undefined) => ([
   {
@@ -12,7 +14,7 @@ const steps = (year: string | undefined) => ([
     fields: ['year']
   },
   {
-    label: `${year && +year && +year} DBB-013`,
+    label: `${year && +year && +year - 1} DBB-013`,
     fields: ['originalAppropriation', 'allowedAppropriation', 'bankingReserveLastYear']
   },
   {
@@ -28,7 +30,9 @@ const getInitialValues = (permitNumber: string | undefined, year: string | undef
     originalAppropriation: '',
     allowedAppropriation: '',
     bankingReserveLastYear: '',
-    totalPumpedThisYear: ''
+    totalPumpedThisYear: '',
+    contactName: '',
+    owner: ''
   }
 }
 
@@ -270,8 +274,12 @@ const InitializeWellWizard = ({ dialogProps, permitnumber, year, onFormSubmit, i
                   }
 
                   {activeStep === 2 &&
-                    <div className="space-y-2">
-                      step 2
+                    <div className="space-y-4">
+                      <div>
+                        Select the record below that should be associated with this well permit or enter custom values.
+                      </div>
+                      <div>This data will be used to populate the DBB-004 and DBB-013 forms and can always be changed later.</div>
+                      <WellPermitsRecordsManager permitNumber={permitnumber} />
                     </div>
 
                   }

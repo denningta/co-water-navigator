@@ -8,7 +8,11 @@ const listWellPermitRecordsHandler = (req: NextApiRequest) => {
 
   if (!permitNumber) throw new Error('Invalid query')
 
-  return listWellPermitRecordsByPermitNumber([...permitNumber])
+  return listWellPermitRecordsByPermitNumber(
+    Array.isArray(permitNumber)
+      ? permitNumber
+      : [permitNumber]
+  )
 }
 
 export const listWellPermitRecordsByPermitNumber = async (permitNumbers: string[]) => {
@@ -17,13 +21,9 @@ export const listWellPermitRecordsByPermitNumber = async (permitNumbers: string[
 
     return data.data
 
-
-
   } catch (error: any) {
-    console.log(error)
     throw new Error(error)
   }
-
 }
 
 export default listWellPermitRecordsHandler

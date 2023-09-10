@@ -7,14 +7,16 @@ function listWellPemitsHandler(req: NextApiRequest) {
 
   const { query } = req
 
-  const { ids, permitNumbers } = query
+  const { id, permitNumber } = query
 
-  if (!ids?.length && !permitNumbers?.length) throw new Error('Invalid query: must include valid query parameters')
+
+  if (!id?.length && !permitNumber?.length) throw new Error('Invalid query: must include valid query parameters')
 
   let validatedQuery: WellPermitsQuery = {}
 
-  if (ids) validatedQuery.ids = [...ids]
-  if (permitNumbers) validatedQuery.permitNumbers = [...permitNumbers]
+  if (id) validatedQuery.ids = Array.isArray(id) ? id : [id]
+  if (permitNumber) validatedQuery.permitNumbers = Array.isArray(permitNumber) ? permitNumber : [permitNumber]
+
 
 
   const response = listWellPermits(validatedQuery)
@@ -27,8 +29,8 @@ function listWellPemitsHandler(req: NextApiRequest) {
 export async function listWellPermits(query: WellPermitsQuery) {
 
   try {
-    const response: QuerySuccess<QueryValue[]> = await fauna.query(getWellPermits(query))
-    return response
+    const { data }: QuerySuccess<QueryValue[]> = await fauna.query(getWellPermits(query))
+    return data
 
   } catch (error: any) {
     console.log(error)

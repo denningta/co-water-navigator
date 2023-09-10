@@ -1,5 +1,5 @@
 import { useUser } from '@auth0/nextjs-auth0';
-import { ColDef, ColumnApi, GridApi, RowNode, SelectionChangedEvent, SetFilterModelValue } from 'ag-grid-community';
+import { ColDef, ColumnApi, GetRowIdFunc, GridApi, RowNode, SelectionChangedEvent, SetFilterModelValue } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 import styles from './DataTable.module.css'
@@ -22,21 +22,25 @@ interface Props {
   domLayout?: 'normal' | 'autoHeight' | 'print'
   noRowsComponent?: () => JSX.Element
   onRowSelectionChanged?: (rowNodes: RowNode[], api: GridApi) => void | null
+  onApiLoad?: ({ api, columnApi }: { api: GridApi, columnApi: ColumnApi }) => void
+  getRowId?: GetRowIdFunc
 }
 
-const DataTable = ({ 
-  columnDefs, 
+const DataTable = ({
+  columnDefs,
   defaultColDef,
-  rowData, 
-  height = 400, 
-  filterModel, 
+  rowData,
+  height = 400,
+  filterModel,
   rowSelection = 'multiple',
   suppressRowClickSelection = false,
   quickFilter,
   paginationPageSize = 20,
   domLayout = 'autoHeight',
   noRowsComponent,
-  onRowSelectionChanged = () => null 
+  onRowSelectionChanged = () => null,
+  onApiLoad = () => { },
+  getRowId
 }: Props) => {
   const gridRef = useRef<AgGridReact>(null);
   const [api, setApi] = useState<GridApi | null>(null)
@@ -49,6 +53,7 @@ const DataTable = ({
     if (!gridRef.current?.api || !gridRef.current.columnApi) return
     setApi(gridRef.current.api)
     setColumnApi(gridRef.current.columnApi)
+    onApiLoad({ api: gridRef.current.api, columnApi: gridRef.current.columnApi })
   }
 
   useEffect(() => {
@@ -59,7 +64,7 @@ const DataTable = ({
 
   useEffect(() => {
     if (!api) return
-    if (quickFilter === undefined) 
+    if (quickFilter === undefined)
       api.resetQuickFilter()
     else
       api.setQuickFilter(quickFilter)
@@ -107,15 +112,16 @@ const DataTable = ({
           loadingOverlayComponent={LoadingOverlay}
           noRowsOverlayComponent={noRowsComponent}
           domLayout={domLayout}
+          getRowId={getRowId}
         >
         </AgGridReact>
       </div>
-      <div 
-      className='border-t border-b border-gray-400 w-0 hidden md:block md:p-3 md:w-[40px] cursor-pointer'
-      onClick={handleClick}>
+      <div
+        className='border-t border-b border-gray-400 w-0 hidden md:block md:p-3 md:w-[40px] cursor-pointer'
+        onClick={handleClick}>
         <button
           className="">
-            <IoIosArrowBack className={`${expanded ? 'rotate-180' : 'rotate-0'} transition-all ease-in-out`} />
+          <IoIosArrowBack className={`${expanded ? 'rotate-180' : 'rotate-0'} transition-all ease-in-out`} />
         </button>
         <div className="rotate-90 flex justify-start">Menu</div>
       </div>
