@@ -25,9 +25,7 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const { getConfirmation } = useConfirmationDialog()
   const { enqueueSnackbar } = useSnackbar()
-  const { mutate } = useSWRConfig()
-
-  console.log(data)
+  const { mutate, cache } = useSWRConfig()
 
   useEffect(() => {
     if (!data) return
@@ -84,6 +82,21 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
         key + '/calculate'
       )
 
+      const { pumpingLimitThisYear } = calculationRes.data
+
+      const meterReadingRes = await axios.post(
+        `/api/v1/meter-readings/${permitNumber}/${lastYear}-12`,
+        {
+          availableThisYear: pumpingLimitThisYear
+        }
+      )
+
+      await refreshCalculations()
+
+      console.log(cache)
+
+      debugger
+
       mutate(
         key,
         calculationRes,
@@ -92,6 +105,9 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
           rollbackOnError: true
         }
       )
+      mutate(`/api/v1/meter-readings?permitNumber=${permitNumber}&year=${year}`)
+      mutate(`/api/v1/modified-banking/${permitNumber}/${year}`)
+      mutate(`/api/v1/data-summary/dbb004-banking-summary`)
       mutate(`/api/v1/data-summary?permitNumber=${permitNumber}`)
 
       enqueueSnackbar(`Setup of permit ${permitNumber} successful!`, { variant: 'success' })
@@ -103,6 +119,18 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
       enqueueSnackbar('Something went wrong', { variant: 'error' })
     }
   }
+
+  const refreshCalculations = async () => {
+    const url = `/api/v1/modified-banking/${permitNumber}/${year}/calculate`
+    try {
+      const res = await axios.post(url)
+      return res.data
+
+    } catch (error) {
+      return error
+    }
+  }
+
 
   return (
     <div className="flex flex-col md:flex-row md:items-center space-y-2">

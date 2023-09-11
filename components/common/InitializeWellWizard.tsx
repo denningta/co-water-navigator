@@ -7,6 +7,7 @@ import * as Yup from 'yup'
 import { IoClose } from "react-icons/io5"
 import useWellPermitRecords from "../../hooks/useWellPermitRecords"
 import WellPermitsRecordsManager from "../widgets/WellPermitsRecordsManager/WellPermitRecordsManager"
+import { WellPermit } from "../../interfaces/WellPermit"
 
 const steps = (year: string | undefined) => ([
   {
@@ -31,8 +32,7 @@ const getInitialValues = (permitNumber: string | undefined, year: string | undef
     allowedAppropriation: '',
     bankingReserveLastYear: '',
     totalPumpedThisYear: '',
-    contactName: '',
-    owner: ''
+    permitData: ''
   }
 }
 
@@ -57,9 +57,11 @@ const ValidationSchema = Yup.object().shape({
   bankingReserveLastYear: Yup.number()
     .required('Required')
     .typeError('Value must be a number'),
-  pumpingLimitNextYear: Yup.number()
+  totalPumpedThisYear: Yup.number()
     .required('Required')
     .typeError('Value must be a number'),
+  permitData: Yup.boolean()
+    .required('Required')
 })
 
 export type InitializeWellWizardProps = {
@@ -134,9 +136,11 @@ const InitializeWellWizard = ({ dialogProps, permitnumber, year, onFormSubmit, i
         validateOnMount={true}
         onSubmit={onFormSubmit ?? (() => { })}
       >
-        {({ values, errors, touched }) => {
+        {({ values, errors, touched, setValues }) => {
           const thisYear = () => (!!(+values.year) ? +values.year : 'this year').toString()
           const lastYear = () => (!!(+values.year) ? +values.year - 1 : 'previous year').toString()
+
+          console.log(errors)
 
           return (
 
@@ -257,8 +261,8 @@ const InitializeWellWizard = ({ dialogProps, permitnumber, year, onFormSubmit, i
                         <div>Line 7: Total amount pumped in {lastYear()}</div>
                         <div className="flex items-center space-x-4">
                           <Field
-                            id={'totalPumpedLastYear'}
-                            name={'totalPumpedLastYear'}
+                            id={'totalPumpedThisYear'}
+                            name={'totalPumpedThisYear'}
                             className={`${inputClass} mt-2 min-w-[300px] md:min-w-[400px]`}
                             placeholder={`Total amount pumped in ${lastYear()}`}
                           />
@@ -276,10 +280,23 @@ const InitializeWellWizard = ({ dialogProps, permitnumber, year, onFormSubmit, i
                   {activeStep === 2 &&
                     <div className="space-y-4">
                       <div>
-                        Select the record below that should be associated with this well permit or enter custom values.
+                        Select the record below that should be associated with this well permit or enter custom values
                       </div>
                       <div>This data will be used to populate the DBB-004 and DBB-013 forms and can always be changed later.</div>
-                      <WellPermitsRecordsManager permitNumber={permitnumber} />
+                      <WellPermitsRecordsManager
+                        permitNumber={permitnumber}
+                        onSelectionChanged={(data) => {
+                          setValues({
+                            ...values,
+                            permitData: !data ? '' : true.toString()
+                          })
+                        }}
+                      />
+                      <Field
+                        id={'permitData'}
+                        name={'permitData'}
+                        className={'hidden'}
+                      />
                     </div>
 
                   }
