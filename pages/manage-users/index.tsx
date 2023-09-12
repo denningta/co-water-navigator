@@ -1,12 +1,10 @@
-import { getServerSidePropsWrapper, getSession, withPageAuthRequired } from '@auth0/nextjs-auth0'
-import { User } from 'auth0'
-import type { GetServerSideProps, NextPage } from 'next'
+import { getServerSidePropsWrapper, getSession } from '@auth0/nextjs-auth0'
+import type { GetServerSideProps } from 'next'
 import { ReactElement } from 'react'
 import useSWR from 'swr'
 import AppLayout from '../../components/AppLayout'
 import MainContent, { Widget } from '../../components/MainContent'
 import Header from '../../components/widgets/Header'
-import ProfileContainer from '../../components/widgets/UserProfile/UserProfileComponent'
 import UserManager from '../../components/widgets/UsersManager/UserManager'
 import { NextPageWithLayout } from '../_app'
 
@@ -25,15 +23,15 @@ const ManageUsers: NextPageWithLayout = () => {
 
 
   const widgets: Widget[] = [
-    { 
-      component: <Header 
+    {
+      component: () => <Header
         title="Manage Users"
         subtitle="Assign permissions and manage access to well permits"
-      />, 
+      />,
       colspan: 3
     },
     {
-      component: <UserManager users={users.data} />,
+      component: () => <UserManager users={users.data} />,
       colspan: 3
     }
   ]
@@ -43,7 +41,7 @@ const ManageUsers: NextPageWithLayout = () => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(async ({ query, req, res}) => {
+export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(async ({ query, req, res }) => {
   const session = getSession(req, res)
   const admin = (session?.user['coWaterExport/roles'] as string[]).includes('admin')
 

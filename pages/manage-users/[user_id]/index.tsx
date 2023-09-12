@@ -26,15 +26,15 @@ const UserDetailsPage: NextPageWithLayout = () => {
   const { data, isValidating, error } = useSWR(`/api/auth/${user_id}/get-user`, fetcher)
 
   const widgets: Widget[] = [
-    { 
-      component: <Header 
+    {
+      component: () => <Header
         title="User Details"
         subtitle="Manage user profile"
-      />, 
+      />,
       colspan: 3
     },
     {
-      component: <AdminProfileComponent user={data} />,
+      component: () => <AdminProfileComponent user={data} />,
       colspan: 3
     }
   ]
@@ -44,7 +44,7 @@ const UserDetailsPage: NextPageWithLayout = () => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(async ({ query, req, res}) => {
+export const getServerSideProps: GetServerSideProps = getServerSidePropsWrapper(async ({ query, req, res }) => {
   const session = getSession(req, res)
   const admin = (session?.user['coWaterExport/roles'] as string[]).includes('admin')
 

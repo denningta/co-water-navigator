@@ -1,8 +1,9 @@
+import { Tooltip } from '@mui/material'
 import axios from 'axios'
-import { FormikHelpers, FormikValues } from 'formik'
 import { useSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
 import { BsGearFill } from 'react-icons/bs'
+import { IoSettingsSharp } from 'react-icons/io5'
 import { TiExport } from 'react-icons/ti'
 import { useSWRConfig } from 'swr'
 import useConfirmationDialog from '../../../hooks/useConfirmationDialog'
@@ -152,12 +153,23 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
           />
         }
         {data && data.length > 0 &&
-          <Button
-            title="Export"
-            href="/export"
-            icon={<TiExport />}
-            type="button"
-          />
+          <>
+            <Tooltip title="Permit Settings">
+              <div>
+                <Button
+                  icon={<IoSettingsSharp />}
+                  type="button"
+                  href={`/well-permits/${permitNumber}/settings`}
+                />
+              </div>
+            </Tooltip>
+            <Button
+              title="Export"
+              href="/export"
+              icon={<TiExport />}
+              type="button"
+            />
+          </>
         }
       </div>
       <InitializeWellWizard

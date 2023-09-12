@@ -10,15 +10,15 @@ import Button from '../../components/common/Button'
 const NotAuthorized: NextPageWithLayout = () => {
   const widgets: Widget[] = [
     {
-      component: 
-        <Header 
-          title="Not Authorized" 
-          subtitle='You are not authorized to access this resource' 
+      component: () =>
+        <Header
+          title="Not Authorized"
+          subtitle='You are not authorized to access this resource'
         />,
       colspan: 3
     },
     {
-      component: <GoBack />,
+      component: () => <GoBack />,
       colspan: 3
     }
   ]

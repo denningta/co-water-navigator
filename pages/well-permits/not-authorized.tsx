@@ -7,31 +7,19 @@ import Header from '../../components/widgets/Header'
 import Button from '../../components/common/Button'
 import Link from 'next/link'
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url)
-  if (!res.ok) {
-    const error = new Error('An error occurred while fetching the data.')
-    error.message = await res.json()
-    throw error
-  }
-  return res.json()
-}
-
 const WellPermitNotAuthorized: NextPageWithLayout = () => {
-
-
 
   const widgets: Widget[] = [
     {
-      component: 
-        <Header 
-          title="Not Authorized" 
-          subtitle='You are not authorized to access this well permit number' 
+      component: () =>
+        <Header
+          title="Not Authorized"
+          subtitle='You are not authorized to access this well permit number'
         />,
       colspan: 3
     },
     {
-      component: <GoBack />,
+      component: () => <GoBack />,
       colspan: 3
     }
   ]

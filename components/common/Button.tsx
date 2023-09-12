@@ -3,7 +3,7 @@ import { useRouter } from "next/router"
 import React, { cloneElement, MouseEvent, useEffect, useState } from "react"
 
 export interface ButtonProps {
-  title: string | JSX.Element
+  title?: string | JSX.Element
   icon?: JSX.Element
   isLoading?: boolean
   size?: number
@@ -54,36 +54,41 @@ const Button = ({
   }, [disabled])
 
   return (
-    <button
-      className={`
+    <>
+      <button
+        className={`
         ${color === 'primary' && 'bg-primary-500 text-white hover:bg-sky-600'}
         ${color === 'secondary' && 'bg-gray-100 text-gray-600 hover:bg-gray-300'}
         ${color === 'error' && 'bg-error-500 text-white hover:bg-error-600'}
         px-3 py-2 
         rounded
-        flex items-center
+        flex items-center justify-center
         drop-shadow 
         transition ease-in-out
+        space-x-3
         ${isLoading && 'bg-gray-400 text-gray-200'}
         ${(disabled || isLoading) && 'cursor-not-allowed'}
       `}
-      style={style}
-      onClick={handleClick}
-      disabled={isLoading || disabled}
-      type={type}
-    >
-      {!isLoading && Icon &&
-        <span className="mr-2 flex items-center">
-          {Icon}
-        </span>
-      }
-      {isLoading &&
-        <span className="mr-2 flex items-center">
-          <CircularProgress color="inherit" size={size} />
-        </span>
-      }
-      <span>{title}</span>
-    </button>
+        style={style}
+        onClick={handleClick}
+        disabled={isLoading || disabled}
+        type={type}
+      >
+        {!isLoading && Icon &&
+          <span className="flex items-center justify-center">
+            {Icon}
+          </span>
+        }
+        {isLoading &&
+          <span className="mr-2 flex items-center">
+            <CircularProgress color="inherit" size={size} />
+          </span>
+        }
+        {title &&
+          <span>{title}</span>
+        }
+      </button>
+    </>
   )
 }
 

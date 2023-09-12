@@ -1,5 +1,4 @@
-import { getServerSidePropsWrapper, getSession, useUser, withPageAuthRequired } from '@auth0/nextjs-auth0'
-import type { GetServerSideProps, NextPage } from 'next'
+import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0'
 import { ReactElement } from 'react'
 import AppLayout from '../../components/AppLayout'
 import MainContent, { Widget } from '../../components/MainContent'
@@ -12,13 +11,13 @@ const Profile: NextPageWithLayout = () => {
 
   const widgets: Widget[] = [
     {
-      component: <Header
+      component: () => <Header
         title="Profile"
         subtitle="Manage agent information"
       />,
       colspan: 3
     },
-    { component: <ProfileContainer user={user} />, colspan: 3 },
+    { component: () => <ProfileContainer user={user} />, colspan: 3 },
   ]
 
   return (

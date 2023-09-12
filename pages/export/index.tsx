@@ -5,7 +5,6 @@ import AppLayout from "../../components/AppLayout"
 import MainContent, { Widget } from "../../components/MainContent"
 import ExportComponent from "../../components/widgets/Export/ExportComponent"
 import Header from "../../components/widgets/Header"
-import WellPermitSearch from "../../components/widgets/WellPermitSearch/WellPermitSearch"
 import { NextPageWithLayout } from "../_app"
 
 
@@ -22,14 +21,14 @@ const fetcher = async (url: string, user_id: string) => {
 const WellPermits: NextPageWithLayout = () => {
 
   const widgets: Widget[] = [
-    { 
-      component: <Header 
+    {
+      component: () => <Header
         title="Export Data"
         subtitle="Export Colorado Ground Water Resources Forms"
-      />, 
+      />,
       colspan: 3
     },
-    { component: <ExportComponent />, colspan: 3 },
+    { component: () => <ExportComponent />, colspan: 3 },
   ]
 
   return (

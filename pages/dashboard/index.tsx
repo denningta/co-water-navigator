@@ -31,21 +31,18 @@ const Dashboard: NextPageWithLayout = () => {
 
   const widgets: Widget[] = [
     {
-      component: <Header
-        title={title}
-        subtitle='Your wells at a glance'
-      />,
+      component: () => <Header title={title} subtitle='Your wells at a glance' />,
       colspan: 3
     },
     {
-      component: <PermitPreview />,
+      component: () => <PermitPreview />,
       colspan: breakpoint === 'sm' || breakpoint === 'md' ? 3 : 2
     },
     {
-      component: <AgentDetails />,
+      component: () => <AgentDetails />,
       colspan: breakpoint === 'sm' || breakpoint === 'md' ? 3 : 1
     },
-    { component: <WellPermitsAssignment />, colspan: 3 }
+    { component: () => <WellPermitsAssignment />, colspan: 3 }
   ]
 
   return (
