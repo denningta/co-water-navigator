@@ -1,18 +1,19 @@
+import { QueryValueObject } from "fauna"
 import path from "path"
 import { PDFCheckBox, PDFDocument, PDFTextField, rgb, StandardFonts } from "pdf-lib"
 import { convertToTableData, getForm } from ".."
 import { AgentInfo } from "../../../../../interfaces/AgentInfo"
 import { ModifiedBanking, WellUsage } from "../../../../../interfaces/ModifiedBanking"
-import { WellPermit } from "../../../../../interfaces/WellPermit"
-import faunaClient, { q } from "../../../../../lib/fauna/faunaClient"
-import getWellPermitRecord from "../../../../../lib/fauna/ts-queries/getWellPermitRecord"
+import fauna from "../../../../../lib/fauna/faunaClientV10"
+import getWellPermitSelectedRecord from "../../../../../lib/fauna/ts-queries/well-permits/getWellPermitSelectedRecord"
 import fields from "./dbb013-fields"
 
 const addDbb013 = async (
   data: ModifiedBanking[],
   agentInfo: AgentInfo,
   wellUsage: WellUsage,
-  debug: boolean = false
+  permitNumber: string,
+  debug: boolean = false,
 ) => {
   const pdfBytes = getForm(
     path.resolve('./public'),
@@ -26,7 +27,8 @@ const addDbb013 = async (
   const fontSize = 11
   const page = document.getPage(0)
 
-  const permitNumber = data[0].permitNumber
+  const response = await fauna.query(getWellPermitSelectedRecord(permitNumber))
+
   const {
     q40,
     q160,
@@ -34,7 +36,7 @@ const addDbb013 = async (
     township,
     range,
     contactName
-  }: WellPermit = await faunaClient.query(getWellPermitRecord(permitNumber ?? ''))
+  } = response.data as QueryValueObject
 
 
   const tableData = {

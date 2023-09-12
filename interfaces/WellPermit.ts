@@ -9,7 +9,7 @@ export type WellPermitDocument = WellPermit & {
 
 export type WellPermit = {
   id?: string
-  coll: any,
+  coll?: any,
   asBuiltAquifers?: string, // As Built Aquifers
   associatedAquifers?: string, // Associated Aquifers
   associatedCaseNumbers?: string, // Water court case number(s) associated with water right

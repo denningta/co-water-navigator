@@ -1,3 +1,4 @@
+import { QueryValueObject } from "fauna"
 import _ from "lodash"
 import path from "path"
 import { PDFCheckBox, PDFDocument, PDFTextField, rgb, StandardFonts } from "pdf-lib"
@@ -5,20 +6,19 @@ import { convertToTableData, getForm } from ".."
 import { AgentInfo } from "../../../../../interfaces/AgentInfo"
 import MeterReading from "../../../../../interfaces/MeterReading"
 import { ModifiedBankingSummary, WellUsage } from "../../../../../interfaces/ModifiedBanking"
-import { WellPermit } from "../../../../../interfaces/WellPermit"
-import faunaClient from "../../../../../lib/fauna/faunaClient"
-import getWellPermitRecord from "../../../../../lib/fauna/ts-queries/getWellPermitRecord"
+import fauna from "../../../../../lib/fauna/faunaClientV10"
+import getWellPermitSelectedRecord from "../../../../../lib/fauna/ts-queries/well-permits/getWellPermitSelectedRecord"
 import { drawTable } from "../../../../../lib/pdf-lib/helpers"
 import colDefs from "./col-defs"
 import fields from "./dbb004-fields"
 
 const addDbb004 = async (
-  data: MeterReading[], 
+  data: MeterReading[],
   bankingSummary: ModifiedBankingSummary,
-  agentInfo: AgentInfo, 
+  agentInfo: AgentInfo,
   wellUsage: WellUsage,
-  permitNumber: string, 
-  year: string, 
+  permitNumber: string,
+  year: string,
   debug: boolean = false
 ) => {
   const pdfBytes = getForm(
@@ -34,14 +34,16 @@ const addDbb004 = async (
   const page = document.getPage(0)
   document.removePage(1)
 
-  const { 
-    q40, 
-    q160, 
-    section, 
-    township, 
-    range, 
-    contactName 
-  }: WellPermit = await faunaClient.query(getWellPermitRecord(permitNumber ?? ''))
+  const response = await fauna.query(getWellPermitSelectedRecord(permitNumber))
+
+  const {
+    q40,
+    q160,
+    section,
+    township,
+    range,
+    contactName
+  } = response.data as QueryValueObject
 
   const formData: any = {
     ...agentInfo,
@@ -56,7 +58,7 @@ const addDbb004 = async (
   }
 
   fields(debug).forEach(field => page.drawRectangle(field.box))
-  
+
   const formFields = fields(false).map(field => {
     if (field.type === 'checkBox') return form.createCheckBox(field.name)
     return form.createTextField(field.name)
@@ -66,7 +68,7 @@ const addDbb004 = async (
     const { name, type, box } = fields()[i]
     if (formField instanceof PDFTextField) {
       const fieldValue = (formData[name] !== (undefined || null)) ? formData[name].toString() : undefined
-      
+
       fieldValue && formField.setText(fieldValue)
       formField.addToPage(page, {
         ...box,
@@ -80,7 +82,7 @@ const addDbb004 = async (
       formField.addToPage(page, {
         ...box,
         borderWidth: 1,
-        borderColor: rgb(0,0,0)
+        borderColor: rgb(0, 0, 0)
       })
     }
   })
@@ -100,7 +102,7 @@ const addDbb004 = async (
       y: 116,
       width: 715.4,
       height: 266.5,
-      borderColor: rgb(0,1,0)
+      borderColor: rgb(0, 1, 0)
     }
   }
 
@@ -120,7 +122,7 @@ const addDbb004 = async (
       }
     }
   })
-  
+
   return document
 
 }

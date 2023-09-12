@@ -25,7 +25,7 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = getSession(req, res)
   const user_id = session?.user?.sub
 
-  const agentInfo =  await faunaClient.query(getAgentInfo(user_id))
+  const agentInfo = await faunaClient.query(getAgentInfo(user_id))
 
   const pdfBytes = await createPdf({
     ...req.body,
@@ -57,7 +57,7 @@ const createPdf = async ({ documents, dataSelection, agentInfo }: ExportData) =>
       }
       if (documents.dbb013) {
         if (!el.dbb013Summary[0]) return
-        const dbb013 = await addDbb013(el.dbb013Summary, agentInfo, el.wellUsage)
+        const dbb013 = await addDbb013(el.dbb013Summary, agentInfo, el.wellUsage, el.permitNumber)
         await mergeDocuments(pdfDoc, dbb013)
       }
     })

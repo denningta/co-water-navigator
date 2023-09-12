@@ -1,15 +1,16 @@
 import { ICellRendererParams } from "ag-grid-community"
-import { MouseEvent, useEffect, useState } from "react"
-import { WellPermitAssignment } from "../../../interfaces/WellPermit"
-import { ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material'
+import { MouseEvent, useState } from "react"
+import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material'
 import { BsThreeDots } from "react-icons/bs"
 import { MdEdit } from "react-icons/md"
-import { useRouter } from "next/router"
+import Link from "next/link"
+import { IoSettingsSharp } from 'react-icons/io5'
 
 const ActionsCellRenderer = (params: ICellRendererParams) => {
-  const router = useRouter()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
+
+  const { permitNumber } = params?.data ?? ''
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -19,11 +20,6 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const handleSelection = () => {
-    handleClose()
-    router.push(`well-permits/${encodeURIComponent(params.data.permit)}`)
-  }
 
   return (
     <div>
@@ -39,9 +35,21 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
         open={open}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleSelection}>
+        <MenuItem>
           <ListItemIcon><MdEdit /></ListItemIcon>
-          <ListItemText>Meter Readings</ListItemText>
+          <ListItemText>
+            <Link href={`/well-permits/${permitNumber}`}>
+              Meter Readings
+            </Link>
+          </ListItemText>
+        </MenuItem>
+        <MenuItem>
+          <ListItemIcon><IoSettingsSharp /></ListItemIcon>
+          <ListItemText>
+            <Link href={`/well-permits/${permitNumber}/settings`}>
+              Permit Settings
+            </Link>
+          </ListItemText>
         </MenuItem>
       </Menu>
     </div>

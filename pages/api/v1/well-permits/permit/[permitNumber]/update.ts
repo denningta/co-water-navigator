@@ -4,7 +4,6 @@ import updateWellPermitByPermitNumber from "../../../../../../lib/fauna/ts-queri
 
 const updateWellPermitByPermitNumberHandler = async (req: NextApiRequest) => {
 
-  debugger
   const { permitNumber } = req.query
   const body = req.body
 
