@@ -180,7 +180,7 @@ const WellPermitSearch = () => {
 
         <div className="flex items-center">
           <BsInfoCircleFill className="mr-2" />
-          You may find multiple records for a single well permit.  Select the record that most closely matches the "contact name" and "location" you expect to include on your forms.
+          You may find multiple records for a single well permit.  Select the record that most closely matches the \"contact name\" and \"location\" you expect to include on your forms.
         </div>
 
         <div className="flex items-center">
