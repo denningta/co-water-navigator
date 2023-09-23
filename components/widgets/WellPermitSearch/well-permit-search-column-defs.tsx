@@ -1,4 +1,4 @@
-import { ColDef } from "ag-grid-community"
+import { ColDef, ICellRendererParams } from "ag-grid-community"
 
 export const defaultColDef: ColDef = {
   filter: true
@@ -16,7 +16,7 @@ const wellPermitColumnDefs: ColDef[] = [
   },
   {
     field: 'receipt',
-    hide: false,
+    hide: true,
     sortable: true
   },
   {
@@ -24,8 +24,22 @@ const wellPermitColumnDefs: ColDef[] = [
     hide: false
   },
   {
+    field: 'location',
+    hide: false,
+    cellRenderer: (params: ICellRendererParams) => {
+      const { q40, q160, section, township, range } = params.data
+
+      return (
+        <div>
+          {q40} 1/4 {q160} 1/4 Sec {section}, T {township}, R {range}
+        </div>
+      )
+
+    }
+  },
+  {
     field: 'permitCurrentStatusDescr',
-    hide: false
+    hide: true
   },
   {
     field: 'division',

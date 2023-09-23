@@ -5,6 +5,7 @@ import { SearchTermName, SelectOption } from "./search-data";
 import useSWR from "swr";
 import wellPermitColumnDefs, { defaultColDef } from "./well-permit-search-column-defs";
 import { IoAdd } from "react-icons/io5";
+import { BsInfoCircleFill } from "react-icons/bs"
 import { useUser } from "@auth0/nextjs-auth0";
 import { RowNode } from "ag-grid-community";
 import { useSnackbar } from "notistack";
@@ -171,6 +172,23 @@ const WellPermitSearch = () => {
         paginationPageSize={20}
         domLayout="autoHeight"
       />
+      <div className="space-y-3 text-sm text-gray-500 mt-3">
+        <div className="flex items-center">
+          <BsInfoCircleFill className="mr-2" />
+          This search tool queries the Colorado Department of Water Resrouces Decision Support System database.
+        </div>
+
+        <div className="flex items-center">
+          <BsInfoCircleFill className="mr-2" />
+          You may find multiple records for a single well permit.  Select the record that most closely matches the "contact name" and "location" you expect to include on your forms.
+        </div>
+
+        <div className="flex items-center">
+          <BsInfoCircleFill className="mr-2" />
+          This data can be customized at any time in the settings page of the well permit.
+
+        </div>
+      </div>
     </div>
   )
 }
