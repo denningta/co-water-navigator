@@ -1,5 +1,7 @@
 import { ColDef, ICellRendererParams } from "ag-grid-community"
 import AccessCellRenderer from "../WellPermitsAssignment/AccessCellRenderer"
+import HeatmapCellRenderer from "../WellPermitsAssignment/HeatmapCellRenderer"
+import PermitCellRenderer from "../WellPermitsAssignment/PermitCellRenderer"
 
 export const defaultColDef: ColDef = {
   resizable: true
@@ -9,7 +11,7 @@ const wellPermitColumnDefs: ColDef[] = [
   {
     field: '',
     filter: false,
-    maxWidth: 55, 
+    maxWidth: 55,
     minWidth: 55,
     pinned: true,
     suppressMovable: true,
@@ -18,7 +20,9 @@ const wellPermitColumnDefs: ColDef[] = [
   {
     field: 'permit',
     hide: false,
-    minWidth: 150
+    minWidth: 90,
+    maxWidth: 150,
+    cellRenderer: PermitCellRenderer
   },
   {
     field: 'status',
@@ -28,9 +32,10 @@ const wellPermitColumnDefs: ColDef[] = [
     cellRenderer: AccessCellRenderer
   },
   {
-    field: 'latestMeterReading',
+    field: 'Meter Reading Summary',
     hide: false,
-    minWidth: 150
+    minWidth: 410,
+    cellRenderer: HeatmapCellRenderer,
   },
   {
     field: 'receipt',
@@ -39,7 +44,7 @@ const wellPermitColumnDefs: ColDef[] = [
   {
     field: 'contactName',
     minWidth: 150,
-    hide: false
+    hide: true
   },
   {
     field: 'permitCurrentStatusDescr',

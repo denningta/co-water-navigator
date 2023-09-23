@@ -1,20 +1,15 @@
-import { Role } from 'auth0'
-import { MouseEvent, useEffect, useState } from 'react'
-import { FaRegTrashAlt, FaTrashAlt } from 'react-icons/fa'
-import RoleTag from '../../common/RoleTag'
-import { Tooltip } from '@mui/material'
+import { useState } from 'react'
+import { FaTrashAlt } from 'react-icons/fa'
 import DataTable from '../DataTable/DataTable'
-import permitManagerColDefs from './permit-manager-column-defs'
-import { useUser } from '@auth0/nextjs-auth0'
 import { UserManagement } from '../../../interfaces/User'
 import { BsCheckCircleFill, BsXCircleFill } from 'react-icons/bs'
 import { GridApi, RowNode } from 'ag-grid-community'
-import { PermitRef, WellPermitAssignment } from '../../../interfaces/WellPermit'
+import { PermitRef } from '../../../interfaces/WellPermit'
 import TableActionButton from '../../common/TableActionButton'
 import { useSnackbar } from 'notistack'
-import useSWR, { useSWRConfig } from 'swr'
 import useWellPermitsByUser from '../../../hooks/useWellPermitsByUser'
 import { tailwindColors } from '../../../lib/tailwindcss/tailwindConfig'
+import wellPermitColumnDefs from './permit-manager-column-defs'
 
 interface Props {
   user: UserManagement | undefined
@@ -24,7 +19,7 @@ const WellPermitsManager = ({ user }: Props) => {
   const { enqueueSnackbar } = useSnackbar()
   const [selectedRowNodes, setSelectedRowNodes] = useState<RowNode[]>([])
   const [api, setApi] = useState<GridApi | undefined>(undefined)
-  const { data, mutate } = useWellPermitsByUser(user?.user_id)
+  const { data } = useWellPermitsByUser(user?.user_id)
   const [isLoading, setIsLoading] = useState({ approve: false, reject: false, delete: false })
 
   const getSelectedPermitRefs = () => {
@@ -44,8 +39,8 @@ const WellPermitsManager = ({ user }: Props) => {
   const handleApproveAccess = async () => {
     setIsLoading({ ...isLoading, approve: true })
     try {
-      const res = await updateStatus('approve')
-      selectedRowNodes.forEach(rowNode => rowNode.setData({ ...rowNode.data, status: 'approved'}))
+      await updateStatus('approve')
+      selectedRowNodes.forEach(rowNode => rowNode.setData({ ...rowNode.data, status: 'approved' }))
       enqueueSnackbar('Update Successful!', { variant: 'success' })
       setIsLoading({ ...isLoading, approve: false })
     } catch (e) {
@@ -58,7 +53,7 @@ const WellPermitsManager = ({ user }: Props) => {
     setIsLoading({ ...isLoading, reject: true })
     try {
       const res = await updateStatus('reject')
-      selectedRowNodes.forEach(rowNode => rowNode.setData({ ...rowNode.data, status: 'rejected'}))
+      selectedRowNodes.forEach(rowNode => rowNode.setData({ ...rowNode.data, status: 'rejected' }))
       enqueueSnackbar('Update Successful!', { variant: 'success' })
       setIsLoading({ ...isLoading, reject: false })
     } catch (e) {
@@ -115,8 +110,8 @@ const WellPermitsManager = ({ user }: Props) => {
   return (
     <div>
       <div className='flex flex-col md:flex-row mb-4'>
-        <TableActionButton 
-          title="Approve" 
+        <TableActionButton
+          title="Approve"
           icon={<BsCheckCircleFill />}
           numSelected={selectedRowNodes.length}
           onClick={handleApproveAccess}
@@ -124,8 +119,8 @@ const WellPermitsManager = ({ user }: Props) => {
           className="mr-2"
           isLoading={isLoading.approve}
         />
-        <TableActionButton 
-          title="Reject" 
+        <TableActionButton
+          title="Reject"
           icon={<BsXCircleFill />}
           numSelected={selectedRowNodes.length}
           onClick={handleRejectAccess}
@@ -133,8 +128,8 @@ const WellPermitsManager = ({ user }: Props) => {
           className="mr-2"
           isLoading={isLoading.reject}
         />
-        <TableActionButton 
-          title="Delete" 
+        <TableActionButton
+          title="Delete"
           icon={<FaTrashAlt />}
           numSelected={selectedRowNodes.length}
           onClick={handleDeleteRequest}
@@ -146,7 +141,7 @@ const WellPermitsManager = ({ user }: Props) => {
 
       <DataTable
         rowData={data}
-        columnDefs={permitManagerColDefs}
+        columnDefs={wellPermitColumnDefs}
         onRowSelectionChanged={handleRowSelectionChanged}
       />
     </div>

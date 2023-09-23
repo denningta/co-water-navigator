@@ -41,12 +41,6 @@ const wellPermitColumnDefs: ColDef[] = [
     hide: false,
     minWidth: 410,
     cellRenderer: HeatmapCellRenderer,
-    // headerComponent: HeatmapHeaderRenderer
-  },
-  {
-    field: 'latestMeterReading',
-    hide: false,
-    minWidth: 150,
   },
   {
     field: 'receipt',
