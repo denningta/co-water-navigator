@@ -24,7 +24,7 @@ const WellPermitsManager = ({ user }: Props) => {
 
   const getSelectedPermitRefs = () => {
     return selectedRowNodes.map(({ data }): PermitRef => ({
-      document_id: data.document_id,
+      document_id: data.id,
       permit: data.permit,
       status: data.status,
       ts: new Date().getTime()
@@ -40,7 +40,11 @@ const WellPermitsManager = ({ user }: Props) => {
     setIsLoading({ ...isLoading, approve: true })
     try {
       await updateStatus('approve')
-      selectedRowNodes.forEach(rowNode => rowNode.setData({ ...rowNode.data, status: 'approved' }))
+      selectedRowNodes.forEach(rowNode => rowNode.setData({
+        ...rowNode.data,
+        document_id: rowNode.data.id,
+        status: 'approved'
+      }))
       enqueueSnackbar('Update Successful!', { variant: 'success' })
       setIsLoading({ ...isLoading, approve: false })
     } catch (e) {
@@ -53,7 +57,11 @@ const WellPermitsManager = ({ user }: Props) => {
     setIsLoading({ ...isLoading, reject: true })
     try {
       const res = await updateStatus('reject')
-      selectedRowNodes.forEach(rowNode => rowNode.setData({ ...rowNode.data, status: 'rejected' }))
+      selectedRowNodes.forEach(rowNode => rowNode.setData({
+        ...rowNode.data,
+        document_id: rowNode.data.id,
+        status: 'rejected'
+      }))
       enqueueSnackbar('Update Successful!', { variant: 'success' })
       setIsLoading({ ...isLoading, reject: false })
     } catch (e) {
@@ -65,7 +73,7 @@ const WellPermitsManager = ({ user }: Props) => {
   const handleDeleteRequest = async () => {
     setIsLoading({ ...isLoading, delete: true })
     try {
-      const document_ids = selectedRowNodes.map(rowNode => rowNode.data.document_id)
+      const document_ids = selectedRowNodes.map(rowNode => rowNode.data.id)
       const res = await deleteRequest(document_ids)
       api?.setRowData(res.app_metadata.permitRefs)
       enqueueSnackbar('Delete Successful', { variant: 'success' })

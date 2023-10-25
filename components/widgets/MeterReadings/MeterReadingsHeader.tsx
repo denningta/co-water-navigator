@@ -96,7 +96,6 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
 
       console.log(cache)
 
-      debugger
 
       mutate(
         key,

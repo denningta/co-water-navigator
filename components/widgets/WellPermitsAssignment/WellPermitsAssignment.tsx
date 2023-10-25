@@ -13,6 +13,7 @@ const WellPermitsAssignment = () => {
   const { data } = useWellPermitsByUser(user?.sub)
   const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined)
 
+
   const handleChange = (value: string) => {
     setQuickFilter(value)
   }

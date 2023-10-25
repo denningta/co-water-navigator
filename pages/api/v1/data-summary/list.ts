@@ -1,12 +1,7 @@
 import { NextApiRequest } from "next";
-import MeterReading from "../../../../interfaces/MeterReading";
-import { WellUsage } from "../../../../interfaces/ModifiedBanking";
-import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
+import faunaClient from "../../../../lib/fauna/faunaClient";
 import getDataSummary from "../../../../lib/fauna/ts-queries/getDataSummary";
-import getLastMeterReadingPrevYear from "../../../../lib/fauna/ts-queries/getLastMeterReadingPrevYear";
 import getUniquePermitNumbersWithData from "../../../../lib/fauna/ts-queries/getUniquePermitNumbersWithData";
-import { HttpError } from "../interfaces/HttpError";
-import validateQuery from "../validatorFunctions";
 
 async function listDataSummary(req: NextApiRequest): Promise<any[]> {
   try {
