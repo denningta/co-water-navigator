@@ -24,9 +24,9 @@ export interface DataSummary {
 
 const useDataSummaryByPermit = (permitNumber: string | undefined) => {
   const { data, mutate } = useSWR<DataSummary[]>(
-    (permitNumber) 
-    ? `/api/v1/data-summary?permitNumber=${permitNumber}` 
-    : null, 
+    (permitNumber)
+      ? `/api/v1/data-summary?permitNumber=${permitNumber}`
+      : null,
     fetcher
   )
   return {
@@ -44,6 +44,18 @@ export const useDataSummaryTotal = () => {
   return {
     data: data,
     mutate: mutate
+  }
+}
+
+export const useDataSummaryBySession = () => {
+  const { data, mutate } = useSWR<DataSummary[]>(
+    `/api/v1/data-summary/session`,
+    fetcher
+  )
+
+  return {
+    data,
+    mutate
   }
 }
 

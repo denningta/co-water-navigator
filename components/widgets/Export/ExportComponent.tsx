@@ -6,19 +6,19 @@ import FileType from "./FileType"
 import DocumentSelection, { DocumentSelectionObj } from "./DocumentSelection"
 import { ColumnApi, GridApi, GridReadyEvent, SelectionChangedEvent } from "ag-grid-community"
 import axios from "axios"
-import { DataSummary, useDataSummaryTotal } from "../../../hooks/useDataSummaryByPermit"
+import { DataSummary, useDataSummaryBySession } from "../../../hooks/useDataSummaryByPermit"
 import { AgGridReact } from "ag-grid-react"
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 import { useSnackbar } from "notistack"
 import QuickSearch from "../../common/QuickSearch"
-import { ApiError } from "next/dist/server/api-utils"
+import { useUser } from "@auth0/nextjs-auth0"
 
 
 interface Props {
 }
 
-const ExportComponent = ({ 
+const ExportComponent = ({
 }: Props) => {
   const [dataSelection, setDataSelection] = useState<DataSummary[]>([])
   const [documents, setDocuments] = useState({
@@ -27,7 +27,7 @@ const ExportComponent = ({
   })
   const [fileType, setFileType] = useState('pdf')
   const [blobUrl, setBlobUrl] = useState<string | undefined>(undefined)
-  const { data, mutate } = useDataSummaryTotal()
+  const { data, mutate } = useDataSummaryBySession()
   const { enqueueSnackbar } = useSnackbar()
   const [exportDisabled, setExportDisabled] = useState(true)
   const [quickFilter, setQuickFilter] = useState<string | undefined>(undefined)
@@ -35,6 +35,7 @@ const ExportComponent = ({
   const [gridApi, setGridApi] = useState<GridApi | null>(null)
   const [columnApi, setColumnApi] = useState<ColumnApi | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+
 
   const handleGridReady = ({ api, columnApi }: GridReadyEvent) => {
     api.sizeColumnsToFit()
@@ -100,56 +101,56 @@ const ExportComponent = ({
   };
 
   return (
-      <div className="p-6">
-        <div className="mb-6">
-          <div className="text-xl font-bold mb-2">Select data to export</div>
-          <div className="flex mb-4">
-            <QuickSearch onChange={(value) => setQuickFilter(value)} />
-          </div>
-          <div className="ag-theme-alpine">
-            <AgGridReact
-              ref={gridRef}
-              columnDefs={exportColDefs}
-              defaultColDef={exportDefaultColDefs}
-              rowData={data}
-              suppressCellFocus={true}
-              pagination={true}
-              onGridReady={handleGridReady}
-              rowSelection="multiple"
-              onSelectionChanged={handleSelectionChanged}
-              quickFilterText={quickFilter}
-              domLayout="autoHeight"
-              paginationPageSize={20}
-            />
-          </div>
+    <div className="p-6">
+      <div className="mb-6">
+        <div className="text-xl font-bold mb-2">Select data to export</div>
+        <div className="flex mb-4">
+          <QuickSearch onChange={(value) => setQuickFilter(value)} />
         </div>
-        <div className="flex">
-          <div className="flex justify-center w-full">
-            <div className="mb-6 mr-16 ml-6 min-w-fit">
-              <FileType fileType={fileType} onChange={handleFileTypeChange} />
-            </div>
-            <div className="mb-6 mr-16 min-w-fit">
-              <DocumentSelection documents={documents} onChange={handleDocumentsChange} />
-            </div>
-          </div>
-          <div className="flex grow justify-end items-end">
-            <span>
-              <Button 
-                title="Export..." 
-                icon={<TiExport />} 
-                onClick={handleExport} 
-                disabled={exportDisabled} 
-                isLoading={isLoading}
-              />
-            </span>
-          </div>
+        <div className="ag-theme-alpine">
+          <AgGridReact
+            ref={gridRef}
+            columnDefs={exportColDefs}
+            defaultColDef={exportDefaultColDefs}
+            rowData={data}
+            suppressCellFocus={true}
+            pagination={true}
+            onGridReady={handleGridReady}
+            rowSelection="multiple"
+            onSelectionChanged={handleSelectionChanged}
+            quickFilterText={quickFilter}
+            domLayout="autoHeight"
+            paginationPageSize={20}
+          />
         </div>
-        {blobUrl && <iframe 
-          src={blobUrl}
-          itemType="application/pdf"
-          className="w-full my-10 h-[1000px]"
-        ></iframe>}
       </div>
+      <div className="flex">
+        <div className="flex justify-center w-full">
+          <div className="mb-6 mr-16 ml-6 min-w-fit">
+            <FileType fileType={fileType} onChange={handleFileTypeChange} />
+          </div>
+          <div className="mb-6 mr-16 min-w-fit">
+            <DocumentSelection documents={documents} onChange={handleDocumentsChange} />
+          </div>
+        </div>
+        <div className="flex grow justify-end items-end">
+          <span>
+            <Button
+              title="Export..."
+              icon={<TiExport />}
+              onClick={handleExport}
+              disabled={exportDisabled}
+              isLoading={isLoading}
+            />
+          </span>
+        </div>
+      </div>
+      {blobUrl && <iframe
+        src={blobUrl}
+        itemType="application/pdf"
+        className="w-full my-10 h-[1000px]"
+      ></iframe>}
+    </div>
   )
 }
 
