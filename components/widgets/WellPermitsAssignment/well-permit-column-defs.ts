@@ -26,6 +26,9 @@ const wellPermitColumnDefs: ColDef[] = [
     hide: false,
     minWidth: 90,
     maxWidth: 150,
+    filter: true,
+    sortable: true,
+    sort: 'asc',
     cellRenderer: PermitCellRenderer
   },
   {
@@ -34,6 +37,8 @@ const wellPermitColumnDefs: ColDef[] = [
     hide: false,
     minWidth: 130,
     maxWidth: 150,
+    filter: true,
+    sortable: true,
     cellRenderer: AccessCellRenderer
   },
   {

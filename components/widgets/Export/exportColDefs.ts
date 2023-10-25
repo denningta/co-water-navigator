@@ -19,7 +19,10 @@ export const exportColDefs: ColDef[] = [
   {
     field: 'permitNumber',
     checkboxSelection: true,
-    maxWidth: 160
+    maxWidth: 160,
+    filter: true,
+    sortable: true,
+    sort: 'asc'
   },
   {
     field: 'year',
