@@ -11,7 +11,6 @@ interface Props {
 
 const ModifiedBankingSummary = ({ permitNumber, year }: Props) => {
   const { data } = useDbb004BankingSummary(permitNumber, year)
-  debugger
   const breakpoint = useTailwindBreakpoints()
 
   const title = <div className="font-bold text-xl">Three Year Modified Banking (from DBB-013)</div>

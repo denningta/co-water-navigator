@@ -30,12 +30,9 @@ async function handler(
 
     const { data } = await fauna.query(getDbb004BankingSummary(permitNumber, year))
 
-    debugger
-
     res.status(200).json(data)
 
   } catch (error: any) {
-    debugger
     res.status(error?.status || 500).json(error)
   }
 
