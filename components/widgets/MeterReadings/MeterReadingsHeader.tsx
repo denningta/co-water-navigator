@@ -83,19 +83,18 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
         key + '/calculate'
       )
 
-      const { pumpingLimitThisYear } = calculationRes.data
+      const { pumpingLimitNextYear } = calculationRes.data
+
+      debugger
 
       const meterReadingRes = await axios.post(
         `/api/v1/meter-readings/${permitNumber}/${lastYear}-12`,
         {
-          availableThisYear: pumpingLimitThisYear
+          availableThisYear: pumpingLimitNextYear
         }
       )
 
       await refreshCalculations()
-
-      console.log(cache)
-
 
       mutate(
         key,
