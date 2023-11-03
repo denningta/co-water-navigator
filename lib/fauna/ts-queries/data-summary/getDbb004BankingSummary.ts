@@ -9,15 +9,19 @@ export default function getDbb004BankingSummary(permitNumber: string, year: stri
 
     let allowedAppropriation = {
       if (modifiedBanking != null) {
-        modifiedBanking.allowedAppropriation?.value
+        {
+          value: modifiedBanking.allowedAppropriation?.value,
+        }
       } else {
         null
       }
     }
 
     let pumpingLimitThisYear = {
-      if (modifiedBanking != null) {
-        modifiedBanking.pumpingLimitThisYear?.value
+      if (modifiedBanking != null && modifiedBanking.pumpingLimitThisYear != null) {
+        {
+          value: modifiedBanking.pumpingLimitThisYear?.value 
+        }
       } else {
         null
       }
@@ -26,38 +30,45 @@ export default function getDbb004BankingSummary(permitNumber: string, year: stri
     let flowMeterLimit = {
       let lastMeterReadingPrevYear = meterReadings.where(meterReading => {
         let recordYear = parseDate(meterReading.date).year
-        meterReading.permitNumber == permitNumber && recordYear == year.parseInt()
+        meterReading.permitNumber == permitNumber && recordYear == (year.parseInt() - 1)
       })
         .order(desc((doc) => parseDate(doc.date).month))
         .order(desc((doc) => parseDate(doc.date).year)).first()
 
       let lastFlowMeterPrevYear = {
         if (lastMeterReadingPrevYear != null) {
-          lastMeterReadingPrevYear.flowMeter?.value
-        } else {
-          null
-        }
-      }
-
-      let pumpingLimitThisYear = {
-        if (modifiedBanking != null) {
-          modifiedBanking.pumpingLimtThisYear?.value
+            lastMeterReadingPrevYear.flowMeter?.value
         } else {
           null
         }
       }
 
       if (pumpingLimitThisYear != null && lastFlowMeterPrevYear != null) {
-         pumpingLimitThisYear + lastFlowMeterPrevYear
+        {
+          value: Math.round(pumpingLimitThisYear.value + lastFlowMeterPrevYear, 2)
+        }
       } else {
         null
       }
     }
   
     {
-      allowedAppropriation: allowedAppropriation,
-      pumpingLimitThisYear: pumpingLimitThisYear,
-      flowMeterLimit: flowMeterLimit
+      permitNumber: permitNumber,
+      year: year,
+      bankingData: [
+        {
+          name: 'allowedAppropriation',
+          value: allowedAppropriation
+        },
+        {
+          name: 'pumpingLimitThisYear',
+          value: pumpingLimitThisYear
+        },
+        {
+          name: 'flowMeterLimit',
+          value: flowMeterLimit
+        },
+      ]
     }
   `
 }

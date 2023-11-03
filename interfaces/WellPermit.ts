@@ -1,4 +1,4 @@
-import { Document, Module, TimeStub } from "fauna"
+import { Module, TimeStub } from "fauna"
 
 export type WellPermitDocument = WellPermit & {
   coll: Module | string;

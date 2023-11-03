@@ -1,43 +1,34 @@
+import { withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { NextApiRequest, NextApiResponse } from "next";
-import fauna from "../../../../../lib/fauna/faunaClientV10";
-import getDbb004BankingSummary from "../../../../../lib/fauna/ts-queries/data-summary/getDbb004BankingSummary";
+import listDbb004BankingSummary from "./list";
+import updateDbb004BankingSummary from "./update";
 
-export interface Dbb004BankingSummary {
-  allowedAppropriation: number
-  pumpingLimitThisYear: number
-  flowMeterLimit: number
-}
+type HandlerFunctions = {
+  [key: string]: (req: NextApiRequest) => Promise<any>
+};
 
-async function handler(
+async function wellPermitRecordsHandler(
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<any> {
-  try {
-    if (!req || !req.method) {
-      throw new Error('No request or request method defined.')
-    }
-
-    const { permitNumber, year } = req.query
-
-    if (!permitNumber || !year)
-      throw new Error('permitNumber and year must be defined')
-
-    if (permitNumber && Array.isArray(permitNumber))
-      throw new Error('Only a single permitNumber may be defined.')
-
-    if (year && Array.isArray(year))
-      throw new Error('Only a single year may be defined.')
-
-    const { data } = await fauna.query(getDbb004BankingSummary(permitNumber, year))
-
-    res.status(200).json(data)
-
-  } catch (error: any) {
-    res.status(error?.status || 500).json(error)
+): Promise<void> {
+  if (!req || !req.method) {
+    throw new Error('No request or an invalid request method was sent to the server')
   }
 
+  const handlers: HandlerFunctions = {
+    GET: listDbb004BankingSummary,
+    POST: updateDbb004BankingSummary
+  }
 
+  try {
+    const response = await handlers[req.method](req)
+    res.status(200).json(response);
+
+  } catch (error: any) {
+    res.status(500).json(error)
+  }
 
 }
 
-export default handler;
+export default withApiAuthRequired(wellPermitRecordsHandler);
+

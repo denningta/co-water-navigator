@@ -85,7 +85,6 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
 
       const { pumpingLimitNextYear } = calculationRes.data
 
-      debugger
 
       const meterReadingRes = await axios.post(
         `/api/v1/meter-readings/${permitNumber}/${lastYear}-12`,

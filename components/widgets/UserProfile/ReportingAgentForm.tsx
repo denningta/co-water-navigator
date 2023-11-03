@@ -1,8 +1,10 @@
+import { Tooltip } from "@mui/material"
 import axios from "axios"
 import { Field, Form, Formik, FormikHelpers } from "formik"
 import { useSnackbar } from "notistack"
 import { useState } from "react"
 import { FaSave } from "react-icons/fa"
+import { ImUndo } from "react-icons/im"
 import useAgentInfo from "../../../hooks/useAgentInfo"
 import Button from "../../common/Button"
 
@@ -67,14 +69,20 @@ const formData: FormData = {
 }
 
 interface ReportingAgentFormProps {
-  user_id: string | undefined | null
+  user_id?: string | undefined | null
+  permitNumber?: string | 'global'
+  subTitle?: string | React.ReactNode
 }
 
-const ReportingAgentForm = ({ user_id }: ReportingAgentFormProps) => {
+const ReportingAgentForm = ({
+  user_id,
+  permitNumber = 'global',
+  subTitle
+}: ReportingAgentFormProps) => {
   const { enqueueSnackbar } = useSnackbar()
-  const { data } = useAgentInfo(user_id ?? null)
+  const { data, mutate } = useAgentInfo(user_id ?? null, permitNumber)
+  console.log(data)
   const [loading, setLoading] = useState(false)
-
 
   const formKeys = Object.keys(formData) as (keyof typeof formData)[]
   const initialValues = formKeys.reduce((prev, curr) => ({ ...prev, [curr]: (data && data[curr]) ?? '' }), {})
@@ -82,21 +90,43 @@ const ReportingAgentForm = ({ user_id }: ReportingAgentFormProps) => {
   const handleSubmit = async (values: any, formikHelpers: FormikHelpers<{}>) => {
     setLoading(true)
     if (!user_id) return
-    values.user_id = user_id
+
+    const updateData = {
+      ...values,
+      user_id: user_id,
+      permitNumber: permitNumber
+    }
+
     try {
-      const res = await axios.post(`/api/auth/${user_id}/agent-info`, values)
+      await axios.post(`/api/auth/${user_id}/agent-info?permitNumber=${permitNumber}`, updateData)
       enqueueSnackbar('Success! Agent information updated.', { variant: 'success' })
+      mutate(data)
       setLoading(false)
     } catch (error: any) {
       enqueueSnackbar('Something went wrong.  Try again.', { variant: 'error' })
       setLoading(false)
     }
+  }
 
+  const handleDelete = async () => {
+    setLoading(true)
+    try {
+      await axios.delete(`/api/auth/${user_id}/agent-info?permitNumber=${permitNumber}`)
+      enqueueSnackbar(`Removed agent info for ${permitNumber}`, { variant: 'success' })
+      mutate(data)
+
+      setLoading(false)
+    } catch (error: any) {
+      enqueueSnackbar('Something went wrong.  Try again.', { variant: 'error' })
+      setLoading(false)
+      throw new Error(error)
+    }
   }
 
   return (
-    <div>
+    <div className="space-y-4">
       <div className="mb-4 text-xl font-bold">Reporting Agent Information</div>
+      <div>{subTitle}</div>
       <Formik
         initialValues={initialValues}
         enableReinitialize={true}
@@ -119,8 +149,26 @@ const ReportingAgentForm = ({ user_id }: ReportingAgentFormProps) => {
               </div>
             )}
           </div>
-          <div className="mt-6">
-            <Button title="Save" icon={<FaSave />} type="submit" isLoading={loading} />
+          <div className="mt-6 flex space-x-4">
+            <Button
+              title="Save"
+              icon={<FaSave />}
+              type="submit"
+              isLoading={loading}
+            />
+            {permitNumber !== 'global' && data?.permitNumber !== 'global' &&
+              <Tooltip title="Use the agent information defined in your profile">
+                <div>
+                  <Button
+                    title={"Revert to global"}
+                    icon={<ImUndo />}
+                    color="secondary"
+                    isLoading={loading}
+                    onClick={handleDelete}
+                  />
+                </div>
+              </Tooltip>
+            }
           </div>
         </Form>
       </Formik>

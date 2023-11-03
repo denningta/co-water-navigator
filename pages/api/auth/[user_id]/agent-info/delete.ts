@@ -1,25 +1,28 @@
-import { withApiAuthRequired } from "@auth0/nextjs-auth0";
-import { Role, RolesData } from "auth0";
 import { NextApiRequest, NextApiResponse } from "next";
-import managementClient from "../../../../../lib/auth0/auth0ManagementClient";
+import fauna from "../../../../../lib/fauna/faunaClientV10";
+import deleteAgentInfoQuery from '../../../../../lib/fauna/ts-queries/agent-info/deleteAgentInfo'
 
 const deleteAgentInfo = async (req: NextApiRequest, res: NextApiResponse): Promise<any> => {
-  return new Promise(async (resolve, reject) => {
+  debugger
 
-    const { user_id } = req.query
-    if (!user_id)
-      throw new Error('user_id query was not defined in the request')
-    if (Array.isArray(user_id)) 
-      throw new Error('Only a single user_id can be queried at a time from this endpoint')
+  const { user_id, permitNumber } = req.query
+  if (!user_id)
+    throw new Error('user_id query was not defined in the request')
+  if (Array.isArray(user_id))
+    throw new Error('Only a single user_id can be queried at a time from this endpoint')
+  if (!permitNumber)
+    throw new Error('permitNumber was not defined in the request')
+  if (Array.isArray(permitNumber))
+    throw new Error('Only a single permitNumber can be queried at this endpoing')
 
-    if (!req.body)
-      throw new Error('No roles data was included in the body of this request')
+  try {
+    const { data } = await fauna.query(deleteAgentInfoQuery(user_id, permitNumber))
+    return data
 
+  } catch (error: any) {
+    throw new Error(error)
+  }
 
-    // TODO: Add delete functionality
-
-    resolve('test')
-  })
 
 }
 

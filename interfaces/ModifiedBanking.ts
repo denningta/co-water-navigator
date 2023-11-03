@@ -31,9 +31,19 @@ export interface WellUsage {
 }
 
 export interface ModifiedBankingSummary {
-  allowedAppropriation?: number
-  pumpingLimitThisYear?: number
-  flowMeterLimit?: number
+  permitNumber: string
+  year: string
+  updatedBy?: {
+    name?: string | null | undefined
+    user_id?: string | null | undefined
+  }
+  bankingData: ModifiedBankingSummaryRow[]
+}
+
+export interface ModifiedBankingSummaryRow {
+  name: 'allowedAppropriation' | 'pumpingLimitThisYear' | 'flowMeterLimit'
+  value?: CalculatedValue | undefined
+  description?: string
 }
 
 export type ModifiedBankingCalculatedFields = 'allowedAppropriation' | 'bankingReserveLastYear' | 'bankingReserveThisYear' | 'changeInBankingReserveThisYear' | 'line10' | 'line3' | 'maxBankingReserve' | 'originalAppropriation' | 'pumpingLimitNextYear' | 'pumpingLimitThisYear' | 'totalPumpedThisYear' 

@@ -1,20 +1,19 @@
 import { Tooltip } from "@mui/material"
 import { ICellRendererParams } from "ag-grid-community"
+import axios from "axios"
 import { IoMdClose } from "react-icons/io"
 import { CalculatedValue } from "../../../interfaces/MeterReading"
 
 const CalcValueCellRenderer = (params: ICellRendererParams, colId: string) => {
   const { source, calculationState, calculationMessage }: CalculatedValue = params.data[colId] ?? {}
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!colId) return
     params.node.setDataValue(colId, '')
   }
 
+
   const clearButtonFields = [
-    'pumpedThisPeriod',
-    'pumpedYearToDate',
-    'availableThisYear',
     'value'
   ]
 

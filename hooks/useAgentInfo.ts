@@ -1,9 +1,7 @@
-import { Role } from "auth0"
 import useSWR, { KeyedMutator } from "swr"
-import { WellPermitAssignment } from "../interfaces/WellPermit"
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url)
+const fetcher = async (url: string, permitNumber: string | 'global') => {
+  const res = await fetch(url + '?permitNumber=' + permitNumber)
   if (!res.ok) {
     const error = new Error('An error occurred while fetching the data.')
     error.message = await res.json()
@@ -12,9 +10,15 @@ const fetcher = async (url: string) => {
   return res.json()
 }
 
-const useAgentInfo = (user_id: string | null | undefined): { data: any, mutate: KeyedMutator<any> } => {
+const useAgentInfo = (
+  user_id: string | null | undefined,
+  permitNumber: string | 'global' = 'global'
+): { data: any, mutate: KeyedMutator<any> } => {
   const { data, mutate } = useSWR(
-    user_id ? `/api/auth/${user_id}/agent-info` : null,
+    [
+      user_id ? `/api/auth/${user_id}/agent-info` : null,
+      permitNumber
+    ],
     fetcher
   )
 

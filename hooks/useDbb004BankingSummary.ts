@@ -16,12 +16,14 @@ const useDbb004BankingSummary = (
   year: string | undefined
 ) => {
   const { data, mutate } = useSWR<ModifiedBankingSummary>([
-      (permitNumber && year) ? `/api/v1/data-summary/dbb004-banking-summary` : null,
-      permitNumber,
-      year
-    ],
+    (permitNumber && year) ? `/api/v1/data-summary/dbb004-banking-summary` : null,
+    permitNumber,
+    year
+  ],
     fetcher
   )
+
+  console.log(data)
 
   return {
     data: data,
