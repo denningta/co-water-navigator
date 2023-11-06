@@ -5,70 +5,62 @@ export default function getDbb004BankingSummary(permitNumber: string, year: stri
     let permitNumber = ${permitNumber}
     let year = ${year}
 
-    let modifiedBanking = administrativeReports.where(.permitNumber == permitNumber && .year == year).first()
+    let calculated = getDbb004BankingSummary(permitNumber, year)!.bankingData
+    let userDef = modifiedBankingSummary.firstWhere(.permitNumber == permitNumber && .year == year)?.bankingData
 
-    let allowedAppropriation = {
-      if (modifiedBanking != null) {
-        {
-          value: modifiedBanking.allowedAppropriation?.value,
-        }
-      } else {
-        null
-      }
-    }
+    let baseRows = [
+      'allowedAppropriation',
+      'pumpingLimitThisYear',
+      'flowMeterLimit'
+    ]
 
-    let pumpingLimitThisYear = {
-      if (modifiedBanking != null && modifiedBanking.pumpingLimitThisYear != null) {
-        {
-          value: modifiedBanking.pumpingLimitThisYear?.value 
-        }
-      } else {
-        null
-      }
-    }
+    let bankingData = baseRows.map(name => {
+      let calcValue = calculated.firstWhere(el => el.name == name)?.value
+      let userValue = userDef?.firstWhere(el => el.name == name)?.value
 
-    let flowMeterLimit = {
-      let lastMeterReadingPrevYear = meterReadings.where(meterReading => {
-        let recordYear = parseDate(meterReading.date).year
-        meterReading.permitNumber == permitNumber && recordYear == (year.parseInt() - 1)
-      })
-        .order(desc((doc) => parseDate(doc.date).month))
-        .order(desc((doc) => parseDate(doc.date).year)).first()
-
-      let lastFlowMeterPrevYear = {
-        if (lastMeterReadingPrevYear != null) {
-            lastMeterReadingPrevYear.flowMeter?.value
+      let value = {
+        if (calcValue == null && calcValue == null) {
+          {
+            name: name,
+            value: null
+          }
+        } else if (calcValue == null && userValue != null) {
+          {
+            name: name,
+            value: userValue,
+          }
+        } else if (calcValue != null && userValue == null) { 
+          {
+            name: name,
+            value: calcValue
+          }
         } else {
-          null
+          if (calcValue?.value != userValue?.value) {
+            {
+              name: name,
+              value: {
+                value: userValue?.value,
+                shouldBe: calcValue?.value,
+                calculationState: 'warning',
+                calculationMessage: 'Expected: ' + calcValue?.value.toString()
+              }
+            }
+          } else {
+            {
+              name: name,
+              value: userValue
+            }
+          }
         }
       }
 
-      if (pumpingLimitThisYear != null && lastFlowMeterPrevYear != null) {
-        {
-          value: Math.round(pumpingLimitThisYear.value + lastFlowMeterPrevYear, 2)
-        }
-      } else {
-        null
-      }
-    }
-  
+      value
+    })
+
     {
       permitNumber: permitNumber,
       year: year,
-      bankingData: [
-        {
-          name: 'allowedAppropriation',
-          value: allowedAppropriation
-        },
-        {
-          name: 'pumpingLimitThisYear',
-          value: pumpingLimitThisYear
-        },
-        {
-          name: 'flowMeterLimit',
-          value: flowMeterLimit
-        },
-      ]
+      bankingData: bankingData
     }
   `
 }

@@ -4,8 +4,8 @@ import path from "path"
 import { PDFCheckBox, PDFDocument, PDFTextField, rgb, StandardFonts } from "pdf-lib"
 import { convertToTableData, getForm } from ".."
 import { AgentInfo } from "../../../../../interfaces/AgentInfo"
-import MeterReading from "../../../../../interfaces/MeterReading"
-import { ModifiedBankingSummary, WellUsage } from "../../../../../interfaces/ModifiedBanking"
+import MeterReading, { CalculatedValue } from "../../../../../interfaces/MeterReading"
+import { ModifiedBankingSummary, ModifiedBankingSummaryRow, WellUsage } from "../../../../../interfaces/ModifiedBanking"
 import fauna from "../../../../../lib/fauna/faunaClientV10"
 import getWellPermitSelectedRecord from "../../../../../lib/fauna/ts-queries/well-permits/getWellPermitSelectedRecord"
 import { drawTable } from "../../../../../lib/pdf-lib/helpers"
@@ -47,7 +47,7 @@ const addDbb004 = async (
 
   const formData: any = {
     ...agentInfo,
-    ...bankingSummary,
+    ...convertBankingSummaryToObject(bankingSummary.bankingData),
     permitNumber: permitNumber,
     location: `${q40} 1/4 ${q160} 1/4 Sec ${section}, T ${township}, R ${range}`,
     owner: contactName,
@@ -67,7 +67,7 @@ const addDbb004 = async (
   formFields.forEach((formField, i) => {
     const { name, type, box } = fields()[i]
     if (formField instanceof PDFTextField) {
-      const fieldValue = (formData[name] !== (undefined || null)) ? formData[name].toString() : undefined
+      const fieldValue = formData[name] ? formData[name].toString() : undefined
 
       fieldValue && formField.setText(fieldValue)
       formField.addToPage(page, {
@@ -87,12 +87,14 @@ const addDbb004 = async (
     }
   })
 
-  const wellUsageKeys = Object.keys(wellUsage) as (keyof typeof wellUsage)[]
-  wellUsageKeys.forEach(key => {
-    const formField = formFields.find(el => el.getName() === key && el instanceof PDFCheckBox)
-    if (!formField || !(formField instanceof PDFCheckBox)) return
-    wellUsage[key] === true && formField.check()
-  })
+  if (wellUsage) {
+    const wellUsageKeys = Object.keys(wellUsage) as (keyof typeof wellUsage)[]
+    wellUsageKeys.forEach(key => {
+      const formField = formFields.find(el => el.getName() === key && el instanceof PDFCheckBox)
+      if (!formField || !(formField instanceof PDFCheckBox)) return
+      wellUsage[key] === true && formField.check()
+    })
+  }
 
   const tableData = data && convertToTableData(data)
 
@@ -125,6 +127,22 @@ const addDbb004 = async (
 
   return document
 
+}
+
+interface BankingSummaryObj {
+  allowedAppropriation?: number | undefined
+  pumpingLimitThisYear?: number | undefined
+  flowMeterLimit?: number | undefined
+}
+
+const convertBankingSummaryToObject = (bankingData: ModifiedBankingSummaryRow[]): BankingSummaryObj => {
+  const result: BankingSummaryObj = {}
+
+  bankingData.forEach((item) => {
+    result[item.name] = item.value?.value
+  })
+
+  return result
 }
 
 

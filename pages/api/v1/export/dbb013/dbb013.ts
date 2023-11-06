@@ -9,7 +9,7 @@ import getWellPermitSelectedRecord from "../../../../../lib/fauna/ts-queries/wel
 import fields from "./dbb013-fields"
 
 const addDbb013 = async (
-  data: ModifiedBanking[],
+  data: ModifiedBanking,
   agentInfo: AgentInfo,
   wellUsage: WellUsage,
   permitNumber: string,
@@ -40,7 +40,7 @@ const addDbb013 = async (
 
 
   const tableData = {
-    ...data && data.length ? convertToTableData(data)[0] : {},
+    ...data ? convertToTableData([data])[0] : {},
     ...agentInfo,
     permitNumber: permitNumber,
     location: `${q40} 1/4 ${q160} 1/4 Sec ${section}, T ${township}, R ${range}`,

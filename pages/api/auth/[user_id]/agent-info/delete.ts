@@ -3,7 +3,6 @@ import fauna from "../../../../../lib/fauna/faunaClientV10";
 import deleteAgentInfoQuery from '../../../../../lib/fauna/ts-queries/agent-info/deleteAgentInfo'
 
 const deleteAgentInfo = async (req: NextApiRequest, res: NextApiResponse): Promise<any> => {
-  debugger
 
   const { user_id, permitNumber } = req.query
   if (!user_id)

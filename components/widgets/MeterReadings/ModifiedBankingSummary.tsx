@@ -78,7 +78,6 @@ const ModifiedBankingSummary = ({
     try {
       const response = await axios.post<ModifiedBankingSummary>(url, updateData)
 
-      debugger
 
       updateGridRows(response.data?.bankingData)
 

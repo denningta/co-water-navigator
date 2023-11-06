@@ -22,7 +22,6 @@ const updateAgentInfo = async (req: NextApiRequest, res: NextApiResponse) => {
     return data
 
   } catch (error: any) {
-    debugger
     throw new Error(error)
   }
 }

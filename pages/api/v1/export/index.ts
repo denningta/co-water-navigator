@@ -1,15 +1,15 @@
 import { getSession } from "@auth0/nextjs-auth0";
-import { readdirSync, readFile, readFileSync } from "fs";
+import { readFileSync } from "fs";
 import { NextApiRequest, NextApiResponse } from "next";
-import { PDFDocument, StandardFonts } from "pdf-lib";
-import { AgentInfo } from "../../../../interfaces/AgentInfo";
-import MeterReading from "../../../../interfaces/MeterReading";
-import { ModifiedBanking, WellUsage } from "../../../../interfaces/ModifiedBanking";
+import { PDFDocument } from "pdf-lib";
 import faunaClient from "../../../../lib/fauna/faunaClient";
-import getAgentInfo from "../../../../lib/fauna/ts-queries/getAgentInfo";
 import addDbb004 from "./dbb004/dbb004";
 import addDbb013 from "./dbb013/dbb013";
 import { DataSummary } from "../../../../hooks/useDataSummaryByPermit";
+import fauna from "../../../../lib/fauna/faunaClientV10";
+import getAgentInfo from "../../../../lib/fauna/ts-queries/agent-info/getAgentInfo";
+import { Document } from "fauna";
+import { AgentInfo } from "../../../../interfaces/AgentInfo";
 
 export interface ExportData {
   fileType: 'pdf' | 'csv'
@@ -18,21 +18,25 @@ export interface ExportData {
     dbb013: boolean
   }
   dataSelection: DataSummary[]
-  agentInfo: AgentInfo
+  user_id: string
 }
 
 const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const session = getSession(req, res)
-  const user_id = session?.user?.sub
+  try {
+    const session = getSession(req, res)
+    const user_id = session?.user?.sub
 
-  const agentInfo = await faunaClient.query(getAgentInfo(user_id))
+    const pdfBytes = await createPdf({
+      ...req.body,
+      user_id
+    })
+    const pdfBytesString = `[${pdfBytes.toString()}]`
+    res.status(200).json(pdfBytesString)
 
-  const pdfBytes = await createPdf({
-    ...req.body,
-    agentInfo: agentInfo
-  })
-  const pdfBytesString = `[${pdfBytes.toString()}]`
-  res.status(200).json(pdfBytesString)
+  } catch (error: any) {
+    debugger
+    res.status(500).json(error)
+  }
 }
 
 export const getForm = (dir: string, fileName: string) => {
@@ -45,20 +49,29 @@ const mergeDocuments = async (main: PDFDocument, merge: PDFDocument) => {
 }
 
 
-const createPdf = async ({ documents, dataSelection, agentInfo }: ExportData) => {
+const createPdf = async ({ documents, dataSelection, user_id }: ExportData) => {
   const pdfDoc = await PDFDocument.create()
 
   await Promise.all(
     dataSelection.map(async (el) => {
-      if (documents.dbb004) {
-        if (!el.dbb004Summary) return
-        const dbb004 = await addDbb004(el.dbb004Summary, el.dbb004BankingSummary, agentInfo, el.wellUsage, el.permitNumber, el.year)
-        await mergeDocuments(pdfDoc, dbb004)
-      }
-      if (documents.dbb013) {
-        if (!el.dbb013Summary[0]) return
-        const dbb013 = await addDbb013(el.dbb013Summary, agentInfo, el.wellUsage, el.permitNumber)
-        await mergeDocuments(pdfDoc, dbb013)
+      // TODO: add agentInfo query here based on user_id and el.permitNumber
+      //
+      try {
+        const agentInfo = await fauna.query<Document & AgentInfo>(getAgentInfo(user_id, el.permitNumber))
+
+        if (documents.dbb004) {
+          if (!el.dbb004Summary) return
+          const dbb004 = await addDbb004(el.dbb004Summary, el.dbb004BankingSummary, agentInfo.data, el.wellUsage, el.permitNumber, el.year)
+          await mergeDocuments(pdfDoc, dbb004)
+        }
+        if (documents.dbb013) {
+          if (!el.dbb013Summary) return
+          const dbb013 = await addDbb013(el.dbb013Summary, agentInfo.data, el.wellUsage, el.permitNumber)
+          await mergeDocuments(pdfDoc, dbb013)
+        }
+
+      } catch (error: any) {
+        throw new Error(error)
       }
     })
   )

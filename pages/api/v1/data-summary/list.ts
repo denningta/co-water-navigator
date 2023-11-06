@@ -17,6 +17,7 @@ async function listDataSummary(req: NextApiRequest): Promise<any[]> {
     if (!Array.isArray(permitNumbers)) permitNumbers = [permitNumbers]
 
     const response: any = await faunaClient.query(getDataSummary(permitNumbers))
+
     return response;
 
   } catch (error: any) {

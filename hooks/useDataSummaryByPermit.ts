@@ -17,7 +17,7 @@ export interface DataSummary {
   year: string
   dbb004Summary: MeterReading[]
   dbb004BankingSummary: ModifiedBankingSummary
-  dbb013Summary: ModifiedBanking[]
+  dbb013Summary: ModifiedBanking
   wellUsage: WellUsage
 }
 

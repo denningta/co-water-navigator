@@ -23,8 +23,6 @@ const useDbb004BankingSummary = (
     fetcher
   )
 
-  console.log(data)
-
   return {
     data: data,
     mutate: mutate

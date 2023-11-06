@@ -1,9 +1,8 @@
 import { NextApiRequest } from "next";
-import { ModifiedBankingSummary, ModifiedBankingSummaryRow } from "../../../../../interfaces/ModifiedBanking";
+import { ModifiedBankingSummary } from "../../../../../interfaces/ModifiedBanking";
 import fauna from "../../../../../lib/fauna/faunaClientV10";
-import { Document, QueryValue } from "fauna"
+import { Document } from "fauna"
 import getDbb004BankingSummary from "../../../../../lib/fauna/ts-queries/data-summary/getDbb004BankingSummary";
-import getUserDefinedDbb004BankingSummary from "../../../../../lib/fauna/ts-queries/data-summary/getUserDefinedDbb004BankingSummary";
 import { CalculatedValue } from "../../../../../interfaces/MeterReading";
 
 export default async function listDbb004BankingSummary(req: NextApiRequest): Promise<ModifiedBankingSummary> {
@@ -19,41 +18,9 @@ export default async function listDbb004BankingSummary(req: NextApiRequest): Pro
     if (year && Array.isArray(year))
       throw new Error('Only a single year may be defined.')
 
-    const calculation = await fauna.query<Document & ModifiedBankingSummary>(getDbb004BankingSummary(permitNumber, year))
-    const userDefined = await fauna.query<Document & ModifiedBankingSummary>(getUserDefinedDbb004BankingSummary(permitNumber, year))
+    const { data } = await fauna.query<Document & ModifiedBankingSummary>(getDbb004BankingSummary(permitNumber, year))
 
-    const base: ModifiedBankingSummaryRow[] = [
-      {
-        name: 'allowedAppropriation',
-        value: undefined
-      },
-      {
-        name: 'pumpingLimitThisYear',
-        value: undefined
-      },
-      {
-        name: 'flowMeterLimit',
-        value: undefined
-      },
-    ]
-
-    const calcData = calculation.data?.bankingData || []
-    const userData = userDefined.data?.bankingData || []
-
-    const bankingData = base.map(baseRow => {
-      const calcValue = calcData.find(el => el.name === baseRow.name)?.value
-      const userValue = userData.find(el => el.name === baseRow.name)?.value
-      return {
-        name: baseRow.name,
-        value: compareUserDefinitiontoCalculatedValue(calcValue, userValue)
-      }
-    })
-
-    return {
-      permitNumber: permitNumber,
-      year: year,
-      bankingData: bankingData
-    }
+    return data
 
   } catch (error: any) {
     throw new Error(error)
