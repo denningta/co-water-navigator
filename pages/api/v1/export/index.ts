@@ -2,7 +2,6 @@ import { getSession } from "@auth0/nextjs-auth0";
 import { readFileSync } from "fs";
 import { NextApiRequest, NextApiResponse } from "next";
 import { PDFDocument } from "pdf-lib";
-import faunaClient from "../../../../lib/fauna/faunaClient";
 import addDbb004 from "./dbb004/dbb004";
 import addDbb013 from "./dbb013/dbb013";
 import { DataSummary } from "../../../../hooks/useDataSummaryByPermit";
@@ -34,7 +33,6 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(200).json(pdfBytesString)
 
   } catch (error: any) {
-    debugger
     res.status(500).json(error)
   }
 }
@@ -54,8 +52,6 @@ const createPdf = async ({ documents, dataSelection, user_id }: ExportData) => {
 
   await Promise.all(
     dataSelection.map(async (el) => {
-      // TODO: add agentInfo query here based on user_id and el.permitNumber
-      //
       try {
         const agentInfo = await fauna.query<Document & AgentInfo>(getAgentInfo(user_id, el.permitNumber))
 
@@ -65,7 +61,7 @@ const createPdf = async ({ documents, dataSelection, user_id }: ExportData) => {
           await mergeDocuments(pdfDoc, dbb004)
         }
         if (documents.dbb013) {
-          if (!el.dbb013Summary) return
+          debugger
           const dbb013 = await addDbb013(el.dbb013Summary, agentInfo.data, el.wellUsage, el.permitNumber)
           await mergeDocuments(pdfDoc, dbb013)
         }

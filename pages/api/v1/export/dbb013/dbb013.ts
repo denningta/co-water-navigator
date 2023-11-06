@@ -9,7 +9,7 @@ import getWellPermitSelectedRecord from "../../../../../lib/fauna/ts-queries/wel
 import fields from "./dbb013-fields"
 
 const addDbb013 = async (
-  data: ModifiedBanking,
+  data: ModifiedBanking | undefined,
   agentInfo: AgentInfo,
   wellUsage: WellUsage,
   permitNumber: string,
@@ -83,12 +83,14 @@ const addDbb013 = async (
     }
   })
 
-  const wellUsageKeys = Object.keys(wellUsage) as (keyof typeof wellUsage)[]
-  wellUsageKeys.forEach(key => {
-    const formField = formFields.find(el => el.getName() === key && el instanceof PDFCheckBox)
-    if (!formField || !(formField instanceof PDFCheckBox)) return
-    wellUsage[key] === true && formField.check()
-  })
+  if (wellUsage) {
+    const wellUsageKeys = Object.keys(wellUsage) as (keyof typeof wellUsage)[]
+    wellUsageKeys.forEach(key => {
+      const formField = formFields.find(el => el.getName() === key && el instanceof PDFCheckBox)
+      if (!formField || !(formField instanceof PDFCheckBox)) return
+      wellUsage[key] === true && formField.check()
+    })
+  }
 
   return document
 }
