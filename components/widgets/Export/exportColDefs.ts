@@ -1,4 +1,4 @@
-import { ColDef } from "ag-grid-community";
+import { ColDef, ICellRendererParams } from "ag-grid-community";
 import DataSummaryCellRenderer from "../CalendarYearSelector/Dbb004HeatmapCellRenderer";
 import Dbb013HeatmapCellRenderer from "../CalendarYearSelector/Dbb013HeatmapCellRenderer";
 import ActionsCellRenderer from "../WellPermitsAssignment/ActionsCellRenderer";
@@ -13,7 +13,7 @@ export const exportColDefs: ColDef[] = [
     suppressMovable: true,
     resizable: false,
     suppressAutoSize: true,
-    cellRenderer: ActionsCellRenderer,
+    cellRenderer: (params: ICellRendererParams) => ActionsCellRenderer(params),
     cellStyle: { textAlign: 'center' },
   },
   {

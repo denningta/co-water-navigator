@@ -1,24 +1,22 @@
 import { ICellRendererParams } from "ag-grid-community"
 import { useEffect, useState } from "react"
-import useModifiedBanking from "../../../hooks/useModifiedBanking"
 import CustomHeatmap, { CustomBinDatum, HeatmapConfig } from "../../common/visx_custom/Heatmap"
-import { CalendarYearSelectorData } from "./CalendarYearSelector"
 
 const Dbb013HeatmapCellRenderer = (params: ICellRendererParams) => {
-  const data = params.data?.dbb013Summary && params.data.dbb013Summary[0]
+  const data = params.data?.dbb013Summary && params.data.dbb013Summary
 
   const [binData, setBinData] = useState<CustomBinDatum[]>([
-    { bin: 'allowedAppropriation', bins: [ { bin: 0, count: 0 }] },
-    { bin: 'bankingReserveLastYear', bins: [ { bin: 0, count: 0 }] },
-    { bin: 'bankingReserveThisYear', bins: [ { bin: 0, count: 0 }] },
-    { bin: 'changeInBankingReserveThisYear', bins: [ { bin: 0, count: 0 }] },
-    { bin: 'line3', bins: [ { bin: 0, count: 0 }] },
-    { bin: 'line10', bins: [ { bin: 0, count: 0 }] },
-    { bin: 'maxBankingReserve', bins: [ { bin: 0, count: 0 }] },
-    { bin: 'originalAppropriation', bins: [ { bin: 0, count: 0 }] },
-    { bin: 'pumpingLimitNextYear', bins: [ { bin: 0, count: 0 }] },
-    { bin: 'pumpingLimitThisYear', bins: [ { bin: 0, count: 0 }] },
-    { bin: 'totalPumpedThisYear', bins: [ { bin: 0, count: 0 }] },
+    { bin: 'allowedAppropriation', bins: [{ bin: 0, count: 0 }] },
+    { bin: 'bankingReserveLastYear', bins: [{ bin: 0, count: 0 }] },
+    { bin: 'bankingReserveThisYear', bins: [{ bin: 0, count: 0 }] },
+    { bin: 'changeInBankingReserveThisYear', bins: [{ bin: 0, count: 0 }] },
+    { bin: 'line3', bins: [{ bin: 0, count: 0 }] },
+    { bin: 'line10', bins: [{ bin: 0, count: 0 }] },
+    { bin: 'maxBankingReserve', bins: [{ bin: 0, count: 0 }] },
+    { bin: 'originalAppropriation', bins: [{ bin: 0, count: 0 }] },
+    { bin: 'pumpingLimitNextYear', bins: [{ bin: 0, count: 0 }] },
+    { bin: 'pumpingLimitThisYear', bins: [{ bin: 0, count: 0 }] },
+    { bin: 'totalPumpedThisYear', bins: [{ bin: 0, count: 0 }] },
   ])
 
   const heatmapConfig: HeatmapConfig = {
@@ -35,7 +33,7 @@ const Dbb013HeatmapCellRenderer = (params: ICellRendererParams) => {
 
   useEffect(() => {
     if (!data) return
-    setBinData(binData.map((el, i) => {
+    setBinData(binData.map((el) => {
       const bin = {
         ...el,
         bins: [
@@ -47,12 +45,12 @@ const Dbb013HeatmapCellRenderer = (params: ICellRendererParams) => {
 
       return bin
     }))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   return (
     <div>
-      <CustomHeatmap 
+      <CustomHeatmap
         binData={binData}
         config={heatmapConfig}
         tooltipComponent={(bin) =>

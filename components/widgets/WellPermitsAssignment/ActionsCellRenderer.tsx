@@ -10,7 +10,7 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
 
-  const { permit } = params?.data ?? ''
+  const { permit, permitNumber } = params?.data ?? ''
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -20,6 +20,7 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  debugger
 
   return (
     <div>
@@ -38,7 +39,7 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
         <MenuItem>
           <ListItemIcon><MdEdit /></ListItemIcon>
           <ListItemText>
-            <Link href={`/well-permits/${permit}`}>
+            <Link href={`/well-permits/${permit ?? permitNumber}`}>
               Meter Readings
             </Link>
           </ListItemText>
@@ -46,7 +47,7 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
         <MenuItem>
           <ListItemIcon><IoSettingsSharp /></ListItemIcon>
           <ListItemText>
-            <Link href={`/well-permits/${permit}/settings`}>
+            <Link href={`/well-permits/${permit ?? permitNumber}/settings`}>
               Permit Settings
             </Link>
           </ListItemText>
