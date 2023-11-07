@@ -14,7 +14,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 export interface CalendarYearSelectorData {
   year: string
   dbb004Summary?: MeterReading[]
-  dbb013Summary?: ModifiedBanking[]
+  dbb013Summary?: ModifiedBanking
 }
 
 interface Props {
