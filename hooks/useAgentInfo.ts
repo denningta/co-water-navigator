@@ -15,10 +15,10 @@ const useAgentInfo = (
   permitNumber: string | 'global' = 'global'
 ): { data: any, mutate: KeyedMutator<any> } => {
   const { data, mutate } = useSWR(
-    [
-      user_id ? `/api/auth/${user_id}/agent-info` : null,
+    user_id ? [
+      `/api/auth/${user_id}/agent-info`,
       permitNumber
-    ],
+    ] : null,
     fetcher
   )
 

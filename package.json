@@ -13,8 +13,8 @@
     "export:dev": "a0deploy export --strip --format yaml --output_folder . --config_file ./config/dev.json --secret $DEV_AUTH0_CLIENT_SECRET",
     "import:staging": "a0deploy import --input_file tenant.yaml --config_file ./config/staging.json",
     "import:prod": "a0deploy import --input_file tenant.yaml --config_file ./config/prod.json",
-    "exportfauna:dev": "npx ts-node lib/fauna/deploy/export-db-config.js",
-    "importfauna:staging": "npx ts-node lib/fauna/deploy/import-db-config.js"
+    "exportfauna:dev": "ts-node lib/fauna/deploy/export-fauna-config.ts",
+    "importfauna:staging": "ts-node lib/fauna/deploy/import-fauna-config.ts"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^1.9.1",

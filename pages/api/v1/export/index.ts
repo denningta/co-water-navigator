@@ -61,7 +61,6 @@ const createPdf = async ({ documents, dataSelection, user_id }: ExportData) => {
           await mergeDocuments(pdfDoc, dbb004)
         }
         if (documents.dbb013) {
-          debugger
           const dbb013 = await addDbb013(el.dbb013Summary, agentInfo.data, el.wellUsage, el.permitNumber)
           await mergeDocuments(pdfDoc, dbb013)
         }

@@ -20,7 +20,6 @@ const ActionsCellRenderer = (params: ICellRendererParams) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  debugger
 
   return (
     <div>

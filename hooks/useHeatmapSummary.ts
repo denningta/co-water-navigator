@@ -11,7 +11,7 @@ const fetcher = async (url: string, permitNumber: string) => {
 }
 
 export interface HeatmapSummary {
-  year: string
+  year: number
   percentComplete: number
 }
 

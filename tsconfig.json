@@ -25,13 +25,16 @@
     "**/*.tsx",
     "components/widgets/MeterReadings/ReadingsGridtsx",
     "pages/manage-users/[user_id]",
-    "lib/fauna/deploy/import-db-config.ts",
+    "lib/fauna/deploy/import-fauna-config.ts",
     "lib/fauna/deploy/export-db-config.ts"
   ],
   "exclude": [
     "node_modules"
   ],
   "ts-node": {
-    "esm": true
+    "esm": true,
+    "compilerOptions": {
+      "module": "NodeNext"
+    }
   }
 }

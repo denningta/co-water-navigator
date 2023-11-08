@@ -1,39 +1,33 @@
 import { ICellRendererParams } from "ag-grid-community"
-import { HeatmapRect } from "@visx/heatmap"
-import { genBins, getSeededRandom } from "@visx/mock-data"
-import { scaleLinear } from "@visx/scale"
 import { Bins } from "@visx/mock-data/lib/generators/genBins"
-import { Group } from "@visx/group"
 import { RectCell } from "@visx/heatmap/lib/heatmaps/HeatmapRect"
 import { styled, Tooltip, tooltipClasses, TooltipProps } from "@mui/material"
-import React, { forwardRef, useMemo } from "react"
+import React, { forwardRef } from "react"
 import CircularProgressWithLabel from "../../common/CircularProgressWithLabel"
 import useHeatmapSummary from "../../../hooks/useHeatmapSummary"
 import Link from "next/link"
 import CustomHeatmap, { CustomBinDatum, HeatmapConfig } from "../../common/visx_custom/Heatmap"
-import tailwindCss, { tailwindColors } from "../../../lib/tailwindcss/tailwindConfig"
-import { KeyValuePair } from "tailwindcss/types/config"
+import { tailwindColors } from "../../../lib/tailwindcss/tailwindConfig"
 
 const HeatmapCellRenderer = (params: ICellRendererParams) => {
-  const { data, mutate } = useHeatmapSummary(params.data.permit)
-
+  const { data } = useHeatmapSummary(params.data.permit)
   const currYear = new Date().getFullYear()
   let binData: CustomBinDatum[] = []
 
-    for (let year = currYear - 10; year <= currYear; year++) {
-      binData.push(
-        {
-          bin: year,
-          bins: [
-            {
-              bin: 0,
-              count: (data && data.find(el => el.year === year.toString())?.percentComplete) ?? 0
-            },
-          ],
-          href: `/well-permits/${params.data.permit}/${year}`
-        },
-      )
-    }
+  for (let year = currYear - 10; year <= currYear; year++) {
+    binData.push(
+      {
+        bin: year,
+        bins: [
+          {
+            bin: 0,
+            count: (data && data.find(el => el.year === year)?.percentComplete) ?? 0
+          },
+        ],
+        href: `/well-permits/${params.data.permit}/${year}`
+      },
+    )
+  }
   // eslint-disable-next-line react-hooks/exhaustive-deps
 
   const heatmapConfig: HeatmapConfig = {
@@ -95,12 +89,12 @@ const Rectangle = ({ bin, permit }: RectangleProps) => {
     <Link href={`/well-permits/${permit}/${bin.datum.bin}`}>
       <HtmlTooltip
         title={
-            <div className="flex flex-col items-center">
-              <div className="font-bold text-lg">
-                {bin.datum.bin}
-              </div>
-              <CircularProgressWithLabel value={bin.count ?? 0}></CircularProgressWithLabel>
+          <div className="flex flex-col items-center">
+            <div className="font-bold text-lg">
+              {bin.datum.bin}
             </div>
+            <CircularProgressWithLabel value={bin.count ?? 0}></CircularProgressWithLabel>
+          </div>
         }
         placement="top"
       >
@@ -113,9 +107,9 @@ const Rectangle = ({ bin, permit }: RectangleProps) => {
           y={bin.y + 4}
           fill={bin.color}
           fillOpacity={bin.opacity}
-          />
-        </HtmlTooltip>
-      </Link>
+        />
+      </HtmlTooltip>
+    </Link>
 
   )
 }
