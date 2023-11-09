@@ -29,18 +29,13 @@ describe('/api/v1/well-permit-records', () => {
 
     try {
       const response = await createWellPermitRecordsHandler(req)
-
       documents = response as any
 
       expect(response).toHaveLength(2)
 
-
     } catch (error: any) {
       throw new Error(error)
     }
-
-
-
   })
 
   afterAll(async () => {

@@ -1,41 +1,40 @@
+import { Document } from "fauna";
 import { NextApiRequest, NextApiResponse } from "next";
 import MeterReading from "../../../../interfaces/MeterReading";
-import { HttpError } from "../interfaces/HttpError";
 import createMeterReadings from "./create";
+import { deleteMeterReadings } from "./delete";
 import listMeterReadings from "./list";
 
 type HandlerFunctions = {
-  [key: string]: (req: NextApiRequest) => Promise<MeterReading[]>
+  [key: string]: (req: NextApiRequest) => Promise<Array<Document & MeterReading>>
 };
 
-function handler(
+async function meterReadingsHandler(
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<MeterReading[] | HttpError> {
+): Promise<Array<Document & MeterReading> | undefined> {
 
   if (!req || !req.method) {
-    return Promise.reject(new HttpError(
-      'No Request or Invalid Request Method',
-      'No request or an invalid request method was sent to the server',
-      400
-    ));
+    throw new Error('Invalid request or request method')
   }
 
   const handlers: HandlerFunctions = {
     GET: listMeterReadings,
     POST: createMeterReadings,
+    DELETE: deleteMeterReadings
+    // TODO: 
+    // PATCH: upsertMeterReadings,
   }
 
-  return handlers[req.method](req)
-    .then((response) => {
-      res.status(200).json(response);
-      return response;
-    })
-    .catch((errors) => {
-      res.status(errors || 500).json({ errors: errors })
-      return errors;
-    });
+  try {
+    const response = await handlers[req.method](req)
+    res.status(200).json(response);
+    return response
+
+  } catch (error: any) {
+    res.status(500).json(error)
+  }
 
 }
 
-export default handler;
+export default meterReadingsHandler;

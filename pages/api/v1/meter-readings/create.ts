@@ -1,31 +1,22 @@
+import { Document } from "fauna";
 import { NextApiRequest } from "next";
 import MeterReading from "../../../../interfaces/MeterReading";
-import faunaClient from "../../../../lib/fauna/faunaClient";
-import validateQuery from "../validatorFunctions";
-import createMeterReadingsFauna from "../../../../lib/fauna/ts-queries/createMeterReadings";
+import fauna from "../../../../lib/fauna/faunaClientV10";
+import createMeterReadingsQuery from "../../../../lib/fauna/ts-queries/meter-readings/createMeterReadings"
 
-function createMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
-  return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'queryExists',
-      'bodyExists',
-      'validMeterReadingsArray'
-    ]);
+async function createMeterReadings(req: NextApiRequest): Promise<Array<Document & MeterReading>> {
+  try {
+    const { body } = req
 
-    if (errors.length) return reject(errors);
+    if (!body) throw new Error('A body was not included in the request but is required')
 
-    const response: any = await faunaClient.query(
-      createMeterReadingsFauna(req.body)
-    ).catch(err => {
-      errors.push({
-        ...err,
-        status: err.requestResult.statusCode
-      });
-      return reject(errors);
-    });
+    const { data } = await fauna.query<Array<Document & MeterReading>>(createMeterReadingsQuery(body))
 
-    return resolve(response.map((el: any) => el.data));
-  });
+    return data
+
+  } catch (error: any) {
+    throw new Error(error)
+  }
 }
 
 export default createMeterReadings;
