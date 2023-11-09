@@ -1,4 +1,4 @@
-import { q } from "../faunaClient"
+import { q } from "../../faunaClient"
 import getMeterReadings from "./getMeterReadings"
 import getWellPermits from "./getWellPermits"
 

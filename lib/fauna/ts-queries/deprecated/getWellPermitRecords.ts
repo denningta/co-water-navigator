@@ -1,4 +1,4 @@
-import { q } from "../faunaClient";
+import { q } from "../../faunaClient";
 
 const getWellPermitRecords = (permitNumber: string) =>
   q.Let(

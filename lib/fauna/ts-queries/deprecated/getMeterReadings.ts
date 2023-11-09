@@ -1,5 +1,5 @@
 import { Expr } from "faunadb"
-import { q } from "../faunaClient"
+import { q } from "../../faunaClient"
 
 
 export interface GetMeterReadingProps {

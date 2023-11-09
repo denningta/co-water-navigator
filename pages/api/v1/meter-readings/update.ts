@@ -1,11 +1,8 @@
-import { NextApiRequest } from "next";
-import { resolve } from "path";
 import MeterReading from "../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
 import { HttpError } from "../interfaces/HttpError";
-import validateQuery from "../validatorFunctions";
 
-function updateMeterReadings(meterReadings: MeterReading[]): Promise<MeterReading[]> {  
+function updateMeterReadings(meterReadings: MeterReading[]): Promise<MeterReading[]> {
   return new Promise(async (resolve, reject) => {
     const errors: any[] = []
 
@@ -14,7 +11,7 @@ function updateMeterReadings(meterReadings: MeterReading[]): Promise<MeterReadin
         q.Select('ref',
           q.Get(
             q.Match(
-              q.Index('meter-readings-by-permitnumber-date'), 
+              q.Index('meter-readings-by-permitnumber-date'),
               [meterReading.permitNumber, meterReading.date]
             )
           )
@@ -26,10 +23,10 @@ function updateMeterReadings(meterReadings: MeterReading[]): Promise<MeterReadin
     const response: any = await faunaClient.query(
       q.Do(updateQueries)
     ).catch(err => {
-        errors.push({
-          ...err, 
-          status: err.requestResult.statusCode
-        });
+      errors.push({
+        ...err,
+        status: err.requestResult.statusCode
+      });
       reject(errors);
     });
 

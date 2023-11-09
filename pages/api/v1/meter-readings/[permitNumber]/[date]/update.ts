@@ -37,20 +37,21 @@ function updateMeterReading(req: NextApiRequest): Promise<MeterReading[]> {
             { data: req.body }
           ),
           q.Create(
-            q.Collection('meterReadings'), 
-            { data: 
-              { 
-                ...req.body, 
-                permitNumber: permitNumber, 
-                date: date 
-              } 
+            q.Collection('meterReadings'),
+            {
+              data:
+              {
+                ...req.body,
+                permitNumber: permitNumber,
+                date: date
+              }
             }
           )
         )
       )
     ).catch(err => {
       errors.push({
-        ...err, 
+        ...err,
         status: err.requestResult.statusCode
       });
       reject(errors);

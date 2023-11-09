@@ -1,7 +1,7 @@
 import { Expr } from "faunadb";
-import { q } from "../faunaClient";
+import { q } from "../../faunaClient";
 
-const getWellUsageQuery = (permitNumber: string | Expr, year: string | Expr) => 
+const getWellUsageQuery = (permitNumber: string | Expr, year: string | Expr) =>
   q.Let(
     {
       wellUsage: q.Map(

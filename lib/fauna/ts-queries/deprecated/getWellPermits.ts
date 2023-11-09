@@ -1,6 +1,6 @@
 import { Expr } from "faunadb";
-import { q } from "../faunaClient";
-import { WellPermitsQuery } from "./well-permits/getWellPermits";
+import { q } from "../../faunaClient";
+import { WellPermitsQuery } from "../well-permits/getWellPermits";
 
 const getWellPermits = (query: WellPermitsQuery) => {
   const { ids, permitNumbers } = query

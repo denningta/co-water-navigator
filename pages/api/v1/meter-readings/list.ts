@@ -1,15 +1,15 @@
+import { Document } from "fauna";
 import { isString } from "lodash";
 import { NextApiRequest } from "next";
 import MeterReading from "../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
-import getMeterReadings from "../../../../lib/fauna/ts-queries/getMeterReadings";
-import validateQuery from "../validatorFunctions";
+import fauna from "../../../../lib/fauna/faunaClientV10";
+import getMeterReadings from "../../../../lib/fauna/ts-queries/meter-readings/getMeterReadings";
 
 async function listMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
   try {
-    const { 
-      permitNumber, 
-      year, 
+    const {
+      permitNumber,
+      year,
       date,
     } = req.query;
 
@@ -17,7 +17,7 @@ async function listMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
     const years: string[] | undefined = isString(year) ? [year] : year
     const permitNumbers: string[] | undefined = isString(permitNumber) ? [permitNumber] : permitNumber
 
-    const response: any = await faunaClient.query(
+    const { data } = await fauna.query<Array<Document & MeterReading>>(
       getMeterReadings({
         dates: dates,
         years: years,
@@ -25,8 +25,8 @@ async function listMeterReadings(req: NextApiRequest): Promise<MeterReading[]> {
       })
     )
 
-    return response
-    
+    return data
+
   } catch (error: any) {
     return error
   }
