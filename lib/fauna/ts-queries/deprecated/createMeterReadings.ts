@@ -1,5 +1,5 @@
-import MeterReading from "../../../interfaces/MeterReading"
-import { q } from "../faunaClient"
+import MeterReading from "../../../../interfaces/MeterReading"
+import { q } from "../../faunaClient"
 
 const createMeterReadings = (meterReadings: MeterReading[]) =>
   q.Map(meterReadings,

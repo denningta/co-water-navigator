@@ -1,7 +1,8 @@
-import { Document } from "fauna"
+import { Document, fql } from "fauna"
 import { createMocks } from "node-mocks-http"
 import MeterReading from "../../../../../interfaces/MeterReading"
 import fauna from "../../../../../lib/fauna/faunaClientV10"
+import { deleteMeterReadingsByRecord } from "../../../../../lib/fauna/ts-queries/meter-readings/deleteMeterReadings"
 import meterReadingsHandler from "../../../../../pages/api/v1/meter-readings"
 
 describe('/api/v1/meter-readings', () => {
@@ -26,6 +27,8 @@ describe('/api/v1/meter-readings', () => {
   let documents: Array<Document & MeterReading> = []
 
   beforeAll(async () => {
+    await fauna.query(deleteMeterReadingsByRecord(body))
+
     const { req, res }: any = createMocks({
       method: 'POST',
       body: body
@@ -118,6 +121,21 @@ describe('/api/v1/meter-readings', () => {
           permitNumber: '12345-TEST',
           date: ['2022-01', '2022-02']
         }
+      })
+
+      try {
+        const response = await meterReadingsHandler(req, res)
+        expect(response).toMatchObject(body)
+
+      } catch (error: any) {
+        throw new Error(error)
+      }
+    })
+
+    test('update meterReadings', async () => {
+      const { req, res }: any = createMocks({
+        method: 'PATCH',
+        body: body
       })
 
       try {

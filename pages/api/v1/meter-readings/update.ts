@@ -1,46 +1,23 @@
+import { Document } from "fauna";
+import { NextApiRequest } from "next";
 import MeterReading from "../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
-import { HttpError } from "../interfaces/HttpError";
+import fauna from "../../../../lib/fauna/faunaClientV10";
+import updateMeterReadingsQuery from "../../../../lib/fauna/ts-queries/meter-readings/updateMeterReadings";
 
-function updateMeterReadings(meterReadings: MeterReading[]): Promise<MeterReading[]> {
-  return new Promise(async (resolve, reject) => {
-    const errors: any[] = []
+async function updateMeterReadings(req: NextApiRequest) {
 
-    const updateQueries = meterReadings.map(meterReading => {
-      return q.Replace(
-        q.Select('ref',
-          q.Get(
-            q.Match(
-              q.Index('meter-readings-by-permitnumber-date'),
-              [meterReading.permitNumber, meterReading.date]
-            )
-          )
-        ),
-        { data: meterReading }
-      )
-    })
+  const { body } = req
 
-    const response: any = await faunaClient.query(
-      q.Do(updateQueries)
-    ).catch(err => {
-      errors.push({
-        ...err,
-        status: err.requestResult.statusCode
-      });
-      reject(errors);
-    });
+  if (!body) throw new Error('A body was not included in the request')
 
-    if (!response) {
-      reject(new HttpError(
-        'No data',
-        `No data found matching query parameters`,
-        404
-      ))
-      return
-    }
+  try {
+    const { data } = await fauna.query<Array<Document & MeterReading>>(updateMeterReadingsQuery(body))
+    return data
 
-    resolve(response.map((el: any) => el.data));
-  });
+  } catch (error: any) {
+    debugger
+    throw new Error(error)
+  }
 }
 
 export default updateMeterReadings;

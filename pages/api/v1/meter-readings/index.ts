@@ -4,6 +4,7 @@ import MeterReading from "../../../../interfaces/MeterReading";
 import createMeterReadings from "./create";
 import { deleteMeterReadings } from "./delete";
 import listMeterReadings from "./list";
+import updateMeterReadings from "./update";
 
 type HandlerFunctions = {
   [key: string]: (req: NextApiRequest) => Promise<Array<Document & MeterReading>>
@@ -21,9 +22,8 @@ async function meterReadingsHandler(
   const handlers: HandlerFunctions = {
     GET: listMeterReadings,
     POST: createMeterReadings,
-    DELETE: deleteMeterReadings
-    // TODO: 
-    // PATCH: upsertMeterReadings,
+    DELETE: deleteMeterReadings,
+    PATCH: updateMeterReadings
   }
 
   try {
