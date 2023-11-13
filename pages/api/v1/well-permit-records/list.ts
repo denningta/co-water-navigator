@@ -1,5 +1,6 @@
-import { Page, QuerySuccess, QueryValue } from "fauna";
+import { Document, Page } from "fauna";
 import { NextApiRequest } from "next";
+import { WellPermit } from "../../../../interfaces/WellPermit";
 import fauna from "../../../../lib/fauna/faunaClientV10";
 import getWellPermitRecordsByPermitNumber from "../../../../lib/fauna/ts-queries/well-permit-records/getWellPermitRecordsQuery";
 
@@ -17,7 +18,7 @@ const listWellPermitRecordsHandler = (req: NextApiRequest) => {
 
 export const listWellPermitRecordsByPermitNumber = async (permitNumbers: string[]) => {
   try {
-    const { data }: QuerySuccess<Page<QueryValue[]>> = await fauna.query(getWellPermitRecordsByPermitNumber(permitNumbers))
+    const { data } = await fauna.query<Page<Document & WellPermit>>(getWellPermitRecordsByPermitNumber(permitNumbers))
 
     return data.data
 

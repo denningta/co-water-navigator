@@ -1,41 +1,23 @@
+import { Document } from "fauna";
 import { NextApiRequest } from "next";
 import MeterReading from "../../../../../../interfaces/MeterReading";
-import faunaClient from "../../../../../../lib/fauna/faunaClient";
-import deleteMeterReading from "../../../../../../lib/fauna/ts-queries/deleteMeterReading";
-import validateQuery from "../../../validatorFunctions";
+import fauna from "../../../../../../lib/fauna/faunaClientV10";
+import deleteMeterReading from "../../../../../../lib/fauna/ts-queries/meter-reading/deleteMeterReading";
 
-async function deleteMeterReadingHandler(req: NextApiRequest): Promise<MeterReading> {
-  return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'queryExists',
-      'permitNumberRequired',
-      'dateRequired',
-      'validDateFormat'
-    ]);
+async function deleteMeterReadingHandler(req: NextApiRequest) {
+  const { permitNumber, date } = req.query
 
-    if (errors.length) return reject(errors);
+  if (!permitNumber || !date) throw new Error('permitNumber or date query parameters missing.')
+  if (Array.isArray(permitNumber) || Array.isArray(date)) throw new Error('An array was provided for permitNumber or date.  Only a single permitNuber and date are allowed at this endpoint')
 
-    const { permitNumber, date } = req.query;
+  try {
+    const { data } = await fauna.query<Document & MeterReading>(deleteMeterReading(permitNumber, date))
 
-    if (!permitNumber || Array.isArray(permitNumber))
-      throw new Error('Invalid permitNumber query')
+    return data
 
-    if (!date || Array.isArray(date))
-      throw new Error('Invalid date query')
-
-    const response: any = await faunaClient.query(
-      deleteMeterReading(permitNumber, date)
-    ).catch(err => {
-      errors.push({
-        ...err,
-        status: err.requestResult.statusCode
-      });
-      return reject(errors);
-    })
-
-    return resolve(response.data);
-
-  });
+  } catch (error: any) {
+    throw new Error(error)
+  }
 
 }
 

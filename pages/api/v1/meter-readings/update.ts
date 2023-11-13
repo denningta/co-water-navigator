@@ -4,20 +4,28 @@ import MeterReading from "../../../../interfaces/MeterReading";
 import fauna from "../../../../lib/fauna/faunaClientV10";
 import updateMeterReadingsQuery from "../../../../lib/fauna/ts-queries/meter-readings/updateMeterReadings";
 
-async function updateMeterReadings(req: NextApiRequest) {
+export default async function updateMeterReadingsHandler(req: NextApiRequest) {
 
   const { body } = req
 
   if (!body) throw new Error('A body was not included in the request')
 
   try {
-    const { data } = await fauna.query<Array<Document & MeterReading>>(updateMeterReadingsQuery(body))
+    const data = await updateMeterReadings(body)
     return data
-
   } catch (error: any) {
-    debugger
     throw new Error(error)
   }
 }
 
-export default updateMeterReadings;
+export async function updateMeterReadings(meterReadings: MeterReading[]) {
+  try {
+    const { data } = await fauna.query<Array<Document & MeterReading>>(updateMeterReadingsQuery(meterReadings))
+    return data
+
+  } catch (error: any) {
+    throw new Error(error)
+  }
+
+}
+

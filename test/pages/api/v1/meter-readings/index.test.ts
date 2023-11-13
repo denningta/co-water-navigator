@@ -26,7 +26,7 @@ describe('/api/v1/meter-readings', () => {
 
   let documents: Array<Document & MeterReading> = []
 
-  beforeAll(async () => {
+  test('create meter readings', async () => {
     await fauna.query(deleteMeterReadingsByRecord(body))
 
     const { req, res }: any = createMocks({
@@ -46,7 +46,92 @@ describe('/api/v1/meter-readings', () => {
     }
   })
 
-  afterAll(async () => {
+
+
+
+
+  test('no query parameters returns an error', async () => {
+    const { req, res }: any = createMocks({
+      method: 'GET',
+    })
+
+    try {
+      await expect(meterReadingsHandler(req, res)).rejects.toThrowError()
+
+    } catch (error: any) {
+    }
+
+  })
+
+  test('permitNumber query', async () => {
+    const { req, res }: any = createMocks({
+      method: 'GET',
+      query: {
+        permitNumber: '12345-TEST',
+      }
+    })
+
+    try {
+      const response = await meterReadingsHandler(req, res)
+      expect(response).toMatchObject(body)
+
+    } catch (error: any) {
+      throw new Error(error)
+    }
+  })
+
+  test('permitNumber and year query', async () => {
+    const { req, res }: any = createMocks({
+      method: 'GET',
+      query: {
+        permitNumber: '12345-TEST',
+        year: '2022',
+      }
+    })
+
+    try {
+      const response = await meterReadingsHandler(req, res)
+      expect(response).toMatchObject(body)
+
+    } catch (error: any) {
+      throw new Error(error)
+    }
+  })
+
+  test('permitNumber and date query', async () => {
+    const { req, res }: any = createMocks({
+      method: 'GET',
+      query: {
+        permitNumber: '12345-TEST',
+        date: ['2022-01', '2022-02']
+      }
+    })
+
+    try {
+      const response = await meterReadingsHandler(req, res)
+      expect(response).toMatchObject(body)
+
+    } catch (error: any) {
+      throw new Error(error)
+    }
+  })
+
+  test('update meterReadings', async () => {
+    const { req, res }: any = createMocks({
+      method: 'PATCH',
+      body: body
+    })
+
+    try {
+      const response = await meterReadingsHandler(req, res)
+      expect(response).toMatchObject(body)
+
+    } catch (error: any) {
+      throw new Error(error)
+    }
+  })
+
+  test('delete meter readings', async () => {
     const { req, res }: any = createMocks({
       method: 'DELETE',
       body: documents.map(el => el.id)
@@ -61,92 +146,5 @@ describe('/api/v1/meter-readings', () => {
       throw new Error(error)
     }
   })
-
-
-
-  describe('listMeterReadings', () => {
-
-    test('no query parameters returns an error', async () => {
-      const { req, res }: any = createMocks({
-        method: 'GET',
-      })
-
-      try {
-        await expect(meterReadingsHandler(req, res)).rejects.toThrowError()
-
-      } catch (error: any) {
-      }
-
-    })
-
-    test('permitNumber query', async () => {
-      const { req, res }: any = createMocks({
-        method: 'GET',
-        query: {
-          permitNumber: '12345-TEST',
-        }
-      })
-
-      try {
-        const response = await meterReadingsHandler(req, res)
-        expect(response).toMatchObject(body)
-
-      } catch (error: any) {
-        throw new Error(error)
-      }
-    })
-
-    test('permitNumber and year query', async () => {
-      const { req, res }: any = createMocks({
-        method: 'GET',
-        query: {
-          permitNumber: '12345-TEST',
-          year: '2022',
-        }
-      })
-
-      try {
-        const response = await meterReadingsHandler(req, res)
-        expect(response).toMatchObject(body)
-
-      } catch (error: any) {
-        throw new Error(error)
-      }
-    })
-
-    test('permitNumber and date query', async () => {
-      const { req, res }: any = createMocks({
-        method: 'GET',
-        query: {
-          permitNumber: '12345-TEST',
-          date: ['2022-01', '2022-02']
-        }
-      })
-
-      try {
-        const response = await meterReadingsHandler(req, res)
-        expect(response).toMatchObject(body)
-
-      } catch (error: any) {
-        throw new Error(error)
-      }
-    })
-
-    test('update meterReadings', async () => {
-      const { req, res }: any = createMocks({
-        method: 'PATCH',
-        body: body
-      })
-
-      try {
-        const response = await meterReadingsHandler(req, res)
-        expect(response).toMatchObject(body)
-
-      } catch (error: any) {
-        throw new Error(error)
-      }
-    })
-  })
-
 
 })

@@ -1,6 +1,10 @@
 import { fql } from "fauna"
 
 const getWellPermitRecordsByPermitNumber = (permitNumbers: string[]) =>
-  fql`wellPermitRecords.where((value) => ${permitNumbers}.includes(value.permit))`
+  fql`
+    let permitNumbers = ${permitNumbers}
+
+    wellPermitRecords.where((value) => permitNumbers.includes(value.permit))
+  `
 
 export default getWellPermitRecordsByPermitNumber

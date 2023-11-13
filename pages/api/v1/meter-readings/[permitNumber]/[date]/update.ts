@@ -1,66 +1,33 @@
+import { Document } from "fauna";
 import { NextApiRequest } from "next";
+import { MeterReadingResponse } from ".";
 import MeterReading from "../../../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
-import validateQuery from "../../../validatorFunctions";
+import fauna from "../../../../../../lib/fauna/faunaClientV10";
+import upsertMeterReading from "../../../../../../lib/fauna/ts-queries/meter-reading/upsertMeterReading";
 import { runCalculationsInternal } from "../calculate";
 
-function updateMeterReading(req: NextApiRequest): Promise<MeterReading[]> {
-  return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'bodyExists',
-      'queryExists',
-      'permitNumberRequired',
-      'dateRequired',
-      'validDateFormat',
-      'validMeterReading'
-    ]);
+async function updateMeterReading(req: NextApiRequest) {
+  const { body } = req
+  const { permitNumber, date } = req.query
 
-    if (errors.length) reject(errors);
+  if (!body) throw new Error('A body was not included in the request')
 
-    const { permitNumber, date } = req.query;
-    if (!permitNumber || Array.isArray(permitNumber)) {
-      reject('PermitNumber does not exist or is an array')
-      return
-    }
+  if (!permitNumber || !date) throw new Error('permitNumber or date query parameters missing.')
+  if (Array.isArray(permitNumber) || Array.isArray(date)) throw new Error('An array was provided for permitNumber or date.  Only a single permitNuber and date are allowed at this endpoint')
 
-    const response: any = await faunaClient.query(
-      q.Let(
-        {
-          match: q.Match(q.Index('meter-readings-by-permitnumber-date'), [permitNumber, date])
-        },
-        q.If(
-          q.Exists(q.Var('match')),
-          q.Replace(
-            q.Select(['ref'], q.Get(
-              q.Match(q.Index('meter-readings-by-permitnumber-date'), [permitNumber, date])
-            )),
-            { data: req.body }
-          ),
-          q.Create(
-            q.Collection('meterReadings'),
-            {
-              data:
-              {
-                ...req.body,
-                permitNumber: permitNumber,
-                date: date
-              }
-            }
-          )
-        )
-      )
-    ).catch(err => {
-      errors.push({
-        ...err,
-        status: err.requestResult.statusCode
-      });
-      reject(errors);
-    })
+  try {
+    const { data } = await fauna.query<MeterReadingResponse>(upsertMeterReading(permitNumber, date, body))
 
-    const calculationUpdates = await runCalculationsInternal(permitNumber)
+    const update = await runCalculationsInternal(permitNumber)
 
-    resolve(calculationUpdates)
-  });
+    return [
+      data,
+      ...update
+    ]
+
+  } catch (error: any) {
+    throw new Error(error)
+  }
 }
 
 export default updateMeterReading;

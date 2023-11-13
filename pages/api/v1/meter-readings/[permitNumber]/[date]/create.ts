@@ -1,67 +1,30 @@
+import { Document } from "fauna"
 import { NextApiRequest } from "next"
-import MeterReading from "../../../../../../interfaces/MeterReading"
-import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient"
-import { HttpError } from "../../../interfaces/HttpError"
-import validateQuery from "../../../validatorFunctions"
+import { MeterReadingResponse } from "."
+import fauna from "../../../../../../lib/fauna/faunaClientV10"
+import createMeterReadingQuery from "../../../../../../lib/fauna/ts-queries/meter-reading/createMeterReading"
 import { runCalculationsInternal } from "../calculate"
 
-async function createMeterReading(req: NextApiRequest): Promise<MeterReading> {
-  return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'queryExists',
-      'bodyExists',
-      'permitNumberRequired',
-      'dateRequired',
-      'validDateFormat',
-      'validMeterReading'
-    ])
+async function createMeterReading(req: NextApiRequest) {
+  const { body } = req
+  const { permitNumber, date } = req.query
 
-    if (errors.length) {
-      reject(errors)
-    }
+  if (!body) throw new Error('A body was not included in the request')
 
-    const { permitNumber, date } = req.query
-    if (!permitNumber || Array.isArray(permitNumber)) {
-      reject('permitNumber not defined or is an array')
-      return
-    }
-    const meterReading = req.body
-    meterReading.permitNumber = permitNumber
-    meterReading.date = date
-    
-    const response: any = await faunaClient.query(
-      q.Create(q.Collection('meterReadings'), 
-        { data: meterReading }
-      )
-    ).catch(err => {
-      if (err.message === 'instance not unique') {
-        errors.push(new HttpError(
-          'Record Already Exists',
-          `A record already exists for permitNumber: ${permitNumber} and date: ${date}`,
-          400
-        ))
-      } else {
-        errors.push({
-          ...err, 
-          status: err.requestResult.statusCode
-        })
-      }
-      reject(errors)
-    })
+  if (!permitNumber || !date) throw new Error('permitNumber or date query parameters missing.')
+  if (Array.isArray(permitNumber) || Array.isArray(date)) throw new Error('An array was provided for permitNumber or date.  Only a single permitNuber and date are allowed at this endpoint')
 
-    if (!response || !response.data) {
-      errors.push(new HttpError(
-        'Record Creation Failed',
-        `Creation failed for meter reading for permit: ${permitNumber} and date: ${date}`,
-        500
-      ))
-      reject(errors)
-    }
+  try {
+    debugger
+    const { data } = await fauna.query<MeterReadingResponse>(createMeterReadingQuery(body))
 
-    runCalculationsInternal(permitNumber)
+    const update = await runCalculationsInternal(permitNumber)
 
-    resolve(response.data)
-  })
+    return update
+
+  } catch (error: any) {
+    throw new Error(error)
+  }
 }
 
 export default createMeterReading

@@ -11,7 +11,7 @@ describe('/api/v1/well-permit-records', () => {
 
   let documents: WellPermitDocument[] = []
 
-  beforeAll(async () => {
+  test('create well permit records', async () => {
 
     const { req }: any = createMocks({
       method: 'POST',
@@ -38,32 +38,13 @@ describe('/api/v1/well-permit-records', () => {
     }
   })
 
-  afterAll(async () => {
-    const { req }: any = createMocks({
-      method: 'DELETE',
-      body: documents.map(el => el.id)
-    })
-
-    try {
-      const response = await deleteWellPermitRecordsHandler(req)
-
-      expect(response).toHaveLength(2)
-
-      fauna.close()
-
-    } catch (error: any) {
-      fauna.close()
-      throw new Error(error)
-    }
-
-  })
 
 
   test('get well permit records', async () => {
     const { req } = createMocks({
       method: 'GET',
       query: {
-        permitNumber: ['12345-FP', '565789-AB'],
+        permitNumber: ['12345-FP', '56789-AB'],
       },
     });
 
@@ -101,5 +82,23 @@ describe('/api/v1/well-permit-records', () => {
 
   })
 
+  test('delete well permit records', async () => {
+    const { req }: any = createMocks({
+      method: 'DELETE',
+      body: documents.map(el => el.id)
+    })
+
+    try {
+      const response = await deleteWellPermitRecordsHandler(req)
+      expect(response).toHaveLength(2)
+
+      fauna.close()
+
+    } catch (error: any) {
+      fauna.close()
+      throw new Error(error)
+    }
+
+  })
 
 })

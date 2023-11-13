@@ -1,51 +1,29 @@
+import { Document } from "fauna";
 import { NextApiRequest } from "next";
 import MeterReading from "../../../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
-import { HttpError } from "../../../interfaces/HttpError";
-import validateQuery from "../../../validatorFunctions";
+import fauna from "../../../../../../lib/fauna/faunaClientV10";
+import getMeterReading from "../../../../../../lib/fauna/ts-queries/meter-reading/getMeterReading";
 
-function listMeterReading(req: NextApiRequest): Promise<MeterReading> {
-  return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'queryExists',
-      'permitNumberRequired',
-      'dateRequired',
-      'validDateFormat',
-    ]);
+async function listMeterReading(req: NextApiRequest) {
 
-    if (errors.length) reject(errors);
+  const { permitNumber, date } = req.query;
 
-    const {permitNumber, date} = req.query;
-    const response = await faunaClient.query(
-      q.Map(
-        q.Paginate(q.Match(q.Index('meter-readings-by-permitnumber-date'), [permitNumber, date])),
-        (meterReading) => {
-          return q.Get(meterReading)
-        }
-      )
-    )
-      .then(res => res)
-      .catch(err => {
-        errors.push(err);
-        reject(errors);
-        return err;
-      });
+  if (!permitNumber || !date) throw new Error('permitNumber and date are required for this query')
 
-    if (!response.data || response.data.length === 0) {
-      errors.push(
-        new HttpError(
-          'No Data',
-          `No data found matching the query paramters:` + 
-          `'permitNumber': ${permitNumber} and 'date': ${date}`,
-          404
-        )
-      );
-  
-      reject(errors);
-    }
-    
-    resolve(response.data.map((record: any) => record.data)[0]);
-  });
+  if (Array.isArray(permitNumber)) throw new Error('Only a single permitNumber is allowed to be queried at a time with this endpoint')
+  if (Array.isArray(date)) throw new Error('Only a single date is allowed to be queried at a time with this endpoint')
+
+  try {
+
+    const { data } = await fauna.query<Document & MeterReading>(getMeterReading(permitNumber, date))
+
+    return data
+
+  } catch (error: any) {
+    throw new Error(error)
+  }
+
+
 }
 
 export default listMeterReading;

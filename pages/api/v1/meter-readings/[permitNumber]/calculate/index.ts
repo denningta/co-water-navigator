@@ -2,105 +2,90 @@ import _ from "lodash";
 import { NextApiRequest, NextApiResponse } from "next";
 import MeterReading from "../../../../../../interfaces/MeterReading";
 import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
-import { HttpError } from "../../../interfaces/HttpError";
-import validateQuery from "../../../validatorFunctions";
-import updateMeterReadings from "../../update";
+import fauna from "../../../../../../lib/fauna/faunaClientV10";
 import verifyAvailableThisYear from "./verify-availableThisYear";
 import verifyEqualToPrevValue from "./verify-equal-to-prev-value";
 import verifyGreaterThanPrevValue from "./verify-greater-than-prev-value";
 import verifyPumpedThisPeriod from "./verify-pumpedThisPeriod";
 import verifyPumpedYearToDate from "./verify-pumpedYearToDate";
+import getMeterReadingsQuery from "../../../../../../lib/fauna/ts-queries/meter-readings/getMeterReadings"
+import { Document } from "fauna";
+import updateMeterReadingsQuery from "../../../../../../lib/fauna/ts-queries/meter-readings/updateMeterReadings";
+import { MeterReadingResponse } from "../[date]";
 
 type HandlerFunctions = {
-  [key: string]: (req: NextApiRequest) => Promise<MeterReading[]>
+  [key: string]: (req: NextApiRequest) => Promise<MeterReadingResponse[]>
 };
 
-async function handler(
+export default async function calculationsHandler(
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<MeterReading[] | HttpError> {
+): Promise<MeterReadingResponse[]> {
   if (!req || !req.method) {
-    return Promise.reject(new HttpError(
-      'No Request or Invalid Request Method',
-      'No request or an invalid request method was sent to the server',
-      400
-    ));
+    throw new Error('No Request or Invalid Request Method')
   }
 
   const handlers: HandlerFunctions = {
     POST: runCalculationsExternal,
   }
 
-  return handlers[req.method](req)
-    .then((response) => {
-      res.status(200).json(response);
-      return response
-    })
-    .catch((errors: any) => {
-      res.status(errors[0].status || 500).json({ errors: errors })
-      return errors
-    });
+  try {
+    const response = await handlers[req.method](req)
+    res.status(200).json(response)
+    return response
+  } catch (error: any) {
+    res.status(500).json(error)
+    throw new Error(error)
+  }
 }
 
-export const runCalculationsExternal = (req: NextApiRequest): Promise<MeterReading[]> => {
-  return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'queryExists',
-      'permitNumberRequired'
-    ]);
+export const runCalculationsExternal = async (req: NextApiRequest) => {
+  const { query } = req
+  if (!query) throw new Error('Invalid query')
+  const { permitNumber } = query
+  if (!permitNumber) throw new Error('No permitNumber parameter was included in the query')
+  const permitNumbers = Array.isArray(permitNumber) ? permitNumber : [permitNumber]
 
-    if (errors.length) reject(errors);
-    const { permitNumber } = req.query;
-    if (!permitNumber) return
+  try {
+    const { data } = await fauna.query<MeterReadingResponse[]>(getMeterReadingsQuery({
+      permitNumbers: permitNumbers
+    }))
 
-    await getMeterReadings(permitNumber)
-      .then(res => resolve(calculate(res)))
-      .catch(error => reject(error))
-  })
+    const calculations = calculate(data)
+
+    return calculations
+
+  } catch (error: any) {
+    throw new Error(error)
+  }
 }
 
-export const runCalculationsInternal = (permitNumber: string): Promise<MeterReading[]> => {
-  return new Promise(async (resolve, reject) => {
-    const meterReadings = await getMeterReadings(permitNumber)
-      .then(res => res)
-      .catch(error => reject(error))
+export const runCalculationsInternal = async (permitNumber: string): Promise<MeterReadingResponse[]> => {
+  try {
+    const meterReadings = await fauna.query<MeterReadingResponse[]>(getMeterReadingsQuery({
+      permitNumbers: [permitNumber]
+    }))
 
-    if (!meterReadings) {
-      reject(new HttpError(
-        'Meter reading calculations failed: No Data',
-        `No data found matching the query paramters: ` +
-        `'permitNumber': ${permitNumber}`,
-        404
-      ))
-      return
+    if (!meterReadings.data || !meterReadings.data.length) {
+      throw new Error(`No data found matching permit: ${permitNumber}`)
     }
 
-    await updateMeterReadings(calculate(meterReadings))
-      .then(res => resolve(res))
-      .catch(error => reject(error))
-  })
-}
+    const calculations = calculate(meterReadings.data)
 
-const getMeterReadings = (permitNumber: string | string[]): Promise<MeterReading[]> => {
-  return new Promise(async (resolve, reject) => {
-    const response: any = await faunaClient.query(
-      q.Map(
-        q.Paginate(
-          q.Join(
-            q.Match(q.Index('meter-readings-by-permit-number'), [permitNumber]),
-            q.Index('meter-readings-sort-by-date-asc')
-          )
-        ),
-        q.Lambda(
-          ['date', 'ref'],
-          q.Get(q.Var('ref'))
-        )
-      )
-    ).catch(error => reject(error))
+    const update = calculations.map(({
+      coll,
+      ts,
+      id,
+      ...rest
+    }) => rest)
 
-    const meterReadings: MeterReading[] = response.data.map((record: any) => record.data);
-    resolve(meterReadings)
-  })
+    const { data } = await fauna.query<MeterReadingResponse[]>(updateMeterReadingsQuery(update))
+
+    return data
+
+  } catch (error: any) {
+    throw new Error(error)
+  }
 }
 
 export type CalculatedField =
@@ -120,14 +105,13 @@ const calculatedFields = [
   'availableThisYear'
 ]
 
-export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
+export const calculate = (meterReadings: (Document & MeterReading)[]): (Document & MeterReading)[] => {
   const updatedMeterReadings: MeterReading[] = []
   const refMeterReadings: MeterReading[] = [meterReadings[0]]
   // TODO: Dynamically query for pumpingLimitThisYear
   const pumpingLimitThisYear = undefined
 
   meterReadings.forEach((meterReading, index, meterReadings) => {
-
     const refRecord = {
       ...meterReading
     }
@@ -162,8 +146,7 @@ export const calculate = (meterReadings: MeterReading[]): MeterReading[] => {
     updatedMeterReadings.push(refRecord)
   })
 
-  return updatedMeterReadings
+  return updatedMeterReadings as MeterReadingResponse[]
 }
 
-export default handler;
 
