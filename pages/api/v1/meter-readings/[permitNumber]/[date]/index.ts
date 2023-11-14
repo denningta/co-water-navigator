@@ -27,7 +27,7 @@ async function meterReadingHandler(
   }
 
   try {
-    const response = handlers[req.method](req)
+    const response = await handlers[req.method](req)
     res.status(200).json(response);
     return response
 

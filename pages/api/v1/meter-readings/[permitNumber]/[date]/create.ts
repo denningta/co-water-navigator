@@ -15,7 +15,6 @@ async function createMeterReading(req: NextApiRequest) {
   if (Array.isArray(permitNumber) || Array.isArray(date)) throw new Error('An array was provided for permitNumber or date.  Only a single permitNuber and date are allowed at this endpoint')
 
   try {
-    debugger
     const { data } = await fauna.query<MeterReadingResponse>(createMeterReadingQuery(body))
 
     const update = await runCalculationsInternal(permitNumber)

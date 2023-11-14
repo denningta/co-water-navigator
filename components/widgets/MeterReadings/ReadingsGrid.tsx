@@ -10,6 +10,7 @@ import { createCalculatedValueColDef, readingsGridDefaultColDef } from "./readin
 import useMeterReadings from "../../../hooks/useMeterReadings";
 import { useSnackbar } from "notistack";
 import { useUser } from "@auth0/nextjs-auth0";
+import axios from "axios";
 
 interface Props {
   permitNumber: string
@@ -19,6 +20,7 @@ interface Props {
 
 const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) => {
   const { data, mutate } = useMeterReadings(permitNumber, year)
+  console.log(data)
   const gridRef = useRef<AgGridReact>(null);
   const [gridApi, setGridApi] = useState<GridApi | null>(null)
   const [columnApi, setColumnApi] = useState<ColumnApi | null>(null)
@@ -33,10 +35,10 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) 
 
   useEffect(() => {
     if (!data) return
-    const placeholderData = initPlaceholderData(permitNumber, year).map(record =>
-      data.find(el =>
+    const placeholderData = initPlaceholderData(permitNumber, year).map(record => {
+      return data.find(el =>
         el.date === record.date) ?? record
-    )
+    })
     setRowData(placeholderData)
   }, [data])
 
@@ -116,22 +118,17 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) 
     },
   ])
 
-  const handleCellValueChange = async ({ data }: CellValueChangedEvent) => {
+  const handleCellValueChange = async (event: CellValueChangedEvent) => {
     onCalculating(true)
 
-    data.updatedBy = { name: user?.name, user_id: user?.sub }
+    event.data.updatedBy = { name: user?.name, user_id: user?.sub }
 
-    const url = `/api/v1/meter-readings/${data.permitNumber}/${data.date}`
+    const url = `/api/v1/meter-readings/${event.data.permitNumber}/${event.data.date}`
     try {
-      await fetch(url, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-        .then(res => res.json())
-        .then(data => updateGridRows(data))
+      const response = await axios.patch(url, event.data)
+      console.log(response.data, data)
+      mutate(data)
+
       onCalculating(false)
     } catch (error: any) {
       onCalculating(false)

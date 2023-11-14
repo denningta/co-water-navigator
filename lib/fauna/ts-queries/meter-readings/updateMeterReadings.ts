@@ -14,7 +14,7 @@ function updateMeterReadingsQuery(data: MeterReading[]) {
       let permitNumber = record.permitNumber
       let date = record.date
 
-      meterReadings.firstWhere(.permitNumber == permitNumber && .date == date)!.update(record)
+      meterReadings.firstWhere(.permitNumber == permitNumber && .date == date)!.replace(record)
     })
   `
 }

@@ -27,6 +27,7 @@ async function listMeterReadings(req: NextApiRequest): Promise<Array<Document & 
       })
     )
 
+
     return data
 
   } catch (error: any) {

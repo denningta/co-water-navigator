@@ -23,12 +23,13 @@ export interface DataSummary {
 
 
 const useDataSummaryByPermit = (permitNumber: string | undefined) => {
-  const { data, mutate } = useSWR<DataSummary[]>(
+  const { data, mutate, error } = useSWR<DataSummary[]>(
     (permitNumber)
       ? `/api/v1/data-summary?permitNumber=${permitNumber}`
       : null,
     fetcher
   )
+
   return {
     data: data,
     mutate: mutate

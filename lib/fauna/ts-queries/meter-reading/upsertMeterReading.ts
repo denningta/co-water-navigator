@@ -1,11 +1,19 @@
-import { fql } from "fauna"
+import { Document, fql } from "fauna"
 import MeterReading from "../../../../interfaces/MeterReading"
 
-export default function upsertMeterReading(permitNumber: string, date: string, data: MeterReading) {
+export default function upsertMeterReading(permitNumber: string, date: string, data: Document & MeterReading) {
+
+  const {
+    coll,
+    id,
+    ts,
+    ...rest
+  } = data
+
   const updateData = {
-    ...data,
-    permitNumber: permitNumber,
-    date: date,
+    ...rest,
+    permitNumber,
+    date
   }
 
   return fql`
@@ -18,7 +26,7 @@ export default function upsertMeterReading(permitNumber: string, date: string, d
     if (document != null) {
       document.update(data)
     } else {
-      administrativeReports.create(data)
+      meterReadings.create(data)
     }
   `
 }

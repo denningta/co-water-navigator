@@ -1,6 +1,6 @@
 import MeterReading from "../../../../interfaces/MeterReading";
 import { q } from "../../faunaClient";
-import deleteMeterReading from "../deleteMeterReading";
+import deleteMeterReading from "./deleteMeterReading";
 
 const deleteMeterReadings = (meterReadings: MeterReading[]) =>
   q.Map(meterReadings,

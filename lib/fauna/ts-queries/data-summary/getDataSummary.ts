@@ -13,14 +13,14 @@ export default function getDataSummary(permitNumbers: string[]) {
             let dateArray = meterReadings.where(.permitNumber == permitNumber) {
               date
             }
-            dateArray.map(el => parseDate(el.date).year.toString()).toArray()
+            dateArray.map(el => parseDate(el.date).year.toString()).toArray().filter(el => el != null)
           }
 
           let dbb013Years = {
             let yearArray = administrativeReports.where(.permitNumber == permitNumber) {
               year
             }
-            yearArray.map(el => el.year).toArray()
+            yearArray.map(el => el.year).toArray().filter(el => el != null)
           }
           dbb004Years.concat(dbb013Years).distinct().order(asc(v => v))
         }

@@ -1,7 +1,5 @@
-import { Document } from "fauna";
 import { NextApiRequest } from "next";
 import { MeterReadingResponse } from ".";
-import MeterReading from "../../../../../../interfaces/MeterReading";
 import fauna from "../../../../../../lib/fauna/faunaClientV10";
 import upsertMeterReading from "../../../../../../lib/fauna/ts-queries/meter-reading/upsertMeterReading";
 import { runCalculationsInternal } from "../calculate";
@@ -20,10 +18,11 @@ async function updateMeterReading(req: NextApiRequest) {
 
     const update = await runCalculationsInternal(permitNumber)
 
-    return [
-      data,
-      ...update
-    ]
+    if (!update.length) {
+      return [data]
+    } else {
+      return update
+    }
 
   } catch (error: any) {
     throw new Error(error)
