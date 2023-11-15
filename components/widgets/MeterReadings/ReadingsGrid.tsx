@@ -121,17 +121,18 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) 
   const handleCellValueChange = async (event: CellValueChangedEvent) => {
     onCalculating(true)
 
-    event.data.updatedBy = { name: user?.name, user_id: user?.sub }
+    const updateData = event.data
+    updateData.updatedBy = { name: user?.name, user_id: user?.sub }
 
     const url = `/api/v1/meter-readings/${event.data.permitNumber}/${event.data.date}`
     try {
-      const response = await axios.patch(url, event.data)
-      console.log(response.data, data)
+      const response = await axios.patch(url, updateData)
       mutate(data)
 
       onCalculating(false)
     } catch (error: any) {
       onCalculating(false)
+      enqueueSnackbar('Something went wrong. Please try again.', { variant: 'error' })
     }
 
 
