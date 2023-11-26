@@ -38,7 +38,6 @@ const calculationFunctionsTest: CalculationFn = {
       })
     },
 
-
     () => {
       return (
         {
@@ -105,6 +104,35 @@ const calculationFunctionsTest: CalculationFn = {
         }
       })
     },
+    () => {
+      const currentRecord: MeterReading = {
+        ...data[4],
+        flowMeter: {
+          value: 'user-deleted',
+          source: 'user-deleted'
+        },
+        powerMeter: {
+          value: 'user-deleted',
+          source: 'user-deleted'
+        },
+        powerConsumptionCoef: {
+          value: 'user-deleted',
+          source: 'user-deleted'
+        }
+      }
+      return ({
+        test: 'passes validation -> user deletion',
+        props: {
+          currentRecord: currentRecord,
+          context: data,
+          index: 4,
+          fields: ['flowMeter', 'powerMeter']
+        },
+        expected: (result, field) => {
+          expect(result).toEqual(currentRecord[field])
+        }
+      })
+    }
   ]
 }
 

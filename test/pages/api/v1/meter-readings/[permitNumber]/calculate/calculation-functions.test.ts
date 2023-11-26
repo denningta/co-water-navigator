@@ -44,7 +44,6 @@ describe('Meter readings calculation functions', () => {
 
           it(`${field} -> ${test}`, () => {
             const result = fn(currentRecord, context, index, field)
-            if (checkResult && !result) throw new Error('result undefined')
             expected(result, field)
           })
 

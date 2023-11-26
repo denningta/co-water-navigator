@@ -124,6 +124,17 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) 
     const updateData = event.data
     updateData.updatedBy = { name: user?.name, user_id: user?.sub }
 
+    const { newValue, oldValue } = event
+    const colId = event.column.getId()
+
+    if (oldValue && !newValue) {
+      updateData[colId] = {
+        value: 'user-deleted',
+        source: 'user-deleted'
+      }
+    }
+
+
     const url = `/api/v1/meter-readings/${event.data.permitNumber}/${event.data.date}`
     try {
       const response = await axios.patch(url, updateData)

@@ -1,57 +1,61 @@
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
+import { getPreviousValidCalculatedValues } from "./helpers";
 
 const verifyPumpedThisPeriod = (
   meterReading: MeterReading,
   meterReadings: MeterReading[],
   index: number
 ): CalculatedValue | undefined => {
-  let prevValue: CalculatedValue | undefined = undefined
-  let prevPowerMeter: CalculatedValue | undefined = undefined
 
-  for (let i = index - 1; i >= 0; i--) {
-    if (meterReadings[i] && meterReadings[i].flowMeter) {
-      prevValue = meterReadings[i].flowMeter
-      break
-    }
+  const {
+    prevFlowMeter,
+    prevPowerMeter
+  } = getPreviousValidCalculatedValues(meterReading, index, meterReadings)
+
+  const {
+    flowMeter,
+    powerMeter,
+    powerConsumptionCoef,
+    pumpedThisPeriod
+  } = meterReading
+
+  const flowMeterValue = flowMeter?.value
+  const powerMeterValue = powerMeter?.value as number | undefined
+  const powerConsumptionCoefValue = powerConsumptionCoef?.value as number | undefined
+  const prevFlowMeterValue = prevFlowMeter?.value as number | undefined
+  const prevPowerMeterValue = prevPowerMeter?.value as number | undefined
+  let flowMeterShouldBe = undefined
+  let powerMeterShouldBe = undefined
+
+  if (flowMeterValue === undefined && powerMeterValue == undefined) return undefined
+  if (flowMeterValue === 'user-deleted') return
+
+
+  if (flowMeterValue !== undefined) {
+    flowMeterShouldBe = parseFloat((flowMeterValue - (prevFlowMeterValue ?? 0)).toFixed(2))
   }
 
-  for (let i = index - 1; i >= 0; i--) {
-    if (meterReadings[i] && meterReadings[i].powerMeter) {
-      prevPowerMeter = meterReadings[i].powerMeter
-      break
-    }
+  if (powerMeterValue !== undefined && powerConsumptionCoefValue !== undefined && prevPowerMeterValue !== undefined) {
+    powerMeterShouldBe = parseFloat(((powerMeterValue - prevPowerMeterValue) * powerConsumptionCoefValue).toFixed((2)))
   }
 
-  if (!prevValue) prevValue = { value: meterReading.flowMeter?.value ?? 0 }
+  if (flowMeterShouldBe === undefined && powerMeterShouldBe === undefined) return
 
-  if (
-    meterReading.flowMeter?.value === undefined
-  ) {
-    if (meterReading.pumpedThisPeriod?.source === 'user')
-      return meterReading.pumpedThisPeriod
-    else
-      return
-  }
-
-  const shouldBe = parseFloat((meterReading.flowMeter.value - prevValue.value).toFixed(2))
+  const shouldBe = flowMeterShouldBe ? flowMeterShouldBe : powerMeterShouldBe as number
 
   const updatedValue: CalculatedValue = {
     ...meterReading.pumpedThisPeriod,
     value: shouldBe
   }
 
-  let shouldBePowerMeterCalc = undefined
-
-  if (meterReading.powerMeter?.value && meterReading.powerConsumptionCoef?.value && prevPowerMeter?.value) {
-    shouldBePowerMeterCalc = parseFloat(((meterReading.powerMeter.value - prevPowerMeter.value) * meterReading.powerConsumptionCoef.value).toFixed((2)))
-    const percent = withinPercent(shouldBe, shouldBePowerMeterCalc)
+  if (powerMeterShouldBe && flowMeterShouldBe) {
+    const percent = withinPercent(flowMeterShouldBe, powerMeterShouldBe)
 
     if (percent < 93) {
-      updatedValue.value = shouldBePowerMeterCalc
+      updatedValue.value = shouldBe
       updatedValue.shouldBe = shouldBe
       updatedValue.calculationState = 'warning'
       updatedValue.calculationMessage = `Flow meter outside tolerance range`
-
     }
 
     if (percent >= 93 && percent < 97) {
@@ -67,9 +71,9 @@ const verifyPumpedThisPeriod = (
     }
   }
 
-  if (meterReading.pumpedThisPeriod?.source === 'user') {
-    updatedValue.value = meterReading.pumpedThisPeriod.value
-    if (meterReading.pumpedThisPeriod.value !== shouldBe) {
+  if (pumpedThisPeriod?.source === 'user') {
+    updatedValue.value = pumpedThisPeriod.value
+    if (pumpedThisPeriod.value !== shouldBe) {
       updatedValue.shouldBe = shouldBe
       updatedValue.calculationState = 'warning'
       updatedValue.calculationMessage = `Expected: ${shouldBe} acre feet.`

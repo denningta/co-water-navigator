@@ -8,9 +8,13 @@ const verifyPumpedYearToDate = (
 ): CalculatedValue | undefined => {
   const readingsThisYear = getRecordsUpToDate(meterReadings, meterReadings[currentIndex].date)
 
+  if (currentRecord.flowMeter?.value === 'user-deleted') return
+
+
   const shouldBe = readingsThisYear.reduce((n, { pumpedThisPeriod }) => {
     if (!pumpedThisPeriod) return +n.toFixed(2)
-    return +(n + pumpedThisPeriod.value).toFixed(2)
+    const value = pumpedThisPeriod.value as number
+    return +(n + value).toFixed(2)
   }, 0)
 
   const updatedValue: CalculatedValue = {

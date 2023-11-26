@@ -1,5 +1,6 @@
 import { CalculatedField } from "."
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading"
+import { getPreviousValidCalculatedValues } from "./helpers"
 
 const verifyGreaterThanPrevValue = (
   meterReading: MeterReading,
@@ -7,20 +8,26 @@ const verifyGreaterThanPrevValue = (
   index: number,
   property: CalculatedField
 ): CalculatedValue | undefined => {
-
   const calculatedValue: CalculatedValue | undefined = meterReading[property]
   let prevValue: CalculatedValue | undefined = undefined
 
-  for (let i = index - 1; i >= 0; i--) {
-    if (meterReadings[i] && meterReadings[i][property]) {
-      prevValue = meterReadings[i][property]
-      break
-    }
-  }
+  const {
+    prevFlowMeter,
+    prevPowerMeter
+  } = getPreviousValidCalculatedValues(meterReading, index, meterReadings)
+
+  prevValue = property === 'powerMeter' ? prevPowerMeter : prevFlowMeter
 
   if (index === 0) return calculatedValue
   if (!calculatedValue || calculatedValue.value === undefined) return
   if (!prevValue || prevValue.value === undefined) prevValue = { value: 0 }
+
+  if (calculatedValue.source === 'user-deleted') {
+    return {
+      value: 'user-deleted',
+      source: 'user-deleted'
+    }
+  }
 
   const updatedValue: CalculatedValue = {
     ...calculatedValue

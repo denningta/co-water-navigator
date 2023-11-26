@@ -25,7 +25,7 @@ export function initPlaceholderData(permitNumber: string, year: string): MeterRe
 
 export function calculatedValueGetter({ data }: ValueGetterParams, field: string) {
   if (data[field] && (data[field].value !== undefined || data[field].value !== null)) {
-    return data[field].value.toString()
+    return data[field].value?.toString()
   } else {
     return data[field]
   }

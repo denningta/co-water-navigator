@@ -9,7 +9,7 @@ export default interface MeterReading {
   powerConsumptionCoef?: CalculatedValue;
   pumpedThisPeriod?: CalculatedValue;
   pumpedYearToDate?: CalculatedValue;
-  availableThisYear?: CalculatedValue; 
+  availableThisYear?: CalculatedValue;
   readBy?: string;
   comments?: string;
   createdAt?: string;
@@ -21,10 +21,11 @@ export default interface MeterReading {
 
 
 export interface CalculatedValue {
-  value: number;
+  value: number | 'user-deleted';
   shouldBe?: number | undefined;
   calculationState?: 'success' | 'warning' | 'error' | undefined;
   calculationMessage?: string;
-  source?: 'user' | 'calculation';
+  source?: 'user' | 'calculation' | 'user-deleted';
   comments?: string[]
 }
+

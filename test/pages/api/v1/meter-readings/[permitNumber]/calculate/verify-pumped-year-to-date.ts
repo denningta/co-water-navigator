@@ -32,8 +32,196 @@ const calculationFn: CalculationFn = {
         }
       })
 
-    }
+    },
+    () => {
+      const context: MeterReading[] = data
+      const currentRecord: MeterReading = {
+        ...data[7],
+        flowMeter: {
+          value: 'user-deleted',
+          source: 'user-deleted'
+        }
+      }
 
+      return ({
+        test: 'passes validation -> same record has user deleted flowMeter',
+        props: {
+          index: 7,
+          currentRecord: currentRecord,
+          context: context,
+          fields: ['pumpedYearToDate'],
+        },
+        expected: (result) => {
+          expect(result).toBeUndefined()
+        }
+      })
+    },
+    () => {
+      const context: MeterReading[] = [
+        data[0],
+        data[1],
+        {
+          ...data[2],
+          flowMeter: {
+            value: 'user-deleted',
+            source: 'user-deleted'
+          }
+        },
+        data[3],
+        data[4],
+        data[5],
+        data[6],
+        data[7]
+      ]
+
+      const currentRecord = data[7]
+
+      return ({
+        test: 'passes validation -> previous record has user deleted flowMeter',
+        props: {
+          index: 7,
+          currentRecord: currentRecord,
+          context: context,
+          fields: ['pumpedYearToDate'],
+        },
+        expected: (result) => {
+          expect(result).toMatchObject({ value: 44.52 })
+        }
+      })
+    },
+    () => {
+
+      const currentRecord: MeterReading = {
+        permitNumber: data[4].permitNumber,
+        date: data[4].date,
+        flowMeter: {
+          value: 100
+        },
+        powerMeter: {
+          value: 200
+        },
+        powerConsumptionCoef: {
+          value: 0.5
+        },
+        pumpedThisPeriod: {
+          value: 50
+        }
+      }
+      const context: MeterReading[] = [
+        {
+          ...data[3],
+          flowMeter: {
+            value: 50
+          },
+          powerMeter: {
+            value: 100
+          },
+          powerConsumptionCoef: {
+            value: 0.5
+          }
+        },
+        currentRecord
+      ]
+
+      return ({
+        test: 'returns calculation when flowMeter, powerMeter and powerCoef are defined',
+        props: {
+          index: 1,
+          currentRecord: currentRecord,
+          context: context,
+          fields: ['pumpedYearToDate'],
+        },
+        expected: (result) => {
+          expect(result).toMatchObject({ value: 50 })
+        }
+      })
+    },
+    () => {
+      const currentRecord: MeterReading = {
+        permitNumber: data[3].permitNumber,
+        date: data[3].date,
+        flowMeter: {
+          value: 50
+        },
+        powerMeter: {
+          value: 200
+        },
+        powerConsumptionCoef: {
+          value: 0.5
+        },
+        pumpedThisPeriod: {
+          value: 50
+        }
+      }
+      const context: MeterReading[] = [
+        {
+          ...data[3],
+          flowMeter: {
+            value: 100
+          },
+          powerMeter: {
+            value: 100
+          },
+          powerConsumptionCoef: {
+            value: 0.5
+          }
+        },
+        currentRecord
+      ]
+
+      return ({
+        test: 'returns calculation when flowMeter, powerMeter and powerCoef are defined ',
+        props: {
+          index: 1,
+          currentRecord: currentRecord,
+          context: context,
+          fields: ['pumpedYearToDate'],
+        },
+        expected: (result) => {
+          expect(result).toMatchObject({ value: 50 })
+        }
+      })
+    },
+    () => {
+      const currentRecord: MeterReading = {
+        permitNumber: data[3].permitNumber,
+        date: data[3].date,
+        powerMeter: {
+          value: 200
+        },
+        powerConsumptionCoef: {
+          value: 0.5
+        },
+        pumpedThisPeriod: {
+          value: 75
+        }
+      }
+      const context: MeterReading[] = [
+        {
+          ...data[3],
+          powerMeter: {
+            value: 100
+          },
+          powerConsumptionCoef: {
+            value: 0.5
+          }
+        },
+        currentRecord
+      ]
+
+      return ({
+        test: 'returns calculation when flowMeter is undefined, powerMeter and powerCoef are defined',
+        props: {
+          index: 1,
+          currentRecord: currentRecord,
+          context: context,
+          fields: ['pumpedYearToDate'],
+        },
+        expected: (result) => {
+          expect(result).toMatchObject({ value: 75 })
+        }
+      })
+    }
   ]
 }
 

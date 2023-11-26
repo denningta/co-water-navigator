@@ -49,6 +49,27 @@ const calculationFn: CalculationFn = {
           expect(result).toHaveProperty('calculationState')
         }
       })
+    },
+    () => {
+      const currentRecord: MeterReading = {
+        ...data[4],
+        powerConsumptionCoef: {
+          value: 'user-deleted',
+          source: 'user-deleted'
+        }
+      }
+      return ({
+        test: 'passes validation -> user deletion',
+        props: {
+          currentRecord: currentRecord,
+          context: data,
+          index: 4,
+          fields: ['powerConsumptionCoef']
+        },
+        expected: (result, field) => {
+          expect(result).toEqual(currentRecord[field])
+        }
+      })
     }
   ]
 }

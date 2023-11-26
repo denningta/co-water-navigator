@@ -96,7 +96,7 @@ export type CalculatedField =
   'pumpedYearToDate' |
   'availableThisYear'
 
-const calculatedFields = [
+export const calculatedFields = [
   'flowMeter',
   'powerMeter',
   'powerConsumptionCoef',

@@ -1,3 +1,4 @@
+import { warn } from "console"
 import MeterReading from "../../../../../../../interfaces/MeterReading"
 import verifyPumpedThisPeriod from "../../../../../../../pages/api/v1/meter-readings/[permitNumber]/calculate/verify-pumpedThisPeriod"
 import { CalculationFn } from "./calculation-functions.test"
@@ -139,6 +140,183 @@ const calculationFn: CalculationFn = {
         }
       })
     },
+    () => {
+      const currentRecord: MeterReading = {
+        ...data[4],
+        flowMeter: {
+          value: 'user-deleted',
+          source: 'user-deleted'
+        }
+      }
+      const context: MeterReading[] = data
+      return ({
+        test: 'return undefined -> same record has user-deleted dependencies',
+        props: {
+          index: 4,
+          currentRecord: currentRecord,
+          context: context,
+          fields: ['pumpedThisPeriod']
+        },
+        expected: (result) => {
+          expect(result).toBeUndefined()
+        }
+      })
+    },
+    () => {
+      const context: MeterReading[] = [
+        data[0],
+        data[1],
+        data[2],
+        {
+          ...data[3],
+          flowMeter: {
+            value: 'user-deleted',
+            source: 'user-deleted'
+          }
+        },
+        data[4]
+      ]
+      const currentRecord: MeterReading = {
+        ...data[4],
+      }
+      return ({
+        test: 'return undefined -> previous record has user-deleted dependencies',
+        props: {
+          index: 4,
+          currentRecord: currentRecord,
+          context: context,
+          fields: ['pumpedThisPeriod']
+        },
+        expected: (result) => {
+          expect(result).toEqual({ value: 11.26 })
+        }
+      })
+    },
+    () => {
+      const currentRecord: MeterReading = {
+        ...data[4],
+        flowMeter: {
+          value: 100
+        },
+        powerMeter: {
+          value: 200
+        },
+        powerConsumptionCoef: {
+          value: 0.5
+        }
+      }
+      const context: MeterReading[] = [
+        {
+          ...data[3],
+          flowMeter: {
+            value: 50
+          },
+          powerMeter: {
+            value: 100
+          },
+          powerConsumptionCoef: {
+            value: 0.5
+          }
+        },
+        currentRecord
+      ]
+
+      return ({
+        test: 'returns calculation when flowMeter, powerMeter and powerCoef are defined',
+        props: {
+          index: 1,
+          currentRecord: currentRecord,
+          context: context,
+          fields: ['pumpedThisPeriod']
+        },
+        expected: (result) => {
+          expect(result).toEqual({ value: 50 })
+        }
+      })
+    },
+    () => {
+      const currentRecord: MeterReading = {
+        ...data[4],
+        flowMeter: {
+          value: 100
+        },
+        powerMeter: {
+          value: 250
+        },
+        powerConsumptionCoef: {
+          value: 0.5
+        }
+      }
+      const context: MeterReading[] = [
+        {
+          ...data[3],
+          flowMeter: {
+            value: 50
+          },
+          powerMeter: {
+            value: 100
+          },
+          powerConsumptionCoef: {
+            value: 0.5
+          }
+        },
+        currentRecord
+      ]
+
+      return ({
+        test: 'returns calculation when flowMeter, powerMeter and powerCoef are defined -> out of tolerance warning',
+        props: {
+          index: 1,
+          currentRecord: currentRecord,
+          context: context,
+          fields: ['pumpedThisPeriod']
+        },
+        expected: (result) => {
+          expect(result).toMatchObject({ value: 50 })
+          expect(result).toHaveProperty('calculationMessage')
+        }
+      })
+    },
+    () => {
+      const currentRecord: MeterReading = {
+        ...data[4],
+        powerMeter: {
+          value: 250
+        },
+        powerConsumptionCoef: {
+          value: 0.5
+        }
+      }
+      delete currentRecord.flowMeter
+      const context: MeterReading[] = [
+        {
+          ...data[3],
+          flowMeter: {
+            value: 50
+          },
+          powerMeter: {
+            value: 100
+          },
+          powerConsumptionCoef: {
+            value: 0.5
+          }
+        },
+        currentRecord
+      ]
+
+      return ({
+        test: 'returns calculation when flowMeter undefined, powerMeter and powerCoef are defined',
+        props: {
+          index: 1,
+          currentRecord: currentRecord,
+          context: context,
+          fields: ['pumpedThisPeriod']
+        },
+        expected: (result) => {
+          expect(result).toMatchObject({ value: 75 })
+        }
+      })
+    }
   ]
 }
 
