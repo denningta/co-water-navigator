@@ -132,6 +132,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) 
         value: 'user-deleted',
         source: 'user-deleted'
       }
+      if (oldValue === 'user-deleted') delete updateData[colId]
     }
 
 

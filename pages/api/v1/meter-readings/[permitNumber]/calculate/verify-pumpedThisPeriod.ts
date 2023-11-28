@@ -26,9 +26,12 @@ const verifyPumpedThisPeriod = (
   const prevPowerMeterValue = prevPowerMeter?.value as number | undefined
   let flowMeterShouldBe = undefined
   let powerMeterShouldBe = undefined
+  let shouldBe = undefined
+
 
   if (flowMeterValue === undefined && powerMeterValue == undefined) return undefined
   if (flowMeterValue === 'user-deleted') return
+  if (meterReading.pumpedThisPeriod?.source === 'user-deleted') return meterReading.pumpedThisPeriod
 
 
   if (flowMeterValue !== undefined) {
@@ -41,7 +44,13 @@ const verifyPumpedThisPeriod = (
 
   if (flowMeterShouldBe === undefined && powerMeterShouldBe === undefined) return
 
-  const shouldBe = flowMeterShouldBe ? flowMeterShouldBe : powerMeterShouldBe as number
+  if (flowMeterShouldBe !== undefined) {
+    shouldBe = flowMeterShouldBe
+  } else if (powerMeterShouldBe !== undefined) {
+    shouldBe = powerMeterShouldBe
+  } else {
+    return
+  }
 
   const updatedValue: CalculatedValue = {
     ...meterReading.pumpedThisPeriod,

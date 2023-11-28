@@ -24,7 +24,7 @@ const ModifiedBankingSummary = ({
   year,
   onCalculating = () => { }
 }: Props) => {
-  const { data } = useDbb004BankingSummary(permitNumber, year)
+  const { data, mutate } = useDbb004BankingSummary(permitNumber, year)
   const breakpoint = useTailwindBreakpoints()
   const gridRef = useRef<AgGridReact>(null)
   const { enqueueSnackbar } = useSnackbar()
@@ -53,12 +53,14 @@ const ModifiedBankingSummary = ({
   }
 
   const handleCellValueChange = async (event: CellValueChangedEvent<Row>) => {
+    debugger
     onCalculating(true)
 
     if (!permitNumber) throw new Error('permitNumber is undefined but required')
     if (!year) throw new Error('year is undefined by required')
 
     let gridData: Row[] = []
+
 
     event.api.forEachNode((node) => {
       node.data && gridData.push(node.data)
@@ -74,22 +76,21 @@ const ModifiedBankingSummary = ({
       bankingData: gridData
     }
 
+    debugger
+
     const url = `/api/v1/data-summary/dbb004-banking-summary`
     try {
       const response = await axios.post<ModifiedBankingSummary>(url, updateData)
-
-
-      updateGridRows(response.data?.bankingData)
-
-
+      mutate(response.data, {
+        optimisticData: updateData,
+        revalidate: true
+      })
 
       onCalculating(false)
     } catch (error: any) {
       enqueueSnackbar(`Something went wrong. Try again.`, { variant: 'error' })
       onCalculating(false)
     }
-
-
   }
 
   const defaultColDef: ColDef = {

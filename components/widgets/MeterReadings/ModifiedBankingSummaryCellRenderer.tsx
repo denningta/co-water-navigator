@@ -1,6 +1,5 @@
 import { Tooltip } from "@mui/material"
 import { ICellRendererParams } from "ag-grid-community"
-import axios from "axios"
 import { IoMdClose } from "react-icons/io"
 import { CalculatedValue } from "../../../interfaces/MeterReading"
 

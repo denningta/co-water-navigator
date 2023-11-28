@@ -19,13 +19,23 @@ const CalcValueCellRenderer = (params: ICellRendererParams, colId: string) => {
   ]
 
   return (
-    <span className="flex items-center justify-center -mx-3 px-3">
+    <span className="flex items-center justify-center -mx-3 px-3 h-full">
       <Tooltip title={calculationMessage ?? ''} arrow={true}>
-        <span className="grow">{params.value}</span>
+        <span className="grow">
+          {
+            params.value === 'user-deleted'
+              ? ''
+              : params.value
+          }
+        </span>
       </Tooltip>
-      {source === 'user' && clearButtonFields.includes(colId) &&
+      {(source === 'user' || params.value === 'user-deleted') && clearButtonFields.includes(colId) &&
         <Tooltip
-          title="Clear value and re-calculate"
+          title={
+            source === 'user'
+              ? `Clear value and re-calculate`
+              : `User deleted value.  Click to re-calculate`
+          }
           enterDelay={1000}
           arrow={true}
         >

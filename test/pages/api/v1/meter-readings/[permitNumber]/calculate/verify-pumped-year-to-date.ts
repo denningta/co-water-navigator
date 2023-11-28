@@ -57,35 +57,47 @@ const calculationFn: CalculationFn = {
       })
     },
     () => {
+      const currentRecord = {
+        permitNumber: data[3].permitNumber,
+        date: data[3].date,
+        flowMeter: {
+          value: 500
+        }
+      }
       const context: MeterReading[] = [
-        data[0],
-        data[1],
         {
-          ...data[2],
+          permitNumber: data[1].permitNumber,
+          date: data[1].date,
+          flowMeter: {
+            value: 400
+          },
+          pumpedThisPeriod: {
+            value: 10
+          }
+        },
+        {
+          permitNumber: data[2].permitNumber,
+          date: data[2].date,
           flowMeter: {
             value: 'user-deleted',
             source: 'user-deleted'
           }
         },
-        data[3],
-        data[4],
-        data[5],
-        data[6],
-        data[7]
+        currentRecord
       ]
 
-      const currentRecord = data[7]
+      console.log(context)
 
       return ({
         test: 'passes validation -> previous record has user deleted flowMeter',
         props: {
-          index: 7,
+          index: 2,
           currentRecord: currentRecord,
           context: context,
           fields: ['pumpedYearToDate'],
         },
         expected: (result) => {
-          expect(result).toMatchObject({ value: 44.52 })
+          expect(result).toMatchObject({ value: 10 })
         }
       })
     },
