@@ -53,7 +53,6 @@ const ModifiedBankingSummary = ({
   }
 
   const handleCellValueChange = async (event: CellValueChangedEvent<Row>) => {
-    debugger
     onCalculating(true)
 
     if (!permitNumber) throw new Error('permitNumber is undefined but required')
@@ -75,8 +74,6 @@ const ModifiedBankingSummary = ({
       },
       bankingData: gridData
     }
-
-    debugger
 
     const url = `/api/v1/data-summary/dbb004-banking-summary`
     try {

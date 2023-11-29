@@ -36,7 +36,7 @@ export function compareUserDefinitiontoCalculatedValue(calcData: CalculatedValue
 
     if (calcData.value !== userData.value) return {
       ...userData,
-      shouldBe: calcData.value,
+      shouldBe: calcData.value as number,
       calculationState: 'warning',
       calculationMessage: `Expected: ${calcData.value}`
     }

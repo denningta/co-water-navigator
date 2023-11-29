@@ -80,8 +80,11 @@ export const convertToTableData = (data: any[]) => {
     const keys = Object.keys(el) as (keyof typeof el)[]
     const obj: any = {}
     keys.forEach(key => {
-      if (el[key].value !== undefined) obj[key] = el[key].value
-      else obj[key] = el[key]
+      if (el[key].value !== undefined) {
+        obj[key] = el[key].value === 'user-deleted' ? '' : el[key].value
+      } else {
+        obj[key] = el[key]
+      }
     })
     return obj
   })

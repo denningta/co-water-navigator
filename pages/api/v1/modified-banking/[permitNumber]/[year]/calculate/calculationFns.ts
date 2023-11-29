@@ -29,7 +29,7 @@ const abstractCalculationFn = (
   if (data[field]?.source === 'user') {
     const userVal = data[field]
     if (!userVal) return
-    updatedValue.value = userVal.value
+    updatedValue.value = userVal.value as number
     if (userVal.value !== shouldBe) {
       updatedValue.shouldBe = shouldBe
       updatedValue.calculationState = 'warning'
@@ -48,10 +48,10 @@ const calculationFns: CalculationFns = {
   originalAppropriation: ({ data, dataLastYear }) => {
     const { originalAppropriation } = data
 
-    let shouldBe: number | undefined = originalAppropriation?.value
+    let shouldBe: number | undefined = originalAppropriation?.value as number
 
     if (dataLastYear?.originalAppropriation) {
-      shouldBe = dataLastYear.originalAppropriation.value
+      shouldBe = dataLastYear.originalAppropriation.value as number
     }
 
     if (!isDefined(shouldBe)) return
@@ -62,10 +62,10 @@ const calculationFns: CalculationFns = {
   allowedAppropriation: ({ data, dataLastYear }) => {
     const { allowedAppropriation } = data
 
-    let shouldBe: number | undefined = allowedAppropriation?.value
+    let shouldBe: number | undefined = allowedAppropriation?.value as number
 
     if (dataLastYear?.allowedAppropriation) {
-      shouldBe = dataLastYear.allowedAppropriation.value
+      shouldBe = dataLastYear.allowedAppropriation.value as number
     }
 
     if (!isDefined(shouldBe)) return
@@ -75,8 +75,10 @@ const calculationFns: CalculationFns = {
 
   line3: ({ data }) => {
     const { allowedAppropriation, originalAppropriation, line3 } = data
+    if (allowedAppropriation?.value === 'user-deleted') return
+    if (originalAppropriation?.value === 'user-deleted') return
 
-    let shouldBe: number | undefined = line3?.value
+    let shouldBe: number | undefined = line3?.value as number
 
     if (allowedAppropriation?.value && originalAppropriation?.value) {
       shouldBe = originalAppropriation.value - allowedAppropriation.value
@@ -89,8 +91,11 @@ const calculationFns: CalculationFns = {
 
   maxBankingReserve: ({ data }) => {
     const { allowedAppropriation, originalAppropriation, maxBankingReserve, line3 } = data
+    if (allowedAppropriation?.value === 'user-deleted') return
+    if (originalAppropriation?.value === 'user-deleted') return
+    if (line3?.value === 'user-deleted') return
 
-    let shouldBe: number | undefined = maxBankingReserve?.value
+    let shouldBe: number | undefined = maxBankingReserve?.value as number
 
     if (allowedAppropriation && originalAppropriation) {
       shouldBe = (originalAppropriation.value - allowedAppropriation.value) * 3
@@ -104,7 +109,7 @@ const calculationFns: CalculationFns = {
   },
 
   bankingReserveLastYear: ({ data, bankingReserveLastYear }) => {
-    let shouldBe: number | undefined = data?.bankingReserveLastYear?.value
+    let shouldBe: number | undefined = data?.bankingReserveLastYear?.value as number
 
     if (isDefined(bankingReserveLastYear)) {
       shouldBe = bankingReserveLastYear
@@ -123,8 +128,11 @@ const calculationFns: CalculationFns = {
       bankingReserveLastYear,
       line6Option
     } = data
+    if (allowedAppropriation?.value === 'user-deleted') return
+    if (originalAppropriation?.value === 'user-deleted') return
+    if (bankingReserveLastYear?.value === 'user-deleted') return
 
-    let shouldBe: number | undefined = pumpingLimitThisYear?.value
+    let shouldBe: number | undefined = pumpingLimitThisYear?.value as number
 
     if (
       allowedAppropriation && originalAppropriation && bankingReserveLastYear
@@ -143,7 +151,7 @@ const calculationFns: CalculationFns = {
   },
 
   totalPumpedThisYear: ({ data, totalPumpedThisYear }) => {
-    let shouldBe: number | undefined = data?.totalPumpedThisYear?.value
+    let shouldBe: number | undefined = data?.totalPumpedThisYear?.value as number
 
     if (isDefined(totalPumpedThisYear)) {
       shouldBe = totalPumpedThisYear
@@ -156,8 +164,12 @@ const calculationFns: CalculationFns = {
 
   changeInBankingReserveThisYear: ({ data }) => {
     const { changeInBankingReserveThisYear, allowedAppropriation, totalPumpedThisYear } = data
+    if (allowedAppropriation?.value === 'user-deleted') return
+    if (changeInBankingReserveThisYear?.value === 'user-deleted') return
+    if (totalPumpedThisYear?.value === 'user-deleted') return
 
-    let shouldBe: number | undefined = changeInBankingReserveThisYear?.value
+
+    let shouldBe: number | undefined = changeInBankingReserveThisYear?.value as number
 
     if (allowedAppropriation && totalPumpedThisYear) {
       shouldBe = allowedAppropriation.value - totalPumpedThisYear.value
@@ -175,6 +187,11 @@ const calculationFns: CalculationFns = {
       bankingReserveLastYear,
       changeInBankingReserveThisYear
     } = data
+
+    if (bankingReserveThisYear?.value === 'user-deleted') return
+    if (bankingReserveLastYear?.value === 'user-deleted') return
+    if (maxBankingReserve?.value === 'user-deleted') return
+    if (changeInBankingReserveThisYear?.value === 'user-deleted') return
 
     let shouldBe: number | undefined = bankingReserveThisYear?.value
 
@@ -200,6 +217,9 @@ const calculationFns: CalculationFns = {
 
   line10: ({ data }) => {
     const { line10, allowedAppropriation, bankingReserveThisYear } = data
+    if (line10?.value === 'user-deleted') return
+    if (allowedAppropriation?.value === 'user-deleted') return
+    if (bankingReserveThisYear?.value === 'user-deleted') return
 
     let shouldBe: number | undefined = line10?.value
 
@@ -214,6 +234,9 @@ const calculationFns: CalculationFns = {
 
   pumpingLimitNextYear: ({ data }) => {
     const { pumpingLimitNextYear, originalAppropriation, line10 } = data
+    if (pumpingLimitNextYear?.value === 'user-deleted') return
+    if (originalAppropriation?.value === 'user-deleted') return
+    if (line10?.value === 'user-deleted') return
 
     let shouldBe: number | undefined = pumpingLimitNextYear?.value
 

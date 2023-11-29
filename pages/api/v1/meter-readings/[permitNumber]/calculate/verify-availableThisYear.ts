@@ -18,6 +18,11 @@ const verifyAvailableThisYear = (
 
   if (!prevValue && meterReading.availableThisYear?.value !== undefined) prevValue = { value: meterReading.availableThisYear.value }
 
+  if (meterReading.availableThisYear?.value === 'user-deleted') return meterReading.availableThisYear
+  if (meterReading.pumpedYearToDate?.value === 'user-deleted') return
+  if (meterReading.pumpedThisPeriod?.value === 'user-deleted') return
+  if (prevValue?.value === 'user-deleted') return
+
   if (meterReading.pumpedYearToDate?.value === undefined) {
     if (meterReading.availableThisYear?.source === 'user') {
       return {

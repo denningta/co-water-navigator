@@ -139,7 +139,10 @@ const convertBankingSummaryToObject = (bankingData: ModifiedBankingSummaryRow[])
   const result: BankingSummaryObj = {}
 
   bankingData.forEach((item) => {
-    result[item.name] = item.value?.value
+    const value = item.value?.value
+    if (typeof value === 'number') {
+      result[item.name] = item.value?.value as number
+    }
   })
 
   return result

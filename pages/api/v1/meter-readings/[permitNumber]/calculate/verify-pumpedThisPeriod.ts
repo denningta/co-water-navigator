@@ -20,7 +20,7 @@ const verifyPumpedThisPeriod = (
   } = meterReading
 
   const flowMeterValue = flowMeter?.value
-  const powerMeterValue = powerMeter?.value as number | undefined
+  const powerMeterValue = powerMeter?.value
   const powerConsumptionCoefValue = powerConsumptionCoef?.value as number | undefined
   const prevFlowMeterValue = prevFlowMeter?.value as number | undefined
   const prevPowerMeterValue = prevPowerMeter?.value as number | undefined
@@ -28,17 +28,16 @@ const verifyPumpedThisPeriod = (
   let powerMeterShouldBe = undefined
   let shouldBe = undefined
 
-
   if (flowMeterValue === undefined && powerMeterValue == undefined) return undefined
-  if (flowMeterValue === 'user-deleted') return
+  if (flowMeterValue === 'user-deleted' && powerMeterValue === 'user-deleted') return
   if (meterReading.pumpedThisPeriod?.source === 'user-deleted') return meterReading.pumpedThisPeriod
 
 
-  if (flowMeterValue !== undefined) {
+  if (flowMeterValue !== undefined && flowMeterValue !== 'user-deleted') {
     flowMeterShouldBe = parseFloat((flowMeterValue - (prevFlowMeterValue ?? 0)).toFixed(2))
   }
 
-  if (powerMeterValue !== undefined && powerConsumptionCoefValue !== undefined && prevPowerMeterValue !== undefined) {
+  if (powerMeterValue !== undefined && powerMeterValue !== 'user-deleted' && powerConsumptionCoefValue !== undefined && prevPowerMeterValue !== undefined) {
     powerMeterShouldBe = parseFloat(((powerMeterValue - prevPowerMeterValue) * powerConsumptionCoefValue).toFixed((2)))
   }
 

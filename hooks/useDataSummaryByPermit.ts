@@ -30,6 +30,8 @@ const useDataSummaryByPermit = (permitNumber: string | undefined) => {
     fetcher
   )
 
+  if (error) throw new Error(error)
+
   return {
     data: data,
     mutate: mutate
@@ -37,7 +39,7 @@ const useDataSummaryByPermit = (permitNumber: string | undefined) => {
 }
 
 export const useDataSummaryTotal = () => {
-  const { data, mutate } = useSWR<DataSummary[]>(
+  const { data, mutate, error } = useSWR<DataSummary[]>(
     '/api/v1/data-summary',
     fetcher
   )
