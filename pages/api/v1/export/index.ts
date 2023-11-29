@@ -46,7 +46,6 @@ const mergeDocuments = async (main: PDFDocument, merge: PDFDocument) => {
   copiedPages.forEach(page => main.addPage(page))
 }
 
-
 const createPdf = async ({ documents, dataSelection, user_id }: ExportData) => {
   const pdfDoc = await PDFDocument.create()
 
