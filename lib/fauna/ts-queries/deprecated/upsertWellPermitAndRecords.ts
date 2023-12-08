@@ -1,5 +1,5 @@
-import { WellPermit } from "../../../interfaces/WellPermit";
-import { q } from "../faunaClient";
+import { WellPermit } from "../../../../interfaces/WellPermit";
+import { q } from "../../faunaClient";
 
 export const upsertWellPermitAndRecords = (data: WellPermit[]) =>
   q.Let({

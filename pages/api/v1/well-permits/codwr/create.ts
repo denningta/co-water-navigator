@@ -1,6 +1,6 @@
+import { Document } from "fauna";
 import { NextApiRequest } from "next";
 import { WellPermit } from "../../../../../interfaces/WellPermit";
-import faunaClient from "../../../../../lib/fauna/faunaClient";
 import fauna from "../../../../../lib/fauna/faunaClientV10";
 import upsertWellPermitAndRecords from "../../../../../lib/fauna/ts-queries/well-permits/upsertWellPermitsAndRecords";
 import { listCodwrWellPermits } from "./list";
@@ -17,11 +17,11 @@ async function createWellPermits(req: NextApiRequest): Promise<WellPermit[]> {
   try {
     const permits = await listCodwrWellPermits(receipts)
 
-    const response: any = await fauna.query(
+    const { data } = await fauna.query<Array<Document & WellPermit>>(
       upsertWellPermitAndRecords(permits)
     );
 
-    return response
+    return data
 
   } catch (error: any) {
     throw new Error(error)

@@ -80,17 +80,20 @@ const WellPermitSearch = () => {
         selectedRowNodes.map(rowNode => rowNode.data.permit).includes(row.permit)
       )
 
-      const res = await axios.post(
+      const createWellPermitsResponse = await axios.post(
         '/api/v1/well-permits/codwr',
         recordsWithSamePermitNumber
       )
 
       if (!user) throw new Error('User not defined')
-      const permitRefs = res.data.map((el: any) => ({
-        document_id: el.document_id,
+
+      const permitRefs = createWellPermitsResponse.data.map((el: any) => ({
+        document_id: el.id,
         permit: el.permit,
         status: 'requested'
       }))
+
+      debugger
 
       const appMetaDataRes = await fetch('/api/auth/user/update-app-meta-data', {
         method: 'POST',
@@ -115,6 +118,7 @@ const WellPermitSearch = () => {
       }
       setAddPermitsLoading(false)
     } catch (error: any) {
+      debugger
       console.log(error)
       setAddPermitsLoading(false)
       enqueueSnackbar('Something went wrong, please try again', { variant: 'error' })
