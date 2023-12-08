@@ -46,4 +46,10 @@ export interface ModifiedBankingSummaryRow {
   description?: string
 }
 
+export interface ModifiedBankingDependencies {
+  dataLastYear: ModifiedBanking
+  bankingReserveLastYear: CalculatedValue,
+  totalPumpedThisYear: CalculatedValue
+}
+
 export type ModifiedBankingCalculatedFields = 'allowedAppropriation' | 'bankingReserveLastYear' | 'bankingReserveThisYear' | 'changeInBankingReserveThisYear' | 'line10' | 'line3' | 'maxBankingReserve' | 'originalAppropriation' | 'pumpingLimitNextYear' | 'pumpingLimitThisYear' | 'totalPumpedThisYear' 

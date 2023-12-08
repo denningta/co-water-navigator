@@ -14,12 +14,14 @@ async function createWellPermits(req: NextApiRequest): Promise<WellPermit[]> {
     return record.receipt
   })
 
+
   try {
     const permits = await listCodwrWellPermits(receipts)
 
     const { data } = await fauna.query<Array<Document & WellPermit>>(
       upsertWellPermitAndRecords(permits)
     );
+
 
     return data
 

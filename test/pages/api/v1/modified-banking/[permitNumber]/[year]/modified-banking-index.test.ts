@@ -4,6 +4,7 @@ import { ModifiedBanking } from "../../../../../../../interfaces/ModifiedBanking
 import fauna from "../../../../../../../lib/fauna/faunaClientV10"
 import { deleteModifiedBankingByRecords } from "../../../../../../../lib/fauna/ts-queries/modified-banking/deleteModifiedBanking"
 import modifiedBankingHandler from "../../../../../../../pages/api/v1/modified-banking/[permitNumber]/[year]"
+import { queryDependencies } from "../../../../../../../pages/api/v1/modified-banking/[permitNumber]/[year]/calculate"
 
 describe('/api/v1/modified-banking/[permitNumber]/[year]', () => {
 
@@ -23,6 +24,7 @@ describe('/api/v1/modified-banking/[permitNumber]/[year]', () => {
       value: 400
     }
   }
+
   const update: ModifiedBanking = {
     ...body,
     totalPumpedThisYear: {
@@ -36,7 +38,11 @@ describe('/api/v1/modified-banking/[permitNumber]/[year]', () => {
   })
 
   test('create modifiedBanking', async () => {
-    await fauna.query(deleteModifiedBankingByRecords([body]))
+    try {
+      await fauna.query(deleteModifiedBankingByRecords([body]))
+    } catch (error: any) {
+      throw new Error(error)
+    }
 
     const { req, res }: any = createMocks({
       method: 'POST',
@@ -50,6 +56,23 @@ describe('/api/v1/modified-banking/[permitNumber]/[year]', () => {
     try {
       const response = await modifiedBankingHandler(req, res) as Document & ModifiedBanking
       expect(response).toMatchObject(body)
+
+    } catch (error: any) {
+      throw new Error(error)
+    }
+  })
+
+  test('queryDependencies', async () => {
+
+    try {
+
+      const response = await queryDependencies('4020-TEST', '2023')
+
+      expect(response).toMatchObject({
+        dataLastYear: null,
+        bankingReserveLastYear: null,
+        totalPumpedThisYear: null
+      })
 
     } catch (error: any) {
       throw new Error(error)
@@ -100,7 +123,6 @@ describe('/api/v1/modified-banking/[permitNumber]/[year]', () => {
   test('delete modifiedBanking', async () => {
     const { req, res }: any = createMocks({
       method: 'DELETE',
-      body: body,
       query: {
         permitNumber: body.permitNumber,
         year: body.year
@@ -109,7 +131,7 @@ describe('/api/v1/modified-banking/[permitNumber]/[year]', () => {
 
     try {
       const response = await modifiedBankingHandler(req, res) as Document & ModifiedBanking
-      expect(response).toMatchObject(update)
+      expect(response).toBeNull()
 
     } catch (error: any) {
       throw new Error(error)

@@ -1,48 +1,26 @@
+import { Document } from "fauna";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
-import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
-import { HttpError } from "../../../interfaces/HttpError";
-import validateQuery from "../../../validatorFunctions";
+import fauna from "../../../../../../lib/fauna/faunaClientV10";
+import { deleteModifiedBankingByPermitYear } from "../../../../../../lib/fauna/ts-queries/modified-banking/deleteModifiedBanking";
 
-async function deleteModifiedBanking(req: NextApiRequest, res: NextApiResponse): Promise<ModifiedBanking> {
-  return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'queryExists',
-      'permitNumberRequired',
-      'yearRequired'
-    ]);
+async function deleteModifiedBanking(req: NextApiRequest, res: NextApiResponse) {
+  const { permitNumber, year } = req.query;
 
-    if (errors.length) return reject(errors);
+  if (Array.isArray(permitNumber)) throw new Error('permitNumber query must be a single value.  Array provided.')
+  if (!permitNumber) throw new Error('permitNumber query paramter is required')
+  if (Array.isArray(year)) throw new Error('year query must be a single value.  Array provided.')
+  if (!year) throw new Error('year query paramter is required')
 
-    const { permitNumber, year } = req.query;
+  try {
+    const { data } = await fauna.query<Document & ModifiedBanking>(deleteModifiedBankingByPermitYear(permitNumber, year))
 
-    const response: any = await faunaClient.query(
-      q.Delete(q.Select(['ref'], q.Get(
-        q.Match(q.Index('admin-reports-by-permitnumber-year'), [permitNumber, year])
-      )))
-    ).catch(err => {
-      errors.push({
-        ...err,
-        status: err.requestResult.statusCode
-      });
-      return reject(errors);
-    })
+    return null
 
-    if (!response.data || response.data.length === 0) {
-      errors.push(
-        new HttpError(
-          'No Data',
-          `No data found matching the query paramters:` +
-          `'permitNumber': ${permitNumber} and 'year': ${year}`,
-          404
-        )
-      );
-      reject(errors);
-    }
+  } catch (error: any) {
+    throw new Error(error)
+  }
 
-    return resolve(response.data);
-
-  });
 
 }
 

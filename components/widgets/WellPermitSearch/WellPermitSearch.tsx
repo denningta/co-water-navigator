@@ -93,8 +93,6 @@ const WellPermitSearch = () => {
         status: 'requested'
       }))
 
-      debugger
-
       const appMetaDataRes = await fetch('/api/auth/user/update-app-meta-data', {
         method: 'POST',
         headers: {
@@ -118,10 +116,9 @@ const WellPermitSearch = () => {
       }
       setAddPermitsLoading(false)
     } catch (error: any) {
-      debugger
-      console.log(error)
       setAddPermitsLoading(false)
       enqueueSnackbar('Something went wrong, please try again', { variant: 'error' })
+      throw new Error(error)
     }
   }
 

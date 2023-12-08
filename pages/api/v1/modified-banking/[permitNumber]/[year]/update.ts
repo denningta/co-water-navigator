@@ -1,7 +1,8 @@
+import { Document } from "fauna";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
-import faunaClient from "../../../../../../lib/fauna/faunaClient";
-import upsertModifiedBanking from "../../../../../../lib/fauna/ts-queries/upsertModifiedBanking";
+import fauna from "../../../../../../lib/fauna/faunaClientV10";
+import upsertModifiedBanking from "../../../../../../lib/fauna/ts-queries/modified-banking/upsertModifiedBanking";
 import { runCalculationsInternal } from "./calculate";
 
 async function updateModifiedBankingHandler(req: NextApiRequest, res: NextApiResponse): Promise<ModifiedBanking> {
@@ -20,24 +21,29 @@ async function updateModifiedBankingHandler(req: NextApiRequest, res: NextApiRes
     return data
 
   } catch (error: any) {
-    return error
+    throw new Error(error)
   }
 
 }
 
 
-export const updateModifiedBanking = async (permitNumber: string, year: string, data: ModifiedBanking) => {
+export const updateModifiedBanking = async (permitNumber: string, year: string, modifiedBanking: ModifiedBanking) => {
   try {
-    const calculationUpdates = await runCalculationsInternal(data, permitNumber, year)
-    const updateData = calculationUpdates ? { ...calculationUpdates } : data
+    const calculationUpdates = await runCalculationsInternal(modifiedBanking, permitNumber, year)
 
-    const response: any = await faunaClient.query(
-      upsertModifiedBanking(permitNumber, year, updateData)
-    )
-    return response.data
+    const updateData = calculationUpdates ?
+      {
+        ...calculationUpdates,
+        permitNumber: permitNumber,
+        year: year
+      } :
+      modifiedBanking
 
-  } catch (error) {
-    return error
+    const { data } = await fauna.query<Document & ModifiedBanking>(upsertModifiedBanking(updateData))
+    return data
+
+  } catch (error: any) {
+    throw new Error(error)
   }
 }
 

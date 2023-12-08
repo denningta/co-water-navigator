@@ -1,9 +1,11 @@
+import { Document } from "fauna";
 import _ from "lodash"
 import { NextApiRequest, NextApiResponse } from "next";
-import { ModifiedBanking } from "../../../../../../../interfaces/ModifiedBanking"
+import { ModifiedBanking, ModifiedBankingDependencies } from "../../../../../../../interfaces/ModifiedBanking"
 import faunaClient, { q } from "../../../../../../../lib/fauna/faunaClient"
-import getModifiedBankingDependencies from "../../../../../../../lib/fauna/ts-queries/getModifiedBankingDependencies";
+import fauna from "../../../../../../../lib/fauna/faunaClientV10";
 import getModifiedBankingQuery from "../../../../../../../lib/fauna/ts-queries/getModifiedBankingQuery";
+import getModifiedBankingDependencies from "../../../../../../../lib/fauna/ts-queries/modified-banking/getModifiedBankingDependencies";
 import { updateModifiedBanking } from "../update";
 import calculationFns, { CalculationProps } from "./calculationFns"
 
@@ -63,8 +65,7 @@ export const runCalculationsInternal = async (
   year: string
 ) => {
   try {
-    const dependencies: Omit<CalculationProps, 'data'> | void =
-      await queryDependencies(permitNumber, year)
+    const dependencies = await queryDependencies(permitNumber, year)
 
     if (!dependencies) throw new Error('Modified banking calculations failed: Missing dependencies')
 
@@ -77,7 +78,7 @@ export const runCalculationsInternal = async (
     return updatedData
 
   } catch (error: any) {
-    return error
+    throw new Error(error)
   }
 }
 
@@ -87,11 +88,11 @@ export const queryDependencies = async (
   permitNumber: string, year: string
 ) => {
   try {
-    const response = faunaClient.query(getModifiedBankingDependencies(permitNumber, year))
-    return response
+    const { data } = await fauna.query<Document>(getModifiedBankingDependencies(permitNumber, year))
+    return data
 
   } catch (error: any) {
-    return error
+    throw new Error(error)
   }
 }
 

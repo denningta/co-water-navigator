@@ -1,7 +1,8 @@
+import { Document } from "fauna";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ModifiedBanking } from "../../../../../../interfaces/ModifiedBanking";
-import faunaClient from "../../../../../../lib/fauna/faunaClient";
-import getModifiedBankingQuery from "../../../../../../lib/fauna/ts-queries/getModifiedBankingQuery";
+import fauna from "../../../../../../lib/fauna/faunaClientV10";
+import getModifiedBanking from "../../../../../../lib/fauna/ts-queries/modified-banking/listModifiedBanking";
 
 async function listModifiedBanking(req: NextApiRequest, res: NextApiResponse): Promise<ModifiedBanking> {
   try {
@@ -16,10 +17,9 @@ async function listModifiedBanking(req: NextApiRequest, res: NextApiResponse): P
     if (year && Array.isArray(year))
       throw new Error('Only a single year may be defined.')
 
-    const response: ModifiedBanking = await faunaClient.query(getModifiedBankingQuery(permitNumber, year))
+    const { data } = await fauna.query<Document & ModifiedBanking>(getModifiedBanking(permitNumber, year))
 
-    return response
-
+    return data
 
   } catch (error: any) {
     return error

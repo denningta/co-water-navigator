@@ -10,3 +10,14 @@ export default function deleteWellPermits(wellPermits: WellPermit[]) {
     })
   `
 }
+
+export function deleteWellPermitsById(ids: string[]) {
+  return fql`
+    ${ids}.forEach(id => {
+      let doc = wellPermits.byId(id)
+      if (doc != null) {
+        doc!.delete()
+      }
+    })
+  `
+}

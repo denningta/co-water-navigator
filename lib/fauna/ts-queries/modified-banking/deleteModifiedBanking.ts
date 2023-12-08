@@ -7,6 +7,12 @@ export default function deleteModifiedBanking(id: string) {
   `
 }
 
+export function deleteModifiedBankingByPermitYear(permitNumber: string, year: string) {
+  return fql`
+    administrativeReports.firstWhere(.permitNumber == ${permitNumber} && .year == ${year})!.delete()
+  `
+}
+
 export function deleteModifiedBankingByRecords(records: ModifiedBanking[]) {
   records.forEach(record => {
     if (!record.permitNumber || !record.year)
