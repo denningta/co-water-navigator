@@ -1,3 +1,4 @@
+import _ from "lodash";
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
 import { validateDate } from "../../../validatorFunctions";
 
@@ -7,18 +8,30 @@ const verifyPumpedYearToDate = (
   currentIndex: number,
 ): CalculatedValue | undefined => {
   const readingsThisYear = getRecordsUpToDate(meterReadings, meterReadings[currentIndex].date)
+  const thisYear = +currentRecord.date.split('-')[0]
+  let shouldBe = undefined
 
   if (
     (currentRecord.flowMeter?.value === 'user-deleted' || currentRecord.flowMeter?.value === undefined)
     && (currentRecord.powerMeter?.value === 'user-deleted' || currentRecord.powerMeter?.value === undefined)
   ) return
+
   if (currentRecord.pumpedYearToDate?.source === 'user-deleted') return currentRecord.pumpedYearToDate
 
-  const shouldBe = readingsThisYear.reduce((n, { pumpedThisPeriod }) => {
-    if (pumpedThisPeriod === undefined || pumpedThisPeriod?.value === undefined) return +n.toFixed(2)
-    const value = pumpedThisPeriod.value as number
-    return +(n + value).toFixed(2)
-  }, 0)
+  if (currentRecord.pumpedThisPeriod?.value === 'user-deleted') {
+    const lastFloMeterLastYear = _.last(getRecordsUpToDate(meterReadings, `${thisYear - 1}-12`))?.flowMeter?.value
+    const lastFlowMeter = _.last(readingsThisYear)?.flowMeter?.value
+    if (lastFloMeterLastYear === undefined || lastFlowMeter === undefined || lastFloMeterLastYear === 'user-deleted' || lastFlowMeter === 'user-deleted') return
+    shouldBe = lastFlowMeter - lastFloMeterLastYear
+
+  } else {
+    shouldBe = readingsThisYear.reduce((n, { pumpedThisPeriod }) => {
+      if (pumpedThisPeriod === undefined || pumpedThisPeriod?.value === undefined) return +n.toFixed(2)
+      const value = pumpedThisPeriod.value as number
+      return +(n + value).toFixed(2)
+    }, 0)
+  }
+
 
   const updatedValue: CalculatedValue = {
     ...currentRecord.pumpedYearToDate,

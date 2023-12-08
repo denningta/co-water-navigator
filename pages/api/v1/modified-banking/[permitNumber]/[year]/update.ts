@@ -16,7 +16,7 @@ async function updateModifiedBankingHandler(req: NextApiRequest, res: NextApiRes
     }
     if (!req.body) throw new Error('body was missing or undefined in the request')
 
-    const data = updateModifiedBanking(permitNumber, year, req.body)
+    const data = await updateModifiedBanking(permitNumber, year, req.body)
     return data
 
   } catch (error: any) {

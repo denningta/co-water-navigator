@@ -9,7 +9,7 @@ type HandlerFunctions = {
   [key: string]: (req: NextApiRequest, res: NextApiResponse) => Promise<ModifiedBanking>
 };
 
-async function handler(
+async function modifiedBankingHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -38,4 +38,4 @@ async function handler(
 
 }
 
-export default handler;
+export default modifiedBankingHandler;

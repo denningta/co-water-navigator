@@ -24,7 +24,7 @@ export default function upsertMeterReading(permitNumber: string, date: string, d
     let document = meterReadings.firstWhere(.permitNumber == permitNumber && .date == date)
 
     if (document != null) {
-      document.replace(data)
+      document!.replace(data)
     } else {
       meterReadings.create(data)
     }

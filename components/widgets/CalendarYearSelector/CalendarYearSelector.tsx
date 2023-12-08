@@ -46,7 +46,9 @@ const CalendarYearSelector = ({
   const [onlyDataFilter, setOnlyDataFilter] = useState<boolean>(onlyDataFilterDefault)
 
   useEffect(() => {
+    console.log(data, Array.isArray(data))
     if (!year || !data) return
+    if (!Array.isArray(data)) return
     if (!onlyDataFilter) {
       const rowData = initCalendarYearPlaceholderData(year, 5).map(record =>
         data.find((el: any) => record.year === el.year) ?? record

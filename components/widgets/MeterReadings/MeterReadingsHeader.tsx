@@ -8,6 +8,7 @@ import { TiExport } from 'react-icons/ti'
 import { useSWRConfig } from 'swr'
 import useConfirmationDialog from '../../../hooks/useConfirmationDialog'
 import useDataSummaryByPermit from '../../../hooks/useDataSummaryByPermit'
+import MeterReading from '../../../interfaces/MeterReading'
 import { ModifiedBanking } from '../../../interfaces/ModifiedBanking'
 import BreadcrumbsRouter from '../../common/BreadcrumbsRouter'
 import Button from '../../common/Button'
@@ -75,29 +76,28 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
       }
 
       const key = `/api/v1/modified-banking/${permitNumber}/${lastYear}`
-      const modBankingRes = await axios.post(
+      const modBankingRes = await axios.patch(
         key,
         modifiedBanking
       )
-      const calculationRes = await axios.post(
-        key + '/calculate'
-      )
 
-      const { pumpingLimitNextYear } = calculationRes.data
-
-
-      const meterReadingRes = await axios.post(
-        `/api/v1/meter-readings/${permitNumber}/${lastYear}-12`,
-        {
-          availableThisYear: pumpingLimitNextYear
+      const meterReading: MeterReading = {
+        permitNumber: permitNumber,
+        date: `${lastYear}-12`,
+        availableThisYear: {
+          value: modBankingRes.data.pumpingLimitNextYear.value,
+          source: 'user'
         }
-      )
+      }
 
-      await refreshCalculations()
+      const meterReadingRes = await axios.patch(
+        `/api/v1/meter-readings/${permitNumber}/${lastYear}-12`,
+        meterReading
+      )
 
       mutate(
         key,
-        calculationRes,
+        modBankingRes,
         {
           revalidate: true,
           rollbackOnError: true
@@ -115,6 +115,7 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
 
     } catch (error: any) {
       enqueueSnackbar('Something went wrong', { variant: 'error' })
+      setIsLoading(false)
     }
   }
 

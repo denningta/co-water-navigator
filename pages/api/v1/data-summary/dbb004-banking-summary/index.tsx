@@ -25,7 +25,7 @@ async function wellPermitRecordsHandler(
     res.status(200).json(response);
 
   } catch (error: any) {
-    res.status(500).json(error)
+    res.status(500).send(error)
   }
 
 }

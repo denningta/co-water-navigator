@@ -61,3 +61,21 @@ export function isUserDeleted(value: CalculatedValue | undefined): boolean {
     return false
   }
 }
+
+export function isNotDefined(value: CalculatedValue | undefined): boolean {
+  if (!value) return false
+  if (value.value === undefined || value.value === 'user-deleted') {
+    return true
+  } else {
+    return false
+  }
+}
+
+export function parseDate(date: string): { year: number, month: number } {
+  const dateArray = date.split('-')
+
+  return {
+    year: +dateArray[0],
+    month: +dateArray[1]
+  }
+}

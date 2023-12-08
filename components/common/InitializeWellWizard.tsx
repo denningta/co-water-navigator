@@ -5,9 +5,7 @@ import { FaCheck } from "react-icons/fa"
 import Button from "./Button"
 import * as Yup from 'yup'
 import { IoClose } from "react-icons/io5"
-import useWellPermitRecords from "../../hooks/useWellPermitRecords"
 import WellPermitsRecordsManager from "../widgets/WellPermitsRecordsManager/WellPermitRecordsManager"
-import { WellPermit } from "../../interfaces/WellPermit"
 
 const steps = (year: string | undefined) => ([
   {

@@ -35,6 +35,7 @@ const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) 
 
   useEffect(() => {
     if (!data) return
+    if (!Array.isArray(data)) return
     const placeholderData = initPlaceholderData(permitNumber, year).map(record => {
       return data.find(el =>
         el.date === record.date) ?? record

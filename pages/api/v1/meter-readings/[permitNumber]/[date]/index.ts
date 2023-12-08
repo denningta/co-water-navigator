@@ -32,7 +32,7 @@ async function meterReadingHandler(
     return response
 
   } catch (error: any) {
-    res.status(500).json(error)
+    res.status(500).send(error)
     throw new Error(error)
   }
 }

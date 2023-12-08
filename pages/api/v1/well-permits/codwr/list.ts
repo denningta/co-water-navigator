@@ -16,7 +16,6 @@ async function listCodwrWellPermitsHandler(req: NextApiRequest): Promise<WellPer
     throw new Error(error)
 
   }
-
 }
 
 
