@@ -34,19 +34,24 @@ const calculationFn: CalculationFn = {
 
     },
     () => {
-      const context: MeterReading[] = data
       const currentRecord: MeterReading = {
-        ...data[7],
+        permitNumber: data[2].permitNumber,
+        date: data[2].date,
         flowMeter: {
           value: 'user-deleted',
           source: 'user-deleted'
         }
       }
+      const context: MeterReading[] = [
+        data[0],
+        data[1],
+        currentRecord
+      ]
 
       return ({
         test: 'passes validation -> same record has user deleted flowMeter',
         props: {
-          index: 7,
+          index: 2,
           currentRecord: currentRecord,
           context: context,
           fields: ['pumpedYearToDate'],

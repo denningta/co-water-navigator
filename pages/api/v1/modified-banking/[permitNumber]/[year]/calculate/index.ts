@@ -2,10 +2,9 @@ import { Document } from "fauna";
 import _ from "lodash"
 import { NextApiRequest, NextApiResponse } from "next";
 import { ModifiedBanking, ModifiedBankingDependencies } from "../../../../../../../interfaces/ModifiedBanking"
-import faunaClient, { q } from "../../../../../../../lib/fauna/faunaClient"
 import fauna from "../../../../../../../lib/fauna/faunaClientV10";
-import getModifiedBankingQuery from "../../../../../../../lib/fauna/ts-queries/getModifiedBankingQuery";
 import getModifiedBankingDependencies from "../../../../../../../lib/fauna/ts-queries/modified-banking/getModifiedBankingDependencies";
+import getModifiedBanking from "../../../../../../../lib/fauna/ts-queries/modified-banking/listModifiedBanking";
 import { updateModifiedBanking } from "../update";
 import calculationFns, { CalculationProps } from "./calculationFns"
 
@@ -43,12 +42,12 @@ export const runCalculationsExternal = async (req: NextApiRequest): Promise<Modi
     if (!permitNumber || Array.isArray(permitNumber)) throw new Error('Invalid permitNumber')
     if (!year || Array.isArray(year)) throw new Error('Invalid year')
 
-    const modifiedBankingData: ModifiedBanking = await faunaClient.query(getModifiedBankingQuery(permitNumber, year))
+    const { data } = await fauna.query<Document & ModifiedBanking>(getModifiedBanking(permitNumber, year))
 
-    const data = await runCalculationsInternal(modifiedBankingData, permitNumber, year)
+    const calcData = await runCalculationsInternal(data, permitNumber, year)
 
-    if (data) {
-      const updateRes = await updateModifiedBanking(permitNumber, year, data)
+    if (calcData) {
+      const updateRes = await updateModifiedBanking(permitNumber, year, calcData)
       return updateRes
     }
 

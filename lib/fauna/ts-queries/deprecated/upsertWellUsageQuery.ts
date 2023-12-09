@@ -1,7 +1,7 @@
 import { Expr } from "faunadb";
-import { q } from "../faunaClient";
+import { q } from "../../faunaClient";
 
-const upsertWellUsageQuery = (permitNumber: string | Expr, year: string | Expr, data: any) => 
+const upsertWellUsageQuery = (permitNumber: string | Expr, year: string | Expr, data: any) =>
   q.Let(
     {
       wellUsage: q.Map(
@@ -12,7 +12,7 @@ const upsertWellUsageQuery = (permitNumber: string | Expr, year: string | Expr, 
           q.Get(q.Var('el'))
         )
       ),
-      response: 
+      response:
         q.If(
           q.ContainsPath(['data', 0], q.Var('wellUsage')),
           q.Replace(q.Select(['data', 0, 'ref'], q.Var('wellUsage')), { data: data }),

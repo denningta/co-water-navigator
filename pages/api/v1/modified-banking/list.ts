@@ -1,63 +1,39 @@
-import { Expr } from "faunadb";
 import { NextApiRequest } from "next";
-import MeterReading from "../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../lib/fauna/faunaClient";
-import { HttpError } from "../interfaces/HttpError";
-import validateQuery from "../validatorFunctions";
+import fauna from "../../../../lib/fauna/faunaClientV10";
+import { getModifiedBankingRecords } from "../../../../lib/fauna/ts-queries/modified-banking/listModifiedBanking";
 
-function listAdministrativeReports(req: NextApiRequest): Promise<MeterReading[]> {
-  return new Promise(async (resolve, reject) => {
-    const errors = validateQuery(req, [
-      'queryExists',
-      'optionalYearValid',
-      'permitNumberRequired'
-    ]);
+async function listAdministrativeReports(req: NextApiRequest) {
 
-    if (errors.length) reject(errors);
+  const { permitNumber, year } = req.query
 
-    const { permitNumber, year } = req.query;
-  
-    let permitNumberQuery = permitNumber && q.Union(
-      !Array.isArray(permitNumber)
-        ? q.Match(q.Index('admin-reports-by-permitnumber'), permitNumber)
-        : permitNumber.map(el => q.Match(q.Index('admin-reports-by-permitnumber'), el))
-    )
-    
-    let yearQuery = year && q.Union(
-      !Array.isArray(year) 
-        ? q.Match(q.Index('admin-reports-by-year'), year) 
-        : year.map(el => q.Match(q.Index('admin-reports-by-year'), el))
-    )
-    
-    const query = [
-      permitNumberQuery,
-      yearQuery,
-    ].filter(el => el)
 
-    const response: any = await faunaClient.query(
-      q.Map(
-        q.Paginate(
-          q.Intersection(query)
-        ),
-        (record) => q.Get(record)
-      )
-    ).catch(err => reject(err));
+  let permitNumbers: string[] | null = null
+  let years: string[] | null = null
 
-    if (!response.data || response.data.length === 0) {
-      errors.push(
-        new HttpError(
-          'No Data',
-          `No data found matching the query paramters:` + 
-          `'permitNumber': ${permitNumber} and 'year': ${year}`,
-          404
-        )
-      );
-  
-      reject(errors);
-    }
+  if (!permitNumber) {
+    permitNumbers = null
+  } else if (Array.isArray(permitNumber)) {
+    permitNumbers = permitNumber
+  } else {
+    permitNumbers = [permitNumber as string]
+  }
 
-    resolve(response.data.map((el: any) => el.data));
-  });
+  if (!year) {
+    years = null
+  } else if (Array.isArray(year)) {
+    years = year
+  } else {
+    years = [year as string]
+  }
+
+  try {
+    const { data } = await fauna.query(getModifiedBankingRecords(permitNumbers, years))
+
+    return data
+
+  } catch (error: any) {
+    throw new error(error)
+  }
 }
 
 export default listAdministrativeReports;

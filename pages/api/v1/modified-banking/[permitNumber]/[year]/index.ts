@@ -6,7 +6,7 @@ import listModifiedBanking from "./list";
 import updateModifiedBanking from "./update";
 
 type HandlerFunctions = {
-  [key: string]: (req: NextApiRequest, res: NextApiResponse) => Promise<ModifiedBanking>
+  [key: string]: (req: NextApiRequest, res: NextApiResponse) => Promise<ModifiedBanking | null>
 };
 
 async function modifiedBankingHandler(

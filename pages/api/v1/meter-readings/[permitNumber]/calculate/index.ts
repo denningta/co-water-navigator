@@ -1,7 +1,6 @@
 import _ from "lodash";
 import { NextApiRequest, NextApiResponse } from "next";
 import MeterReading from "../../../../../../interfaces/MeterReading";
-import faunaClient, { q } from "../../../../../../lib/fauna/faunaClient";
 import fauna from "../../../../../../lib/fauna/faunaClientV10";
 import verifyAvailableThisYear from "./verify-availableThisYear";
 import verifyEqualToPrevValue from "./verify-equal-to-prev-value";

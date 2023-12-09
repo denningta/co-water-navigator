@@ -1,7 +1,7 @@
 import { Expr } from "faunadb";
 import { q } from "../../faunaClient";
 import getLastMeterReadingPrevYear from "./getLastMeterReadingPrevYear";
-import getModifiedBankingQuery from "../getModifiedBankingQuery";
+import getModifiedBankingQuery from "./getModifiedBankingQuery";
 
 const getDbb004BankingSummary = (permitNumber: string | Expr, year: string | Expr) =>
   q.Let(

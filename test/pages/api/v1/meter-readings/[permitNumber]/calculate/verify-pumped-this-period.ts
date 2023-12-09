@@ -142,13 +142,20 @@ const calculationFn: CalculationFn = {
     },
     () => {
       const currentRecord: MeterReading = {
-        ...data[4],
+        permitNumber: data[4].permitNumber,
+        date: data[4].date,
         flowMeter: {
           value: 'user-deleted',
           source: 'user-deleted'
         }
       }
-      const context: MeterReading[] = data
+      const context: MeterReading[] = [
+        data[0],
+        data[1],
+        data[2],
+        data[3],
+        currentRecord
+      ]
       return ({
         test: 'return undefined -> same record has user-deleted dependencies',
         props: {

@@ -1,19 +1,19 @@
 import { Document } from "fauna";
 import { NextApiRequest } from "next";
 import { DataSummary } from "../../../../hooks/useDataSummaryByPermit";
-import faunaClient from "../../../../lib/fauna/faunaClient";
 import fauna from "../../../../lib/fauna/faunaClientV10";
 import getDataSummary from "../../../../lib/fauna/ts-queries/data-summary/getDataSummary";
-import getUniquePermitNumbersWithData from "../../../../lib/fauna/ts-queries/getUniquePermitNumbersWithData";
+import getUniquePermitNumbersWithData from "../../../../lib/fauna/ts-queries/data-summary/getUniquePermitNumbersWithData";
 
-async function listDataSummary(req: NextApiRequest): Promise<any[]> {
+async function listDataSummary(req: NextApiRequest) {
   try {
     const { permitNumber } = req.query
 
     let permitNumbers = permitNumber
 
     if (!permitNumbers) {
-      permitNumbers = await faunaClient.query(getUniquePermitNumbersWithData())
+      const { data } = await fauna.query<string[]>(getUniquePermitNumbersWithData())
+      permitNumbers = data
     }
 
     if (!permitNumbers) throw new Error('No meter readings or modified banking data found')
@@ -26,7 +26,6 @@ async function listDataSummary(req: NextApiRequest): Promise<any[]> {
   } catch (error: any) {
     return error
   }
-
 }
 
 export default listDataSummary

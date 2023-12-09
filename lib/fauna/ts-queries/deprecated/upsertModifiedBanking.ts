@@ -1,6 +1,6 @@
 import { Expr } from "faunadb";
-import { ModifiedBanking } from "../../../interfaces/ModifiedBanking";
-import { q } from "../faunaClient";
+import { ModifiedBanking } from "../../../../interfaces/ModifiedBanking";
+import { q } from "../../faunaClient";
 
 const upsertModifiedBanking = (permitNumber: string | Expr, year: string | Expr, data: ModifiedBanking) =>
   q.Let(

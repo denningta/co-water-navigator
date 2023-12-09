@@ -1,5 +1,5 @@
 import { Expr } from "faunadb";
-import { q } from "../faunaClient";
+import { q } from "../../faunaClient";
 
 const getTotalPumpedThisYear = (permitNumber: string | Expr, year: string | Expr) =>
   q.Let(

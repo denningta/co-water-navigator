@@ -1,5 +1,5 @@
 import { Expr } from "faunadb";
-import { q } from "../faunaClient";
+import { q } from "../../faunaClient";
 import getModifiedBankingLastYear from "./getModifiedBankingLastYear";
 import getTotalPumpedThisYear from "./getTotalPumpedThisYear";
 
