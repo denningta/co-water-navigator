@@ -17,6 +17,23 @@ describe('verifyAvailaibleThisYear', () => {
 
   const pumpingLimitThisYear = 300
 
+  test('user defined value', () => {
+    const index = 7
+    const currentRecord: MeterReading = {
+      ...generateRecord(index),
+      availableThisYear: {
+        value: 520,
+        source: 'user'
+      }
+    }
+    const context = [
+      currentRecord
+    ]
+
+    const result = verifyAvailableThisYear(currentRecord, pumpingLimitThisYear, context, index)
+    expect(result).toMatchObject({ value: 520, source: 'user' })
+  })
+
 
   describe('= pumpingLimitThisYear - pumpedYearToDate', () => {
 
