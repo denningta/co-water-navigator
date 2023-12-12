@@ -1,5 +1,5 @@
 import MeterReading, { CalculatedValue } from "../../../../../../interfaces/MeterReading";
-import { getPreviousValidCalculatedValues, isUserDeleted, parseDate } from "./helpers";
+import { getLastFlowMeterPrevYears, getPreviousValidCalculatedValues, parseDate, sumCalculatedValues } from "./helpers";
 
 const verifyAvailableThisYear = (
   meterReading: MeterReading,
@@ -8,8 +8,6 @@ const verifyAvailableThisYear = (
   index: number,
 ): CalculatedValue | undefined => {
   let shouldBe: number | undefined = undefined
-  const { availableThisYear } = meterReading
-  const { pumpedThisPeriod } = meterReading
   const {
     prevAvailableThisYear
   } = getPreviousValidCalculatedValues(meterReading, index, meterReadings)
@@ -17,18 +15,13 @@ const verifyAvailableThisYear = (
 
   // Calc Case 1
   const currentFlowMeter = meterReading.flowMeter?.value
-  const lastFlowMeterLastYear = meterReadings.filter(el => {
-    const test1 = parseDate(el.date).year - 1
-    const test2 = parseDate(meterReading.date).year
-    const test = test1 === test2
-    return test
-
-  }
-  )[0]?.flowMeter?.value
+  const pumpedThisPeriod = meterReading.pumpedThisPeriod?.value
+  const lastFlowMeterLastYear = getLastFlowMeterPrevYears(meterReadings, meterReading)?.value
   const pumpedYearToDate = meterReading.pumpedYearToDate?.value
-  const sumPumpedThisPeriod = meterReadings.filter(el =>
-    parseDate(el.date).year === parseDate(meterReading.date).year
-  ).map(el => el.pumpedThisPeriod?.value).filter(el => typeof el === 'number')
+  const sumPumpedThisPeriod = sumCalculatedValues(
+    meterReadings.filter((el) => parseDate(el.date).year === parseDate(meterReading.date).year),
+    'pumpedThisPeriod'
+  )
 
 
   if (
@@ -40,47 +33,25 @@ const verifyAvailableThisYear = (
 
   } else if (
     typeof pumpingLimitThisYear === 'number' &&
+    typeof sumPumpedThisPeriod === 'number'
+  ) {
+    shouldBe = pumpingLimitThisYear - sumPumpedThisPeriod
+
+  } else if (
+    typeof pumpingLimitThisYear === 'number' &&
     typeof pumpedYearToDate === 'number'
   ) {
     shouldBe = pumpingLimitThisYear - pumpedYearToDate
 
   } else if (
-    typeof pumpingLimitThisYear === 'number'
+    typeof prevAvailableThisYear?.value === 'number' &&
+    typeof pumpedThisPeriod === 'number'
   ) {
+    shouldBe = prevAvailableThisYear.value - pumpedThisPeriod
 
+  } else {
+    return
   }
-
-
-
-
-  // if (prevAvailableThisYear === undefined && meterReading.availableThisYear?.value !== undefined) {
-  //   prevValue = { value: meterReading.availableThisYear.value }
-  // }
-  //
-
-
-  if (isUserDeleted(availableThisYear)) return meterReading.availableThisYear
-  if (isUserDeleted(pumpedYearToDate)) return
-  if (isUserDeleted(pumpedThisPeriod)) return
-  if (isUserDeleted(prevAvailableThisYear)) return
-
-  if (meterReading.pumpedYearToDate?.value === undefined) {
-    if (meterReading.availableThisYear?.source === 'user') {
-      return {
-        ...meterReading.availableThisYear,
-      }
-    }
-    else {
-      return
-    }
-  }
-
-  shouldBe =
-    pumpingLimitThisYear
-      ? parseFloat((pumpingLimitThisYear - pumpedYearToDate?.value).toFixed(2))
-      : parseFloat(
-        ((prevAvailableThisYear?.value ?? 0) - (pumpedThisPeriod?.value ?? 0)).toFixed(2)
-      )
 
   const updatedValue: CalculatedValue = {
     ...meterReading.availableThisYear,

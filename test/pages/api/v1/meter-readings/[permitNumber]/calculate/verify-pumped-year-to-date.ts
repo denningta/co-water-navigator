@@ -3,10 +3,8 @@ import verifyPumpedYearToDate from "../../../../../../../pages/api/v1/meter-read
 import { CalculationFn } from "./calculation-functions.test"
 import * as meterReadingData from './test-data.json'
 
-const rawData: any = meterReadingData
-delete rawData.default
-
-const data: MeterReading[] = Object.keys(rawData).map(key => rawData[key])
+const importData = meterReadingData as any
+const data: MeterReading[] = importData.meterReadings
 
 
 

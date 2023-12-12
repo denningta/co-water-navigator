@@ -4,7 +4,8 @@ import verifyPumpedThisPeriod from "../../../../../../../pages/api/v1/meter-read
 import { CalculationFn } from "./calculation-functions.test"
 import * as meterReadingData from './test-data.json'
 
-const data: MeterReading[] = meterReadingData as any
+const importData = meterReadingData as any
+const data: MeterReading[] = importData.meterReadings
 
 const calculationFn: CalculationFn = {
   name: 'verifyPumpedThisPeriod',

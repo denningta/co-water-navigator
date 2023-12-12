@@ -41,7 +41,7 @@ export function getPreviousValidCalculatedValues(
   calculatedFields.forEach(({ property, prevProperty }) => {
     let prevValue: CalculatedValue | undefined = undefined
     for (let i = index - 1; i >= 0; i--) {
-      if (context[i] && context[i][property] && !isUserDeleted(context[i][property])) {
+      if (context[i] && context[i][property] && isDefined(context[i][property])) {
         prevValue = context[i][property]
         break
       }
@@ -53,21 +53,16 @@ export function getPreviousValidCalculatedValues(
   return resultObj
 }
 
-export function isUserDeleted(value: CalculatedValue | undefined): boolean {
-  if (!value) return false
-  if (value.value === 'user-deleted' || value.source === 'user-deleted') {
-    return true
-  } else {
+export function isDefined(value: CalculatedValue | undefined): boolean {
+  if (
+    value === undefined
+    || value.value === undefined
+    || value.value === 'user-deleted'
+    || isNaN(value.value)
+  ) {
     return false
-  }
-}
-
-export function isNotDefined(value: CalculatedValue | undefined): boolean {
-  if (!value) return false
-  if (value.value === undefined || value.value === 'user-deleted') {
-    return true
   } else {
-    return false
+    return true
   }
 }
 
@@ -79,3 +74,48 @@ export function parseDate(date: string): { year: number, month: number } {
     month: +dateArray[1]
   }
 }
+
+export function getLastFlowMeterPrevYears(meterReadings: MeterReading[], meterReading: MeterReading): CalculatedValue | undefined {
+  const thisYear = parseDate(meterReading.date).year
+
+  return meterReadings
+    .filter(el => parseDate(el.date).year <= (thisYear - 1))
+    .sort((a, b) => {
+      const aDate = parseDate(a.date)
+      const bDate = parseDate(b.date)
+      if (aDate.year !== bDate.year) {
+        return bDate.year - aDate.year
+      } else {
+        return bDate.month - aDate.month
+      }
+    })
+    .find(el => {
+      if (el && el.flowMeter && isDefined(el.flowMeter)) {
+        return el
+      }
+    })?.flowMeter
+}
+
+export type CalculatedValueProperties<T> = {
+  [K in keyof T]: Exclude<T[K], undefined> extends CalculatedValue ? K : never;
+}[keyof T];
+
+export function sumCalculatedValues(meterReadings: MeterReading[], field: CalculatedValueProperties<MeterReading>) {
+  // @ts-expect-error
+  const array = meterReadings.filter(el => isDefined(el[field]))
+  if (!array.length) return
+  const sum = meterReadings.reduce((accumulator, item) => {
+    // @ts-expect-error
+    if (item && item[field] && isDefined(item[field])) {
+      // @ts-expect-error
+      return accumulator + item[field].value
+    } else {
+      return accumulator
+    }
+  }, 0)
+
+  return +sum.toFixed(2)
+}
+
+
+

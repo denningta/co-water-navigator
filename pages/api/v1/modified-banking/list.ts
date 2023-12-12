@@ -1,4 +1,6 @@
+import { Document } from "fauna";
 import { NextApiRequest } from "next";
+import { ModifiedBanking } from "../../../../interfaces/ModifiedBanking";
 import fauna from "../../../../lib/fauna/faunaClientV10";
 import { getModifiedBankingRecords } from "../../../../lib/fauna/ts-queries/modified-banking/listModifiedBanking";
 
@@ -27,7 +29,7 @@ async function listAdministrativeReports(req: NextApiRequest) {
   }
 
   try {
-    const { data } = await fauna.query(getModifiedBankingRecords(permitNumbers, years))
+    const { data } = await fauna.query<Array<Document & ModifiedBanking>>(getModifiedBankingRecords(permitNumbers, years))
 
     return data
 
