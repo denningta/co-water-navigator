@@ -25,7 +25,6 @@ const ModifiedBankingSummary = ({
   onCalculating = () => { }
 }: Props) => {
   const { data, mutate } = useDbb004BankingSummary(permitNumber, year)
-  console.log(data)
   const breakpoint = useTailwindBreakpoints()
   const gridRef = useRef<AgGridReact>(null)
   const { enqueueSnackbar } = useSnackbar()

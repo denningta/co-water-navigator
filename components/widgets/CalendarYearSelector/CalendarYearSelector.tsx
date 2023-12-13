@@ -46,7 +46,6 @@ const CalendarYearSelector = ({
   const [onlyDataFilter, setOnlyDataFilter] = useState<boolean>(onlyDataFilterDefault)
 
   useEffect(() => {
-    console.log(data, Array.isArray(data))
     if (!year || !data) return
     if (!Array.isArray(data)) return
     if (!onlyDataFilter) {

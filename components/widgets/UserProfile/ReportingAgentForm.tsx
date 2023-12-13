@@ -81,7 +81,6 @@ const ReportingAgentForm = ({
 }: ReportingAgentFormProps) => {
   const { enqueueSnackbar } = useSnackbar()
   const { data, mutate } = useAgentInfo(user_id ?? null, permitNumber)
-  console.log(data)
   const [loading, setLoading] = useState(false)
 
   const formKeys = Object.keys(formData) as (keyof typeof formData)[]

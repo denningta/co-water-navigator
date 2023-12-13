@@ -20,7 +20,6 @@ interface Props {
 
 const ReadingsGrid = ({ permitNumber, year, onCalculating = () => { } }: Props) => {
   const { data, mutate } = useMeterReadings(permitNumber, year)
-  console.log(data)
   const gridRef = useRef<AgGridReact>(null);
   const [gridApi, setGridApi] = useState<GridApi | null>(null)
   const [columnApi, setColumnApi] = useState<ColumnApi | null>(null)

@@ -20,7 +20,6 @@ const ModifiedBankingComponent = ({
   onCalculating = () => { }
 }: Props) => {
   const { data, mutate } = useModifiedBanking(permitNumber, year)
-  console.log(year, data)
   const [formElements, setFormElements] = useState<FormElement[]>([])
   const { enqueueSnackbar } = useSnackbar()
 

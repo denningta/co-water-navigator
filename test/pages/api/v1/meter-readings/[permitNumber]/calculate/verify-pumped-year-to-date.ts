@@ -89,8 +89,6 @@ const calculationFn: CalculationFn = {
         currentRecord
       ]
 
-      console.log(context)
-
       return ({
         test: 'passes validation -> previous record has user deleted flowMeter',
         props: {

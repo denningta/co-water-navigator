@@ -27,8 +27,7 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
   const [isLoading, setIsLoading] = useState(false)
   const { getConfirmation } = useConfirmationDialog()
   const { enqueueSnackbar } = useSnackbar()
-  const { mutate, cache } = useSWRConfig()
-  console.log(cache)
+  const { mutate } = useSWRConfig()
 
   useEffect(() => {
     if (!data) return
