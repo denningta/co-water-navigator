@@ -1,12 +1,11 @@
 import { Document } from "fauna";
 import _ from "lodash"
 import { NextApiRequest, NextApiResponse } from "next";
-import { ModifiedBanking, ModifiedBankingDependencies } from "../../../../../../../interfaces/ModifiedBanking"
+import { ModifiedBanking } from "../../../../../../../interfaces/ModifiedBanking"
 import fauna from "../../../../../../../lib/fauna/faunaClientV10";
 import getModifiedBankingDependencies from "../../../../../../../lib/fauna/ts-queries/modified-banking/getModifiedBankingDependencies";
 import getModifiedBanking from "../../../../../../../lib/fauna/ts-queries/modified-banking/listModifiedBanking";
 import upsertModifiedBanking from "../../../../../../../lib/fauna/ts-queries/modified-banking/upsertModifiedBanking";
-import { updateModifiedBanking } from "../update";
 import calculationFns, { CalculationProps } from "./calculationFns"
 
 type HandlerFunctions = {

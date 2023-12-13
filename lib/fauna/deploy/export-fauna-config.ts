@@ -4,7 +4,7 @@ import dotenv from "dotenv"
 
 dotenv.config()
 const cliSecret = process.env.DEV_FAUNA_CLI_SECRET
-const endpoint = process.env.FAUNADB_ENDPOINT || ''
+const endpoint = process.env.FAUNADB_ENDPOINT || 'https://db.fauna.com/'
 
 const fauna = new Client({
   endpoint: new URL(endpoint),
@@ -35,7 +35,7 @@ export async function getFaunaDatabaseConfig() {
 
         roles: (Role.all() {
           name,
-          membershp,
+          membership,
           privileges,
           data
         }).toArray()
