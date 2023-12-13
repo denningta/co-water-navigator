@@ -3,7 +3,7 @@ import fs from "fs"
 import dotenv from "dotenv"
 
 dotenv.config()
-const cliSecret = process.env.FAUNA_CLI_SECRET
+const cliSecret = process.env.STAGING_FAUNA_CLI_SECRET
 const endpoint = process.env.FAUNADB_ENDPOINT || ''
 
 export const fauna = new Client({
@@ -22,7 +22,6 @@ export async function importFaunaConfig(path: string) {
     roles
   } = JSON.parse(fs.readFileSync(path, 'utf8'))
 
-
   try {
     const { data } = await fauna.query(fql`
       let collections = (Collections.all() {
@@ -33,7 +32,6 @@ export async function importFaunaConfig(path: string) {
         data
       }).toArray()
       upsertCollections(${collections})
-
       upsertFunctions(${functions})
       upsertRoles(${roles})
     `)
