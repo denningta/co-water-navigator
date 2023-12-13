@@ -5,6 +5,7 @@ import { ModifiedBanking, ModifiedBankingDependencies } from "../../../../../../
 import fauna from "../../../../../../../lib/fauna/faunaClientV10";
 import getModifiedBankingDependencies from "../../../../../../../lib/fauna/ts-queries/modified-banking/getModifiedBankingDependencies";
 import getModifiedBanking from "../../../../../../../lib/fauna/ts-queries/modified-banking/listModifiedBanking";
+import upsertModifiedBanking from "../../../../../../../lib/fauna/ts-queries/modified-banking/upsertModifiedBanking";
 import { updateModifiedBanking } from "../update";
 import calculationFns, { CalculationProps } from "./calculationFns"
 
@@ -30,7 +31,8 @@ export default async function handler(
     res.status(200).json(data)
 
   } catch (error: any) {
-    res.status(500).json(error)
+    res.status(500).send(error)
+    throw new Error(error)
   }
 }
 
@@ -43,18 +45,18 @@ export const runCalculationsExternal = async (req: NextApiRequest): Promise<Modi
     if (!year || Array.isArray(year)) throw new Error('Invalid year')
 
     const { data } = await fauna.query<Document & ModifiedBanking>(getModifiedBanking(permitNumber, year))
+    const { coll, id, ts, ...modifiedBanking } = data ?? {}
 
-    const calcData = await runCalculationsInternal(data, permitNumber, year)
+    const calcData = await runCalculationsInternal(modifiedBanking, permitNumber, year)
 
     if (calcData) {
-      const updateRes = await updateModifiedBanking(permitNumber, year, calcData)
-      return updateRes
+      const { data } = await fauna.query<Document & ModifiedBanking>(upsertModifiedBanking(calcData))
+      return data
     }
 
   } catch (error: any) {
     throw new Error(error)
   }
-
 }
 
 
@@ -74,9 +76,14 @@ export const runCalculationsInternal = async (
     }
 
     const updatedData = calculate(props)
-    return updatedData
+    return {
+      ...updatedData,
+      permitNumber,
+      year
+    }
 
   } catch (error: any) {
+    debugger
     throw new Error(error)
   }
 }
@@ -98,7 +105,7 @@ export const queryDependencies = async (
 export const calculate = (
   props: CalculationProps
 ): ModifiedBanking | undefined => {
-  const { data } = props
+  const data = props.data ?? {}
 
   const refRecord = {
     ...data
@@ -108,7 +115,6 @@ export const calculate = (
 
   calculatedFields.forEach(field => {
     refRecord[field] = calculationFns[field]({ ...props, data: refRecord })
-    if (field === 'pumpingLimitNextYear') console.log(refRecord[field])
   })
 
   let updateRecord = false

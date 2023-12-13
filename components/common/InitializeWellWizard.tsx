@@ -138,8 +138,6 @@ const InitializeWellWizard = ({ dialogProps, permitnumber, year, onFormSubmit, i
           const thisYear = () => (!!(+values.year) ? +values.year : 'this year').toString()
           const lastYear = () => (!!(+values.year) ? +values.year - 1 : 'previous year').toString()
 
-          console.log(errors)
-
           return (
 
             <Form>

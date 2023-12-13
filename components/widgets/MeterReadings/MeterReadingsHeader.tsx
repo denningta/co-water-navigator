@@ -28,6 +28,7 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
   const { getConfirmation } = useConfirmationDialog()
   const { enqueueSnackbar } = useSnackbar()
   const { mutate, cache } = useSWRConfig()
+  console.log(cache)
 
   useEffect(() => {
     if (!data) return
@@ -95,6 +96,8 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
         meterReading
       )
 
+      await refreshCalculations()
+
       mutate(
         key,
         modBankingRes,
@@ -105,7 +108,7 @@ const MeterReadingsHeader = ({ permitNumber, year }: Props) => {
       )
       mutate(`/api/v1/meter-readings?permitNumber=${permitNumber}&year=${year}`)
       mutate(`/api/v1/modified-banking/${permitNumber}/${year}`)
-      mutate(`/api/v1/data-summary/dbb004-banking-summary`)
+      mutate(`/api/v1/data-summary/dbb004-banking-summary?permitNumber=${permitNumber}&year=${year}`)
       mutate(`/api/v1/data-summary?permitNumber=${permitNumber}`)
 
       enqueueSnackbar(`Setup of permit ${permitNumber} successful!`, { variant: 'success' })

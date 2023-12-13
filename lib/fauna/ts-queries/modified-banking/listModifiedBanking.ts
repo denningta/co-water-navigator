@@ -5,7 +5,7 @@ export default function getModifiedBanking(permitNumber: string, year: string) {
     let permitNumber = ${permitNumber}
     let year = ${year}
 
-    administrativeReports.firstWhere(.permitNumber == permitNumber && year == year)
+    administrativeReports.firstWhere(.permitNumber == permitNumber && .year == year)
   `
 }
 

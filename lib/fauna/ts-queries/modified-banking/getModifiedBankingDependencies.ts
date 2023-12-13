@@ -5,13 +5,13 @@ export default function getModifiedBankingDependencies(permitNumber: string, yea
   return fql`
     let permitNumber = ${permitNumber}
     let year = ${year}
-    let lastYear = (year.parseInt() - 1).toString
+    let lastYear = (year.parseInt() - 1).toString()
 
-    let dataLastYear = administrativeReports.firstWhere(.permitNumber == permitNumber && year == lastYear)
-    
+    let dataLastYear = administrativeReports.firstWhere(.permitNumber == permitNumber && .year == lastYear)
+
     let bankingReserveLastYear = {
       if (dataLastYear != null) {
-        dataLastYear!.bankingReserveThisYear
+        dataLastYear!.bankingReserveThisYear.value
       }
     }
 
@@ -61,5 +61,3 @@ export default function getModifiedBankingDependencies(permitNumber: string, yea
     }
   `
 }
-
-

@@ -37,7 +37,7 @@ const Dbb013HeatmapCellRenderer = (params: ICellRendererParams) => {
       const bin = {
         ...el,
         bins: [
-          { bin: 0, count: data[el.bin]?.value ? 100 : 0 }
+          { bin: 0, count: typeof data[el.bin]?.value === 'number' ? 100 : 0 }
         ]
       }
 

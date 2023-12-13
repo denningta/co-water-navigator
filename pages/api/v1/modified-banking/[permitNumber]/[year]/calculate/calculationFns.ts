@@ -83,7 +83,7 @@ const calculationFns: CalculationFns = {
       shouldBe = originalAppropriation.value - allowedAppropriation.value
     }
 
-    if (shouldBe === undefined) return
+    if (!isDefined(shouldBe)) return
 
     return abstractCalculationFn('line3', data, shouldBe)
   },
@@ -102,7 +102,7 @@ const calculationFns: CalculationFns = {
       shouldBe = line3.value * 3
     }
 
-    if (shouldBe === undefined) return
+    if (!isDefined(shouldBe)) return
 
     return abstractCalculationFn('maxBankingReserve', data, shouldBe)
   },
