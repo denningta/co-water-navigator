@@ -1,7 +1,7 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { NextApiRequest, NextApiResponse } from "next";
 import fauna from "../../../../../lib/fauna/faunaClientV10";
-import getPermitPreview from "../../../../../lib/fauna/ts-queries/permit-preview/getPermitReview";
+import getPermitPreview from "../../../../../lib/fauna/ts-queries/permit-preview/getPermitPreview";
 
 async function handler(
   req: NextApiRequest,

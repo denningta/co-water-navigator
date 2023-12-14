@@ -55,6 +55,7 @@ const LineChart = ({
   const date = (d: PumpedThisPeriod) => d && new Date(d.date).valueOf();
   const pumpedThisPeriod = (d: PumpedThisPeriod) => d && Number(d.pumpedThisPeriod);
 
+  debugger
   const rawData = data.map((record, index) =>
     record.pumpData.map((el: any) => ({ ...el, lineId: index, permit: record.permit }))
   ).flat(1)

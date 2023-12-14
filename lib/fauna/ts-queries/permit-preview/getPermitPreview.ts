@@ -1,12 +1,10 @@
 import { fql } from "fauna";
-import getWellPermits from "../well-permits/getWellPermits";
 
 const getPermitPreview = (ids: string[]) =>
   fql`
-
     let permitNumbers = () => {
       let getWellPermits = () => {
-        ${getWellPermits({ ids: ids })}
+        wellPermits.where((doc) => ${ids}.includes(doc.id)).toArray()
       }
 
       let getPermitNumbers = (array) => {
