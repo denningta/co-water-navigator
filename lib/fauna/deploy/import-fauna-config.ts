@@ -3,7 +3,7 @@ import fs from "fs"
 import dotenv from "dotenv"
 
 dotenv.config()
-const cliSecret = process.env.STAGING_FAUNA_CLI_SECRET
+const cliSecret = process.env.FAUNA_CLI_SECRET
 const endpoint = process.env.FAUNADB_ENDPOINT || 'https://db.fauna.com/'
 
 export const fauna = new Client({
