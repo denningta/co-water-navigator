@@ -12,12 +12,18 @@ async function handler(
       throw new Error('No request or request method defined.')
     }
 
+    let document_ids: string[] = []
+
     const session = getSession(req, res)
     const { permitRefs } = session?.user.app_metadata
 
-    const document_ids = permitRefs
-      ? permitRefs.filter((el: any) => el.status === 'approved').map((el: any) => el.document_id)
-      : []
+    if (!permitRefs) {
+      res.status(200).json([])
+    }
+
+    document_ids = permitRefs.filter((el: any) => el.status === 'approved').map((el: any) => el.document_id)
+
+    debugger
 
     const { data } = await fauna.query(
       getPermitPreview(document_ids)
