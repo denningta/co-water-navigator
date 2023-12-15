@@ -16,7 +16,6 @@ const listAgentInfo = async (req: NextApiRequest, res: NextApiResponse): Promise
   if (Array.isArray(permitNumber))
     throw new Error('Only a single permitNumber can be queried at a time from this endpoint')
 
-
   try {
     const { data } = await fauna.query(getAgentInfo(user_id, permitNumber))
     return data

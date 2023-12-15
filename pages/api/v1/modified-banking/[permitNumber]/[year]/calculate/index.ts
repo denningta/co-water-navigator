@@ -82,7 +82,6 @@ export const runCalculationsInternal = async (
     }
 
   } catch (error: any) {
-    debugger
     throw new Error(error)
   }
 }

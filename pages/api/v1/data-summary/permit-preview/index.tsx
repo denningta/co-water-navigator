@@ -3,10 +3,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fauna from "../../../../../lib/fauna/faunaClientV10";
 import getPermitPreview from "../../../../../lib/fauna/ts-queries/permit-preview/getPermitPreview";
 
-async function handler(
+async function permitPreviewHandler(
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<any> {
+) {
   try {
     if (!req || !req.method) {
       throw new Error('No request or request method defined.')
@@ -18,12 +18,12 @@ async function handler(
     const { permitRefs } = session?.user.app_metadata
 
     if (!permitRefs) {
-      res.status(200).json([])
+      const response: string[] = []
+      res.status(200).json(response)
+      return response
     }
 
     document_ids = permitRefs.filter((el: any) => el.status === 'approved').map((el: any) => el.document_id)
-
-    debugger
 
     const { data } = await fauna.query(
       getPermitPreview(document_ids)
@@ -32,8 +32,10 @@ async function handler(
     res.status(200).json(data)
 
   } catch (error: any) {
-    res.status(error?.status || 500).json(error)
+    res.status(error?.status || 500).send(error)
+    throw new Error(error)
   }
 }
 
-export default handler;
+export default permitPreviewHandler;
+

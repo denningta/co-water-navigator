@@ -5,12 +5,12 @@ import deleteAgentInfo from "./delete";
 import listAgentInfo from "./list";
 import updateAgentInfo from "./update";
 
-type HandlerFunctions = { 
-  [key: string]: (req: NextApiRequest, res: NextApiResponse) => Promise<any> 
+type HandlerFunctions = {
+  [key: string]: (req: NextApiRequest, res: NextApiResponse) => Promise<any>
 };
 
-async function handler(
-  req: NextApiRequest, 
+async function agentInfoHandler(
+  req: NextApiRequest,
   res: NextApiResponse
 ): Promise<any | HttpError> {
   if (!req || !req.method) {
@@ -20,24 +20,24 @@ async function handler(
       400
     ));
   }
-  
-  const handlers: HandlerFunctions = { 
+
+  const handlers: HandlerFunctions = {
     GET: listAgentInfo,
     POST: updateAgentInfo,
     DELETE: deleteAgentInfo
   }
 
   return handlers[req.method](req, res)
-  .then((response) => {
-    res.status(200).json(response);
-    return response;
-  })
-  .catch((error) => {
-    res.status(error.status || 500).json({error: error})
-    return error;
-  });
+    .then((response) => {
+      res.status(200).json(response);
+      return response;
+    })
+    .catch((error) => {
+      res.status(500).send({ error: error })
+      throw new Error(error)
+    });
 
 }
 
-export default withApiAuthRequired(handler);
+export default withApiAuthRequired(agentInfoHandler);
 
