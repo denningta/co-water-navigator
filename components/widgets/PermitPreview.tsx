@@ -5,7 +5,6 @@ import Button from '../common/Button';
 import { BiPlus } from 'react-icons/bi';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import AreaChart from '../common/AreaChart';
 
 const PermitPreview = () => {
   const { data } = usePermitPreview()
@@ -34,7 +33,6 @@ const PermitPreview = () => {
       </Tabs>
       <div>
         <LineChart data={data ?? []} startDate={startDate} endDate={endDate} />
-        <AreaChart />
         {!data &&
           <div className='absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center'>
             <CircularProgress />

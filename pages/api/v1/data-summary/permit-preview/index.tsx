@@ -23,7 +23,10 @@ async function permitPreviewHandler(
       return response
     }
 
-    document_ids = permitRefs.filter((el: any) => el.status === 'approved').map((el: any) => el.document_id)
+    document_ids = permitRefs
+      .filter((el: any) => el.status === 'approved')
+      .map((el: any) => el.document_id)
+      ?? []
 
     const { data } = await fauna.query(
       getPermitPreview(document_ids)

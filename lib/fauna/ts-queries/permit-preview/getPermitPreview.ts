@@ -1,10 +1,11 @@
 import { fql } from "fauna";
 
-const getPermitPreview = (ids: string[]) =>
-  fql`
+const getPermitPreview = (ids: string[]) => {
+  return fql`
+    let ids = ${ids}
     let permitNumbers = () => {
       let getWellPermits = () => {
-        wellPermits.where((doc) => ${ids}.includes(doc.id)).toArray()
+        wellPermits.where((doc) => ids.includes(doc.id)).toArray()
       }
 
       let getPermitNumbers = (array) => {
@@ -34,5 +35,6 @@ const getPermitPreview = (ids: string[]) =>
       })
     })
   `
+}
 
 export default getPermitPreview

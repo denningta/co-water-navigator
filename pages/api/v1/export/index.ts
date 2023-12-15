@@ -33,7 +33,8 @@ const exportHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(200).json(pdfBytesString)
 
   } catch (error: any) {
-    res.status(500).json(error)
+    res.status(500).send(error)
+    throw new Error(error)
   }
 }
 
@@ -52,15 +53,30 @@ const createPdf = async ({ documents, dataSelection, user_id }: ExportData) => {
   await Promise.all(
     dataSelection.map(async (el) => {
       try {
-        const agentInfo = await fauna.query<Document & AgentInfo>(getAgentInfo(user_id, el.permitNumber))
+        let agentInfo: AgentInfo = {
+          user_id: user_id,
+          permitNumber: '',
+          firstName: '',
+          lastName: '',
+          agentFor: '',
+          phone: '',
+          address: '',
+          city: '',
+          state: '',
+          zip: ''
+        }
+
+        const { data } = await fauna.query<Document & AgentInfo | null>(getAgentInfo(user_id, el.permitNumber))
+
+        if (data) agentInfo = data
 
         if (documents.dbb004) {
           if (!el.dbb004Summary) return
-          const dbb004 = await addDbb004(el.dbb004Summary, el.dbb004BankingSummary, agentInfo.data, el.wellUsage, el.permitNumber, el.year)
+          const dbb004 = await addDbb004(el.dbb004Summary, el.dbb004BankingSummary, agentInfo, el.wellUsage, el.permitNumber, el.year)
           await mergeDocuments(pdfDoc, dbb004)
         }
         if (documents.dbb013) {
-          const dbb013 = await addDbb013(el.dbb013Summary, agentInfo.data, el.wellUsage, el.permitNumber)
+          const dbb013 = await addDbb013(el.dbb013Summary, agentInfo, el.wellUsage, el.permitNumber)
           await mergeDocuments(pdfDoc, dbb013)
         }
 
